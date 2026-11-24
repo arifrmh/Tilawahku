@@ -125,3 +125,17 @@ of claiming that audio is stored locally.
 - The source API does not identify the `id.indonesian` translator by name.
 - Remote voice revocation and verification of the exact Kemenag translation
   edition remain outstanding.
+
+## License
+
+Copyright (C) 2026 Arif Rahmaanul Hakim and TILAWAHKU contributors.
+
+The source code of TILAWAHKU is licensed under the **GNU General Public License v3.0 (GPL-3.0)** — see the [LICENSE](LICENSE) file for the full license text.
+
+### Third-party assets and content
+
+The GPL-3.0 license applies only to the TILAWAHKU application source code. Bundled and streamed third-party assets remain subject to their respective licenses and source terms:
+
+- **Amiri Quran font** (`assets/fonts/`): licensed under the SIL Open Font License 1.1 ([assets/fonts/OFL.txt](assets/fonts/OFL.txt)).
+- **Web ASR model metadata/assets** (`web/asr/`): `Abdou/quran-asr-small`, licensed under the MIT License ([web/asr/LICENSE](web/asr/LICENSE)).
+- **Qur'an Arabic text, Indonesian translation, transliteration, and reciter audio** (`assets/data/tilawahku_content.db`, `assets/data/quran_web_preview.json`, and CDN audio streams): subject to the original providers' terms and permissions described in [Bundled content and provenance](#bundled-content-and-provenance) above (non-commercial use, attribution, and rights-holder terms apply).
