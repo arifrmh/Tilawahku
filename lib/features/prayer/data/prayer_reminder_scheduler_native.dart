@@ -21,6 +21,9 @@ class NotificationPrayerReminderScheduler implements PrayerReminderScheduler {
   final FlutterLocalNotificationsPlugin _plugin;
 
   bool _ready = false;
+  bool _exactAlarmRequested = false;
+  bool _iosPermissionGranted = false;
+  Future<bool>? _preparing;
 
   @override
   bool get supportsPlatform {
@@ -32,7 +35,17 @@ class NotificationPrayerReminderScheduler implements PrayerReminderScheduler {
   }
 
   @override
-  Future<bool> prepare() async {
+  Future<bool> prepare() {
+    final existing = _preparing;
+    if (existing != null) return existing;
+    final pending = _prepareOnce();
+    _preparing = pending;
+    return pending.whenComplete(() {
+      if (identical(_preparing, pending)) _preparing = null;
+    });
+  }
+
+  Future<bool> _prepareOnce() async {
     if (!supportsPlatform) return false;
     if (!_ready) {
       tz_data.initializeTimeZones();
@@ -66,11 +79,20 @@ class NotificationPrayerReminderScheduler implements PrayerReminderScheduler {
           AndroidFlutterLocalNotificationsPlugin
         >();
     if (android != null) {
-      final granted = await android.requestNotificationsPermission();
-      if (granted == false) return false;
-      // Izin alarm presisi boleh ditolak: mode inexact tetap menampilkan
-      // pengingat, hanya jamnya bisa meleset beberapa menit.
-      await android.requestExactAlarmsPermission();
+      final enabled = await android.areNotificationsEnabled();
+      if (enabled != true) {
+        final granted = await android.requestNotificationsPermission();
+        if (granted == false) return false;
+      }
+      // Minta izin alarm presisi maksimal sekali per sesi; jika ditolak,
+      // mode inexact tetap dipakai tanpa membuka Pengaturan berulang kali.
+      if (!_exactAlarmRequested) {
+        final canExact = await android.canScheduleExactNotifications() ?? false;
+        if (!canExact) {
+          _exactAlarmRequested = true;
+          await android.requestExactAlarmsPermission();
+        }
+      }
       return true;
     }
 
@@ -79,12 +101,14 @@ class NotificationPrayerReminderScheduler implements PrayerReminderScheduler {
           IOSFlutterLocalNotificationsPlugin
         >();
     if (ios != null) {
+      if (_iosPermissionGranted) return true;
       final granted = await ios.requestPermissions(
         alert: true,
         badge: true,
         sound: true,
       );
-      return granted != false;
+      _iosPermissionGranted = granted != false;
+      return _iosPermissionGranted;
     }
     return false;
   }

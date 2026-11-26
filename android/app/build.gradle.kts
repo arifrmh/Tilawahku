@@ -28,11 +28,15 @@ android {
         multiDexEnabled = true
     }
 
+    val isSplitPerAbi = project.findProperty("split-per-abi")?.toString() == "true"
+
     buildTypes {
         debug {
             // x86_64 disertakan di debug agar dapat berjalan pada emulator x86_64.
-            ndk {
-                abiFilters += listOf("arm64-v8a", "armeabi-v7a", "x86_64")
+            if (!isSplitPerAbi) {
+                ndk {
+                    abiFilters += listOf("arm64-v8a", "armeabi-v7a", "x86_64")
+                }
             }
         }
         release {
@@ -40,10 +44,12 @@ android {
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.getByName("debug")
             // sherpa_onnx mengirim paket ffiPlugin per ABI (total 109,1 MB .so), jadi
-            // tanpa filter semua library ASR masuk APK. x86/x86_64 tidak dibawa pada
-            // build release.
-            ndk {
-                abiFilters += listOf("arm64-v8a", "armeabi-v7a")
+            // tanpa filter semua library ASR masuk APK. Saat --split-per-abi dipakai,
+            // AGP melarang ndk.abiFilters bersamaan dengan splits.abi.
+            if (!isSplitPerAbi) {
+                ndk {
+                    abiFilters += listOf("arm64-v8a", "armeabi-v7a")
+                }
             }
         }
     }

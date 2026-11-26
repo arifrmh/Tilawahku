@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../app/app_theme.dart';
 import '../../../core/preferences/app_preferences.dart';
-import '../../navigation/presentation/main_navigation_screen.dart';
+import '../../voices/presentation/voice_selection_screen.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({
@@ -50,7 +50,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       if (!mounted) return;
       Navigator.of(context).pushReplacement(
         MaterialPageRoute<void>(
-          builder: (_) => MainNavigationScreen(
+          builder: (_) => VoiceSelectionScreen(
             preferences: widget.preferences,
             onSetDarkMode: widget.onSetDarkMode,
           ),
@@ -140,7 +140,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     _saving
                         ? 'Menyimpan...'
                         : _page == _slides.length - 1
-                        ? 'Mulai'
+                        ? 'Pilih qari'
                         : 'Lanjut',
                   ),
                 ),

@@ -97,58 +97,64 @@ class MicrophoneCapture implements RecitationCapture {
   Stopwatch? _clock;
   Object? _streamError;
   RecordConfig? _reportedConfig;
+  bool _starting = false;
 
   @override
   Future<void> start() async {
-    if (_pcm != null) {
+    if (_pcm != null || _starting) {
       throw const RecitationCaptureException(
         RecitationCaptureFailure.interrupted,
         'Perekaman sudah berjalan.',
       );
     }
-    if (!await _recorder.hasPermission()) {
-      throw const RecitationCaptureException(
-        RecitationCaptureFailure.permissionDenied,
-        'Izin mikrofon belum diberikan. Aktifkan izin Mikrofon pada '
-        'pengaturan aplikasi lalu coba lagi.',
-      );
-    }
-
-    final pcm = BytesBuilder();
-    final clock = Stopwatch()..start();
-    _streamError = null;
-    _reportedConfig = null;
+    _starting = true;
     try {
-      await _recorder.setOnConfigChanged((config) {
-        _reportedConfig = config;
-      });
-      final stream = await _recorder.startStream(_config);
-      _subscription = stream.listen(
-        pcm.add,
-        onError: (Object error, StackTrace stackTrace) {
-          _streamError = error;
-        },
-      );
-      _pcm = pcm;
-      _clock = clock;
-    } on PlatformException catch (error) {
-      await _reset();
-      if (error.code == 'no_input_device') {
+      if (!await _recorder.hasPermission()) {
         throw const RecitationCaptureException(
-          RecitationCaptureFailure.noMicrophone,
-          'Tidak ada mikrofon yang tersedia untuk merekam bacaan.',
+          RecitationCaptureFailure.permissionDenied,
+          'Izin mikrofon belum diberikan. Aktifkan izin Mikrofon pada '
+          'pengaturan aplikasi lalu coba lagi.',
         );
       }
-      throw RecitationCaptureException(
-        RecitationCaptureFailure.interrupted,
-        'Mikrofon tidak dapat dimulai: ${error.message ?? error.code}',
-      );
-    } catch (error) {
-      await _reset();
-      throw RecitationCaptureException(
-        RecitationCaptureFailure.interrupted,
-        'Mikrofon tidak dapat dimulai: $error',
-      );
+
+      final pcm = BytesBuilder();
+      final clock = Stopwatch()..start();
+      _streamError = null;
+      _reportedConfig = null;
+      try {
+        await _recorder.setOnConfigChanged((config) {
+          _reportedConfig = config;
+        });
+        final stream = await _recorder.startStream(_config);
+        _subscription = stream.listen(
+          pcm.add,
+          onError: (Object error, StackTrace stackTrace) {
+            _streamError = error;
+          },
+        );
+        _pcm = pcm;
+        _clock = clock;
+      } on PlatformException catch (error) {
+        await _reset();
+        if (error.code == 'no_input_device') {
+          throw const RecitationCaptureException(
+            RecitationCaptureFailure.noMicrophone,
+            'Tidak ada mikrofon yang tersedia untuk merekam bacaan.',
+          );
+        }
+        throw RecitationCaptureException(
+          RecitationCaptureFailure.interrupted,
+          'Mikrofon tidak dapat dimulai: ${error.message ?? error.code}',
+        );
+      } catch (error) {
+        await _reset();
+        throw RecitationCaptureException(
+          RecitationCaptureFailure.interrupted,
+          'Mikrofon tidak dapat dimulai: $error',
+        );
+      }
+    } finally {
+      _starting = false;
     }
   }
 

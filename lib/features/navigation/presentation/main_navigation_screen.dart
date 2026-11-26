@@ -211,6 +211,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           onOpenMemorization: _openMemorization,
           onOpenTajwid: _openTajwid,
           onOpenPrayerTimes: _openPrayerTimes,
+          onOpenReadingStats: _openReadingStats,
         ),
         HomeScreen(
           preferences: widget.preferences,
@@ -282,6 +283,7 @@ class _HomeDashboard extends StatefulWidget {
     required this.onOpenMemorization,
     required this.onOpenTajwid,
     required this.onOpenPrayerTimes,
+    required this.onOpenReadingStats,
   });
 
   final AppPreferences preferences;
@@ -292,6 +294,7 @@ class _HomeDashboard extends StatefulWidget {
   final VoidCallback onOpenMemorization;
   final VoidCallback onOpenTajwid;
   final VoidCallback onOpenPrayerTimes;
+  final VoidCallback onOpenReadingStats;
 
   @override
   State<_HomeDashboard> createState() => _HomeDashboardState();
@@ -445,28 +448,33 @@ class _HomeDashboardState extends State<_HomeDashboard> {
               onPressed: () => _continueReading(data.lastRead),
             ),
             const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  child: _SummaryCard(
-                    icon: Icons.auto_stories_outlined,
-                    title: 'Progres mushaf',
-                    value: data.lastRead == null
-                        ? '0 / 604 halaman'
-                        : 'Hal. ${data.lastRead!.pageNumber} / 604',
+            IntrinsicHeight(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Expanded(
+                    child: _SummaryCard(
+                      icon: Icons.auto_stories_outlined,
+                      title: 'Progres mushaf',
+                      value: data.lastRead == null
+                          ? '0 / 604 halaman'
+                          : 'Hal. ${data.lastRead!.pageNumber} / 604',
+                      onTap: widget.onOpenReadingStats,
+                    ),
                   ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _SummaryCard(
-                    icon: Icons.psychology_alt_rounded,
-                    title: 'Hafalan dikuasai',
-                    value: data.programCount == 0
-                        ? 'Belum ada program'
-                        : '${data.masteredAyahs} dari ${data.totalProgramAyahs} ayat',
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _SummaryCard(
+                      icon: Icons.psychology_alt_rounded,
+                      title: 'Hafalan dikuasai',
+                      value: data.programCount == 0
+                          ? 'Belum ada program'
+                          : '${data.masteredAyahs} dari ${data.totalProgramAyahs} ayat',
+                      onTap: widget.onOpenMemorization,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
             if (data.programCount > 0) ...[
               const SizedBox(height: 8),
@@ -788,40 +796,58 @@ class _SummaryCard extends StatelessWidget {
     required this.icon,
     required this.title,
     required this.value,
+    required this.onTap,
   });
 
   final IconData icon;
   final String title;
   final String value;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final colors = theme.colorScheme;
     return Card(
       margin: EdgeInsets.zero,
+      clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(14),
         side: BorderSide(
-          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.45),
+          color: colors.outlineVariant.withValues(alpha: 0.45),
         ),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Icon(icon, color: theme.colorScheme.primary, size: 20),
-            const SizedBox(height: 8),
-            Text(title, style: theme.textTheme.bodySmall),
-            const SizedBox(height: 4),
-            Text(
-              value,
-              style: theme.textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w600,
-                fontFeatures: const [FontFeature.tabularFigures()],
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(14),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Icon(icon, color: colors.primary, size: 20),
+                  Icon(
+                    Icons.chevron_right_rounded,
+                    size: 18,
+                    color: colors.onSurface.withValues(alpha: 0.45),
+                  ),
+                ],
               ),
-            ),
-          ],
+              const SizedBox(height: 8),
+              Text(title, style: theme.textTheme.bodySmall),
+              const SizedBox(height: 4),
+              Text(
+                value,
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  fontFeatures: const [FontFeature.tabularFigures()],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

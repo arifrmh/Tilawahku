@@ -42,6 +42,7 @@ class _LocationSheetState extends State<_LocationSheet> {
   final _latitude = TextEditingController();
   final _longitude = TextEditingController();
   String _error = '';
+  bool _locating = false;
 
   @override
   void initState() {
@@ -115,17 +116,29 @@ class _LocationSheetState extends State<_LocationSheet> {
             ),
             const SizedBox(height: 12),
             FilledButton.icon(
-              onPressed: widget.selection.busy
+              onPressed: (_locating || widget.selection.busy)
                   ? null
                   : () async {
+                      setState(() {
+                        _locating = true;
+                        _error = '';
+                      });
                       await widget.selection.useDeviceLocation();
-                      if (context.mounted &&
-                          widget.selection.locationMessage == null) {
+                      if (!context.mounted) return;
+                      final message = widget.selection.locationMessage;
+                      if (message == null) {
                         Navigator.of(context).pop();
+                        return;
                       }
+                      setState(() {
+                        _locating = false;
+                        _error = message;
+                      });
                     },
               icon: const Icon(Icons.my_location_rounded),
-              label: const Text('Gunakan lokasi perangkat'),
+              label: Text(
+                _locating ? 'Mengambil lokasi...' : 'Gunakan lokasi perangkat',
+              ),
             ),
             const SizedBox(height: 12),
             TextField(

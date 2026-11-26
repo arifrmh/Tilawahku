@@ -14,6 +14,7 @@ import 'package:tilawahku/features/reading/presentation/search_screen.dart';
 import 'package:tilawahku/features/repeat/presentation/repeat_settings_screen.dart';
 import 'package:tilawahku/features/voices/data/voice_catalog.dart';
 import 'package:tilawahku/features/voices/data/voice_audio_source.dart';
+import 'package:tilawahku/features/voices/presentation/voice_selection_screen.dart';
 import 'package:tilawahku/features/download/data/surah_audio_repository.dart';
 
 void main() {
@@ -111,6 +112,26 @@ void main() {
     final materialApp = tester.widget<MaterialApp>(find.byType(MaterialApp));
     expect(materialApp.themeAnimationDuration, const Duration(milliseconds: 350));
     expect(materialApp.themeAnimationCurve, Curves.easeInOutCubic);
+
+    // Finishing onboarding goes directly to voice selection so a qari is picked
+    await tester.tap(find.text('Lewati'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
+    expect(find.byType(VoiceSelectionScreen), findsOneWidget);
+    expect(find.text('Pilih suara'), findsWidgets);
+  });
+
+  testWidgets('returning user without selected voice opens voice selection directly', (
+    tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({'onboarding_complete': true});
+    await tester.pumpWidget(const TilawahkuApp());
+    await tester.pump(const Duration(milliseconds: 50));
+    await tester.pump(const Duration(milliseconds: 1200));
+    await tester.pump(const Duration(milliseconds: 400));
+
+    expect(find.byType(VoiceSelectionScreen), findsOneWidget);
+    expect(find.text('Pilih suara'), findsWidgets);
   });
 
   testWidgets('home opens the reader without a selected voice', (tester) async {

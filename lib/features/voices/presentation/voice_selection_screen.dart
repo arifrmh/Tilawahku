@@ -20,6 +20,7 @@ class VoiceSelectionScreen extends StatefulWidget {
     required this.preferences,
     required this.onSetDarkMode,
     this.allowBack = false,
+    this.catalog,
     this.previewController,
     this.isMainAudioPlaying,
     this.mainAudioPlayingStream,
@@ -28,6 +29,7 @@ class VoiceSelectionScreen extends StatefulWidget {
   final AppPreferences preferences;
   final ValueChanged<bool> onSetDarkMode;
   final bool allowBack;
+  final VoiceCatalog? catalog;
   final VoicePreviewController? previewController;
   final bool Function()? isMainAudioPlaying;
   final Stream<bool>? mainAudioPlayingStream;
@@ -37,7 +39,7 @@ class VoiceSelectionScreen extends StatefulWidget {
 }
 
 class _VoiceSelectionScreenState extends State<VoiceSelectionScreen> {
-  final VoiceCatalog _catalog = const VoiceCatalog();
+  late final VoiceCatalog _catalog = widget.catalog ?? const VoiceCatalog();
   final VoiceRepository _voiceRepository = VoiceRepository();
   final AudioDownloadManager _downloadManager = AudioDownloadManager.instance;
   final AudioPackageRepository _packageRepository = AudioPackageRepository();
@@ -45,6 +47,7 @@ class _VoiceSelectionScreenState extends State<VoiceSelectionScreen> {
   late final VoicePreviewController _previewController;
   StreamSubscription<bool>? _mainPlaybackSubscription;
   String? _selectedVoiceId;
+  String? _savedVoiceId;
   bool _mainAudioPlaying = false;
   bool _saving = false;
   String? _error;
@@ -128,7 +131,12 @@ class _VoiceSelectionScreenState extends State<VoiceSelectionScreen> {
   Future<void> _loadSelectedVoice() async {
     try {
       final selected = await widget.preferences.selectedVoiceId;
-      if (mounted) setState(() => _selectedVoiceId = selected);
+      if (mounted) {
+        setState(() {
+          _selectedVoiceId = selected;
+          _savedVoiceId = selected;
+        });
+      }
     } catch (error) {
       if (mounted) setState(() => _error = error.toString());
     }
@@ -450,14 +458,46 @@ class _VoiceSelectionScreenState extends State<VoiceSelectionScreen> {
                 top: false,
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(16, 10, 16, 14),
-                  child: SizedBox(
-                    width: double.infinity,
-                    child: FilledButton(
-                      onPressed: _selectedVoiceId == null || _saving
-                          ? null
-                          : _continue,
-                      child: Text(_saving ? 'Menyimpan...' : 'Pilih suara'),
-                    ),
+                  child: Builder(
+                    builder: (context) {
+                      final isAlreadyActive =
+                          widget.allowBack &&
+                          _selectedVoiceId != null &&
+                          _selectedVoiceId == _savedVoiceId;
+                      final isDisabled =
+                          _selectedVoiceId == null ||
+                          isAlreadyActive ||
+                          _saving;
+                      final buttonLabel = _saving
+                          ? 'Menyimpan...'
+                          : _selectedVoiceId == null
+                          ? 'Pilih qari terlebih dahulu'
+                          : isAlreadyActive
+                          ? 'Dipilih'
+                          : 'Pilih suara';
+                      return SizedBox(
+                        width: double.infinity,
+                        child: FilledButton(
+                          style: FilledButton.styleFrom(
+                            backgroundColor: AppColors.gold,
+                            foregroundColor: AppColors.navy,
+                            disabledBackgroundColor:
+                                colors.surfaceContainerHighest,
+                            disabledForegroundColor: colors.onSurface
+                                .withValues(alpha: 0.45),
+                            side: isDisabled && !_saving
+                                ? BorderSide(
+                                    color: colors.outlineVariant.withValues(
+                                      alpha: 0.55,
+                                    ),
+                                  )
+                                : BorderSide.none,
+                          ),
+                          onPressed: isDisabled ? null : _continue,
+                          child: Text(buttonLabel),
+                        ),
+                      );
+                    },
                   ),
                 ),
               ),
@@ -541,58 +581,50 @@ class _VoiceCard extends StatelessWidget {
         ? 'Segera hadir'
         : '${_capitalize(voice.style)} · ${voice.bitrateKbps} kbps';
 
-    return Card(
-      key: ValueKey('voice-selection-${voice.id}'),
-      margin: const EdgeInsets.only(top: 10),
-      elevation: 0,
-      clipBehavior: Clip.antiAlias,
-      color: selected
-          ? colors.primary.withValues(alpha: 0.05)
-          : colors.surfaceContainerHighest,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: BorderSide(
+    final isDark = theme.brightness == Brightness.dark;
+    return Semantics(
+      selected: selected,
+      child: AnimatedContainer(
+        key: ValueKey('voice-selection-${voice.id}'),
+        duration: const Duration(milliseconds: 180),
+        curve: Curves.easeOutCubic,
+        margin: const EdgeInsets.only(top: 10),
+        decoration: BoxDecoration(
           color: selected
-              ? AppColors.gold
-              : colors.outlineVariant.withValues(alpha: 0.45),
-          width: selected ? 1.5 : 1.0,
+              ? AppColors.gold.withValues(alpha: isDark ? 0.10 : 0.08)
+              : colors.surfaceContainerHighest,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: selected
+                ? AppColors.gold
+                : colors.outlineVariant.withValues(alpha: 0.45),
+            width: selected ? 2.0 : 1.0,
+          ),
         ),
-      ),
-      child: InkWell(
-        onTap: onSelect,
-        borderRadius: BorderRadius.circular(16),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              QariAvatar(voice: voice, size: 54, selected: selected),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
+        child: Material(
+          color: Colors.transparent,
+          borderRadius: BorderRadius.circular(16),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: onSelect,
+            borderRadius: BorderRadius.circular(16),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  QariAvatar(voice: voice, size: 54, selected: selected),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Expanded(
-                          child: Text(
-                            voice.name,
-                            style: theme.textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.w700,
-                            ),
+                        Text(
+                          voice.name,
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w700,
                           ),
                         ),
-                        if (selected) ...[
-                          const SizedBox(width: 6),
-                          const Icon(
-                            Icons.check_circle_rounded,
-                            size: 20,
-                            color: AppColors.gold,
-                            semanticLabel: 'Qari dipilih',
-                          ),
-                        ],
-                      ],
-                    ),
                     const SizedBox(height: 8),
                     Wrap(
                       spacing: 6,
@@ -705,6 +737,8 @@ class _VoiceCard extends StatelessWidget {
           ),
         ),
       ),
+    ),
+    ),
     );
   }
 }

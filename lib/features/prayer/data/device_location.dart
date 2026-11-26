@@ -60,26 +60,59 @@ abstract interface class DeviceLocationProvider {
 typedef PositionReader = Future<Position> Function(LocationSettings settings);
 
 class GeolocatorDeviceLocation implements DeviceLocationProvider {
-  const GeolocatorDeviceLocation({PositionReader? readPosition})
-    : _readPosition = readPosition;
+  const GeolocatorDeviceLocation({
+    PositionReader? readPosition,
+    Future<Position?> Function()? readLastKnownPosition,
+    Future<bool> Function()? isServiceEnabled,
+    Future<LocationPermission> Function()? checkPermission,
+    Future<LocationPermission> Function()? requestPermission,
+  }) : _readPosition = readPosition,
+       _readLastKnownPosition = readLastKnownPosition,
+       _isServiceEnabled = isServiceEnabled,
+       _checkPermission = checkPermission,
+       _requestPermission = requestPermission;
 
   static const Duration timeLimit = Duration(seconds: 15);
+  static Future<LocationPermission>? _permissionInFlight;
 
   final PositionReader? _readPosition;
+  final Future<Position?> Function()? _readLastKnownPosition;
+  final Future<bool> Function()? _isServiceEnabled;
+  final Future<LocationPermission> Function()? _checkPermission;
+  final Future<LocationPermission> Function()? _requestPermission;
+
+  Future<LocationPermission> _resolvePermission() {
+    final existing = _permissionInFlight;
+    if (existing != null) return existing;
+    final pending = _checkAndRequestPermission();
+    _permissionInFlight = pending;
+    return pending.whenComplete(() {
+      if (identical(_permissionInFlight, pending)) {
+        _permissionInFlight = null;
+      }
+    });
+  }
+
+  Future<LocationPermission> _checkAndRequestPermission() async {
+    final check = _checkPermission ?? Geolocator.checkPermission;
+    var permission = await check();
+    if (permission == LocationPermission.denied) {
+      final request = _requestPermission ?? Geolocator.requestPermission;
+      permission = await request();
+    }
+    return permission;
+  }
 
   @override
   Future<WorshipLocation> locate() async {
-    // Di web tidak ada konsep "layanan lokasi", dan geolocator_web selalu
-    // mengembalikan true; memeriksa izin lewat Geolocator di sana juga tidak
-    // reliably didukung, jadi langsung minta posisi ke peramban.
+    // Web tidak mendukung cek layanan/izin Geolocator; langsung minta posisi.
     if (!kIsWeb) {
-      if (!await Geolocator.isLocationServiceEnabled()) {
+      final serviceCheck =
+          _isServiceEnabled ?? Geolocator.isLocationServiceEnabled;
+      if (!await serviceCheck()) {
         throw const LocationFailure(LocationFailureKind.serviceDisabled);
       }
-      var permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-      }
+      final permission = await _resolvePermission();
       switch (permission) {
         case LocationPermission.denied:
           throw const LocationFailure(LocationFailureKind.permissionDenied);
@@ -106,27 +139,43 @@ class GeolocatorDeviceLocation implements DeviceLocationProvider {
       final position = reader == null
           ? await Geolocator.getCurrentPosition(locationSettings: settings)
           : await reader(settings);
-      return WorshipLocation(
-        name: 'Posisi perangkat',
-        latitude: position.latitude,
-        longitude: position.longitude,
-        source: LocationSource.gps,
-      );
+      return _toLocation(position);
     } on TimeoutException {
+      // Fallback ke posisi terakhir agar lokasi tetap tersimpan di dalam ruangan.
+      final lastKnown = await _tryLastKnownPosition();
+      if (lastKnown != null) return _toLocation(lastKnown);
       throw const LocationFailure(LocationFailureKind.timeout);
     } on LocationServiceDisabledException {
       throw const LocationFailure(LocationFailureKind.serviceDisabled);
     } on PermissionDeniedException {
       throw const LocationFailure(LocationFailureKind.permissionDenied);
     } on Exception catch (error) {
-      // Geolocator melempar PlatformException dengan kode yang berbeda-beda
-      // per platform; apa pun bentuknya, lokasi manual tetap tersedia.
       throw LocationFailure(
         _kindOfMessage('${error.runtimeType} $error') ??
             LocationFailureKind.unavailable,
       );
     }
   }
+
+  Future<Position?> _tryLastKnownPosition() async {
+    if (kIsWeb) return null;
+    try {
+      final fallback =
+          _readLastKnownPosition ??
+          (_readPosition == null ? Geolocator.getLastKnownPosition : null);
+      if (fallback == null) return null;
+      return await fallback();
+    } on Object {
+      return null;
+    }
+  }
+
+  static WorshipLocation _toLocation(Position position) => WorshipLocation(
+    name: 'Posisi perangkat',
+    latitude: position.latitude,
+    longitude: position.longitude,
+    source: LocationSource.gps,
+  );
 
   static LocationFailureKind? _kindOfMessage(String message) {
     final lowered = message.toLowerCase();

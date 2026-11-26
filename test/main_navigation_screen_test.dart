@@ -109,6 +109,16 @@ void main() {
     await tester.tap(find.text('Beranda').last);
     await tester.pumpAndSettle();
     expect(find.text('Akses cepat'), findsOneWidget);
+
+    await tester.tap(find.text('Hafalan dikuasai'));
+    await tester.pumpAndSettle();
+    expect(find.text('Hafalan Al-Qur’an'), findsOneWidget);
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Progres mushaf'));
+    await tester.pumpAndSettle();
+    expect(find.text('Statistik membaca'), findsOneWidget);
   });
 
   testWidgets('Beranda continue reading card renders last read scripture preview and opens reader', (
