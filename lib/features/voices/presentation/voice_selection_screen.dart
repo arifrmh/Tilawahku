@@ -12,6 +12,7 @@ import '../../navigation/presentation/main_navigation_screen.dart';
 import '../data/voice_catalog.dart';
 import '../data/voice_preview_controller.dart';
 import '../data/voice_repository.dart';
+import 'qari_avatar.dart';
 
 class VoiceSelectionScreen extends StatefulWidget {
   const VoiceSelectionScreen({
@@ -240,9 +241,10 @@ class _VoiceSelectionScreenState extends State<VoiceSelectionScreen> {
       );
     } catch (error) {
       if (mounted) {
+        final message = error.toString().replaceFirst('Bad state: ', '');
         setState(() {
           _saving = false;
-          _error = 'Gagal menyimpan pilihan suara: $error';
+          _error = 'Gagal menyimpan pilihan suara: $message';
         });
       }
     }
@@ -331,38 +333,85 @@ class _VoiceSelectionScreenState extends State<VoiceSelectionScreen> {
         }
 
         final voices = snapshot.data!;
+        final theme = Theme.of(context);
+        final colors = theme.colorScheme;
         return Column(
           children: [
             if (kIsWeb)
-              const Padding(
-                padding: EdgeInsets.fromLTRB(20, 12, 20, 0),
-                child: Text(
-                  'Pemilihan qari opsional. Pemutaran dan unduhan audio '
-                  'tidak tersedia di Web preview.',
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                child: _VoiceNoticeBanner(
+                  icon: Icons.info_outline_rounded,
+                  message:
+                      'Pemilihan qari opsional. Pemutaran dan unduhan audio '
+                      'tidak tersedia di Web preview.',
                 ),
               ),
             if (!kIsWeb && _mainAudioPlaying)
-              const Padding(
-                padding: EdgeInsets.fromLTRB(20, 12, 20, 0),
-                child: Text(
-                  'Preview dinonaktifkan selama audio utama sedang diputar.',
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                child: _VoiceNoticeBanner(
+                  icon: Icons.volume_up_outlined,
+                  message:
+                      'Preview dinonaktifkan selama audio utama sedang diputar.',
                 ),
               ),
             Expanded(
               child: ListView(
-                padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
                 children: [
-                  Text(
-                    'Pilih qari untuk menemani tilawah Anda.',
-                    style: Theme.of(context).textTheme.bodyLarge,
+                  Container(
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: colors.surfaceContainerHighest,
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(
+                        color: colors.outlineVariant.withValues(alpha: 0.45),
+                      ),
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          width: 36,
+                          height: 36,
+                          decoration: BoxDecoration(
+                            color: colors.primary.withValues(alpha: 0.08),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Icon(
+                            Icons.graphic_eq_rounded,
+                            size: 20,
+                            color: colors.primary,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Pilih qari untuk menemani tilawah Anda.',
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                'Semua contoh suara memutar Al-Fatihah ayat 1.',
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: colors.onSurface.withValues(
+                                    alpha: 0.72,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                   const SizedBox(height: 8),
-                  Text(
-                    'Semua preview memakai contoh yang sama: '
-                    'Al-Fatihah ayat 1.',
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                  const SizedBox(height: 20),
                   for (final voice in voices)
                     _VoiceCard(
                       voice: voice,
@@ -382,25 +431,33 @@ class _VoiceSelectionScreenState extends State<VoiceSelectionScreen> {
                       padding: const EdgeInsets.only(top: 12),
                       child: Text(
                         _error!,
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.error,
-                        ),
+                        style: TextStyle(color: colors.error),
                       ),
                     ),
                 ],
               ),
             ),
-            SafeArea(
-              top: false,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: FilledButton(
-                    onPressed: _selectedVoiceId == null || _saving
-                        ? null
-                        : _continue,
-                    child: Text(_saving ? 'Menyimpan...' : 'Pilih suara'),
+            Container(
+              decoration: BoxDecoration(
+                color: theme.scaffoldBackgroundColor,
+                border: Border(
+                  top: BorderSide(
+                    color: colors.outlineVariant.withValues(alpha: 0.4),
+                  ),
+                ),
+              ),
+              child: SafeArea(
+                top: false,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 10, 16, 14),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: FilledButton(
+                      onPressed: _selectedVoiceId == null || _saving
+                          ? null
+                          : _continue,
+                      child: Text(_saving ? 'Menyimpan...' : 'Pilih suara'),
+                    ),
                   ),
                 ),
               ),
@@ -410,6 +467,40 @@ class _VoiceSelectionScreenState extends State<VoiceSelectionScreen> {
       },
     ),
   );
+}
+
+class _VoiceNoticeBanner extends StatelessWidget {
+  const _VoiceNoticeBanner({required this.icon, required this.message});
+
+  final IconData icon;
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: colors.secondaryContainer.withValues(alpha: 0.45),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: colors.outlineVariant.withValues(alpha: 0.45),
+        ),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, size: 18, color: colors.primary),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              message,
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 class _VoiceCard extends StatelessWidget {
@@ -438,119 +529,189 @@ class _VoiceCard extends StatelessWidget {
       );
 
   Widget _buildCard(BuildContext context, VoicePreviewState previewState) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
     final unavailable = voice.status != VoiceStatus.active;
     final isCurrentPreview = previewState.voiceId == voice.id;
+    final isPreviewActive =
+        isCurrentPreview &&
+        (previewState.status == VoicePreviewStatus.playing ||
+            previewState.status == VoicePreviewStatus.loading);
+    final styleLabel = unavailable
+        ? 'Segera hadir'
+        : '${_capitalize(voice.style)} · ${voice.bitrateKbps} kbps';
+
     return Card(
       key: ValueKey('voice-selection-${voice.id}'),
-      margin: const EdgeInsets.only(top: 12),
+      margin: const EdgeInsets.only(top: 10),
+      elevation: 0,
+      clipBehavior: Clip.antiAlias,
+      color: selected
+          ? colors.primary.withValues(alpha: 0.05)
+          : colors.surfaceContainerHighest,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(
+          color: selected
+              ? AppColors.gold
+              : colors.outlineVariant.withValues(alpha: 0.45),
+          width: selected ? 1.5 : 1.0,
+        ),
+      ),
       child: InkWell(
         onTap: onSelect,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(16),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              CircleAvatar(
-                backgroundColor: Theme.of(context).colorScheme.primary,
-                foregroundColor: Theme.of(context).colorScheme.secondary,
-                child: const Icon(Icons.person_rounded),
-              ),
+              QariAvatar(voice: voice, size: 54, selected: selected),
               const SizedBox(width: 14),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      voice.name,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      unavailable ? 'Segera hadir' : voice.style,
-                      style: Theme.of(context).textTheme.bodySmall,
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            voice.name,
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                        if (selected) ...[
+                          const SizedBox(width: 6),
+                          const Icon(
+                            Icons.check_circle_rounded,
+                            size: 20,
+                            color: AppColors.gold,
+                            semanticLabel: 'Qari dipilih',
+                          ),
+                        ],
+                      ],
                     ),
                     const SizedBox(height: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 5,
-                      ),
-                      decoration: BoxDecoration(
-                        color: voice.audioMode == VoiceAudioMode.surah
-                            ? Theme.of(context).colorScheme.tertiaryContainer
-                            : Theme.of(context).colorScheme.secondaryContainer,
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                      child: Text(
-                        voice.audioMode == VoiceAudioMode.surah
-                            ? 'Audio Per Surah'
-                            : 'Audio Per Ayat',
-                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          fontWeight: FontWeight.w700,
+                    Wrap(
+                      spacing: 6,
+                      runSpacing: 6,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: voice.audioMode == VoiceAudioMode.surah
+                                ? colors.tertiaryContainer
+                                : colors.secondaryContainer,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            voice.audioMode == VoiceAudioMode.surah
+                                ? 'Audio Per Surah'
+                                : 'Audio Per Ayat',
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
                         ),
-                      ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: colors.surfaceContainer,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            styleLabel,
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color: colors.onSurface.withValues(alpha: 0.78),
+                              fontFeatures: const [
+                                FontFeature.tabularFigures(),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                     if (voice.audioMode == VoiceAudioMode.surah) ...[
-                      const SizedBox(height: 6),
+                      const SizedBox(height: 8),
                       Text(
                         'Memutar satu surah secara utuh. Pengulangan ayat '
                         'atau rentang ayat belum tersedia untuk sumber audio ini.',
-                        style: Theme.of(context).textTheme.bodySmall,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: colors.onSurface.withValues(alpha: 0.74),
+                        ),
                       ),
                     ],
                     if (isCurrentPreview &&
                         previewState.status == VoicePreviewStatus.error) ...[
-                      const SizedBox(height: 4),
+                      const SizedBox(height: 6),
                       Text(
                         'Preview gagal: ${previewState.error}',
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.error,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: colors.error,
                         ),
                       ),
                     ],
                   ],
                 ),
               ),
-              if (voice.audioMode == VoiceAudioMode.ayah)
-                IconButton(
-                  key: ValueKey('voice-preview-${voice.id}'),
-                  tooltip:
-                      isCurrentPreview &&
-                          (previewState.status == VoicePreviewStatus.playing ||
-                              previewState.status == VoicePreviewStatus.loading)
-                      ? 'Hentikan preview ${voice.name}'
-                      : 'Dengarkan contoh ${voice.name}',
-                  onPressed: previewEnabled ? onPreview : null,
-                  icon:
-                      isCurrentPreview &&
-                          previewState.status == VoicePreviewStatus.loading
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : Icon(
-                          isCurrentPreview &&
-                                  previewState.status ==
-                                      VoicePreviewStatus.playing
-                              ? Icons.stop_circle_outlined
-                              : Icons.play_circle_outline_rounded,
-                        ),
+              if (voice.audioMode == VoiceAudioMode.ayah) ...[
+                const SizedBox(width: 8),
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: isPreviewActive
+                        ? AppColors.gold.withValues(alpha: 0.16)
+                        : colors.primary.withValues(alpha: 0.08),
+                  ),
+                  child: IconButton(
+                    key: ValueKey('voice-preview-${voice.id}'),
+                    constraints: const BoxConstraints(
+                      minWidth: 48,
+                      minHeight: 48,
+                    ),
+                    tooltip: isPreviewActive
+                        ? 'Hentikan preview ${voice.name}'
+                        : 'Dengarkan contoh ${voice.name}',
+                    onPressed: previewEnabled ? onPreview : null,
+                    color: isPreviewActive ? AppColors.gold : colors.primary,
+                    icon:
+                        isCurrentPreview &&
+                            previewState.status == VoicePreviewStatus.loading
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : Icon(
+                            isCurrentPreview &&
+                                    previewState.status ==
+                                        VoicePreviewStatus.playing
+                                ? Icons.stop_circle_outlined
+                                : Icons.play_circle_outline_rounded,
+                          ),
+                  ),
                 ),
-              if (selected)
-                const Icon(
-                  Icons.check_circle_rounded,
-                  color: AppColors.gold,
-                  semanticLabel: 'Qari dipilih',
-                ),
+              ],
             ],
           ),
         ),
       ),
     );
   }
+}
+
+String _capitalize(String text) {
+  if (text.isEmpty) return text;
+  return '${text[0].toUpperCase()}${text.substring(1)}';
 }
 
 class _VoiceMessage extends StatelessWidget {

@@ -49,24 +49,35 @@ class HijriCalendarDay {
 
   /// Tanggal Hijri dengan penyesuaian pengguna.
   HijriCalendarDay withAdjustment(int adjustmentDays) {
+    if (adjustmentDays == 0) return this;
     final adjusted = _adjustHijriDate(
       hijriDay: hijriDay,
       hijriMonth: hijriMonth,
       hijriYear: hijriYear,
       adjustmentDays: adjustmentDays,
     );
+    final monthChanged = adjusted.month != hijriMonth;
+    final eventKey =
+        '${adjusted.month.toString().padLeft(2, '0')}-${adjusted.day.toString().padLeft(2, '0')}';
+    final matchedEvent = IslamicEvents.instance.findByHijriKey(eventKey);
     return HijriCalendarDay(
       gregorianDate: gregorianDate,
       hijriDay: adjusted.day,
       hijriMonth: adjusted.month,
       hijriYear: adjusted.year,
-      hijriMonthNameEn: hijriMonthNameEn,
-      hijriMonthNameAr: hijriMonthNameAr,
-      hijriMonthNameId: hijriMonthNameId,
+      hijriMonthNameEn: monthChanged
+          ? hijriMonthNameEnFor(adjusted.month)
+          : hijriMonthNameEn,
+      hijriMonthNameAr: monthChanged
+          ? hijriMonthNameArFor(adjusted.month)
+          : hijriMonthNameAr,
+      hijriMonthNameId: monthChanged
+          ? hijriMonthNameIdFor(adjusted.month)
+          : hijriMonthNameId,
       weekdayEn: weekdayEn,
       weekdayAr: weekdayAr,
       isToday: isToday,
-      events: events,
+      events: matchedEvent != null ? [matchedEvent] : const [],
     );
   }
 
@@ -220,17 +231,87 @@ class HijriAdjustment {
   return (day: day, month: month, year: year);
 }
 
-/// Jumlah hari dalam bulan Hijri (perkiraan).
+/// Nama bulan Hijriah (1-12) dalam Bahasa Indonesia.
+String hijriMonthNameIdFor(int month) {
+  const names = [
+    'Muharram',
+    'Safar',
+    'Rabiul Awal',
+    'Rabiul Akhir',
+    'Jumadil Ula',
+    'Jumadil Akhir',
+    'Rajab',
+    "Sya'ban",
+    'Ramadan',
+    'Syawal',
+    "Dzulqa'dah",
+    'Dzulhijjah',
+  ];
+  return month >= 1 && month <= 12 ? names[month - 1] : 'Bulan $month';
+}
+
+/// Nama bulan Hijriah (1-12) dalam bahasa Arab.
+String hijriMonthNameArFor(int month) {
+  const names = [
+    'محرم',
+    'صفر',
+    'ربيع الأول',
+    'ربيع الآخر',
+    'جمادى الأولى',
+    'جمادى الآخرة',
+    'رجب',
+    'شعبان',
+    'رمضان',
+    'شوال',
+    'ذو القعدة',
+    'ذو الحجة',
+  ];
+  return month >= 1 && month <= 12 ? names[month - 1] : '';
+}
+
+/// Nama bulan Hijriah (1-12) dalam bahasa Inggris.
+String hijriMonthNameEnFor(int month) {
+  const names = [
+    'Muharram',
+    'Safar',
+    'Rabi al-Awwal',
+    'Rabi al-Thani',
+    'Jumada al-Ula',
+    'Jumada al-Akhirah',
+    'Rajab',
+    "Sha'ban",
+    'Ramadan',
+    'Shawwal',
+    "Dhu al-Qa'dah",
+    'Dhu al-Hijjah',
+  ];
+  return month >= 1 && month <= 12 ? names[month - 1] : 'Month $month';
+}
+
+/// Nama hari dalam Bahasa Indonesia dari tanggal Gregorian `yyyy-MM-dd`.
+String gregorianWeekdayNameId(String gregorianDate, {String fallback = ''}) {
+  final parsed = DateTime.tryParse(gregorianDate);
+  if (parsed == null) return fallback;
+  const names = [
+    'Senin',
+    'Selasa',
+    'Rabu',
+    'Kamis',
+    'Jumat',
+    'Sabtu',
+    'Minggu',
+  ];
+  return names[parsed.weekday - 1];
+}
+
+/// Jumlah hari dalam bulan Hijriah menurut kalender tabular siklus 30 tahun.
 int _daysInHijriMonth(int month, int year) {
-  // Bulan ganjil: 30 hari, bulan genap: 29 hari
-  // Kecuali bulan genap dalam tahun kabisat: 30 hari
-  // Tahun kabisat Hijri: habis dibagi 30
   if (month.isOdd) return 30;
-  if (month.isEven) {
-    final isLeap = year % 30 == 0;
-    return isLeap ? 30 : 29;
+  if (month == 12) {
+    const leapYearsInCycle = {2, 5, 7, 10, 13, 16, 18, 21, 24, 26, 29};
+    return leapYearsInCycle.contains(year % 30) ? 30 : 29;
   }
-  return 30;
+  return 29;
 }
 
 /// Event penting Islam yang ditentukan oleh tanggal Hijri.
@@ -240,6 +321,8 @@ class IslamicEvents {
 
   static final IslamicEvents instance = IslamicEvents._();
 
+  // Kunci selalu memakai format MM-dd (bulan-tanggal) agar konsisten dengan
+  // IslamicEvent.hijriKey dan lookup kalender.
   final Map<String, IslamicEvent> _events = {
     '01-01': const IslamicEvent(
       hijriDay: 1,
@@ -247,45 +330,45 @@ class IslamicEvents {
       nameId: 'Tahun Baru Islam',
       description: 'Awal tahun Hijriah.',
     ),
-    '10-01': const IslamicEvent(
+    '01-10': const IslamicEvent(
       hijriDay: 10,
       hijriMonth: 1,
       nameId: 'Hari Asyura',
       description:
           'Hari ke-10 bulan Muharram, diperingati sebagai hari penting dalam Islam.',
     ),
-    '12-03': const IslamicEvent(
+    '03-12': const IslamicEvent(
       hijriDay: 12,
       hijriMonth: 3,
       nameId: 'Maulid Nabi',
       description: 'Hari kelahiran Nabi Muhammad SAW.',
     ),
-    '27-07': const IslamicEvent(
+    '07-27': const IslamicEvent(
       hijriDay: 27,
       hijriMonth: 7,
       nameId: 'Isra Mi\'raj',
       description:
           'Perjalanan malam Nabi Muhammad SAW dari Masjidil Haram ke Masjidil Aqsa.',
     ),
-    '01-09': const IslamicEvent(
+    '09-01': const IslamicEvent(
       hijriDay: 1,
       hijriMonth: 9,
       nameId: 'Awal Ramadan',
       description: 'Awal bulan puasa Ramadan.',
     ),
-    '17-09': const IslamicEvent(
+    '09-17': const IslamicEvent(
       hijriDay: 17,
       hijriMonth: 9,
       nameId: 'Nuzulul Quran',
       description: 'Turunnya Al-Quran pertama kali ke Nabi Muhammad SAW.',
     ),
-    '01-10': const IslamicEvent(
+    '10-01': const IslamicEvent(
       hijriDay: 1,
       hijriMonth: 10,
       nameId: 'Idul Fitri',
       description: 'Hari raya setelah menyelesaikan puasa Ramadan.',
     ),
-    '10-12': const IslamicEvent(
+    '12-10': const IslamicEvent(
       hijriDay: 10,
       hijriMonth: 12,
       nameId: 'Idul Adha',

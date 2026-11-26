@@ -47,22 +47,27 @@ class SurahAudioRepository {
 
     final downloadedCounts = <int, (int, int)>{};
     final allTracks = groupedTracks.values.expand((tracks) => tracks).toList();
-    const batchSize = 128;
-    for (var offset = 0; offset < allTracks.length; offset += batchSize) {
-      final batch = allTracks.skip(offset).take(batchSize);
-      final stats = await Future.wait(
-        batch.map((track) async {
-          final fileStat = await File(track.filePath).stat();
-          return (
-            track.surahNumber,
-            fileStat.type == FileSystemEntityType.file ? fileStat.size : 0,
-          );
-        }),
-      );
-      for (final (surahNumber, bytes) in stats) {
-        if (bytes == 0) continue;
-        final (ayahs, totalBytes) = downloadedCounts[surahNumber] ?? (0, 0);
-        downloadedCounts[surahNumber] = (ayahs + 1, totalBytes + bytes);
+    // Jika direktori audio qari belum ada (belum pernah ada audio diunduh),
+    // lewati pengecekan 6.236 file dan langsung kembalikan daftar 0 terunduh.
+    final voiceDirectory = File(allTracks.first.filePath).parent;
+    if (await voiceDirectory.exists()) {
+      const batchSize = 128;
+      for (var offset = 0; offset < allTracks.length; offset += batchSize) {
+        final batch = allTracks.skip(offset).take(batchSize);
+        final stats = await Future.wait(
+          batch.map((track) async {
+            final fileStat = await File(track.filePath).stat();
+            return (
+              track.surahNumber,
+              fileStat.type == FileSystemEntityType.file ? fileStat.size : 0,
+            );
+          }),
+        );
+        for (final (surahNumber, bytes) in stats) {
+          if (bytes == 0) continue;
+          final (ayahs, totalBytes) = downloadedCounts[surahNumber] ?? (0, 0);
+          downloadedCounts[surahNumber] = (ayahs + 1, totalBytes + bytes);
+        }
       }
     }
 

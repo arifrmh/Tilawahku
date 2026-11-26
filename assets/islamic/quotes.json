@@ -1,0 +1,154 @@
+{
+  "_meta": {
+    "title": "Quotes Hikmah Islam",
+    "source": "Kurasi hadis sahih (Bukhari, Muslim, Tirmidzi) dan nukilan nasihat ulama dengan rujukan sumber eksplisit; terjemahan makna disusun ringkas oleh tim TILAWAHKU.",
+    "license": "GPL-3.0 (kurasi teks aplikasi TILAWAHKU)",
+    "updated_at": "2026-11-25"
+  },
+  "items": [
+    {
+      "id": "q-quran-01",
+      "category": "Al-Qur'an",
+      "text_ar": "خَيْرُكُمْ مَنْ تَعَلَّمَ الْقُرْآنَ وَعَلَّمَهُ",
+      "text_id": "Sebaik-baik kalian adalah orang yang mempelajari Al-Qur'an dan mengajarkannya.",
+      "author": "Nabi Muhammad SAW",
+      "source_ref": "HR. Bukhari no. 5027"
+    },
+    {
+      "id": "q-quran-02",
+      "category": "Al-Qur'an",
+      "text_ar": "اقْرَءُوا الْقُرْآنَ فَإِنَّهُ يَأْتِي يَوْمَ الْقِيَامَةِ شَفِيعًا لِأَصْحَابِهِ",
+      "text_id": "Bacalah Al-Qur'an, karena sesungguhnya ia akan datang pada hari kiamat sebagai pemberi syafaat bagi orang-orang yang membacanya.",
+      "author": "Nabi Muhammad SAW",
+      "source_ref": "HR. Muslim no. 804"
+    },
+    {
+      "id": "q-quran-03",
+      "category": "Al-Qur'an",
+      "text_ar": null,
+      "text_id": "Orang yang mahir membaca Al-Qur'an bersama para malaikat yang mulia lagi taat, sedangkan orang yang membacanya dengan terbata-bata dan merasa kesulitan mendapat dua pahala.",
+      "author": "Nabi Muhammad SAW",
+      "source_ref": "HR. Bukhari no. 4937 & Muslim no. 798"
+    },
+    {
+      "id": "q-sabar-01",
+      "category": "Sabar",
+      "text_ar": null,
+      "text_id": "Sungguh menakjubkan urusan orang beriman: seluruh urusannya baik. Jika mendapat kelapangan ia bersyukur, maka itu baik baginya; dan jika ditimpa kesempitan ia bersabar, maka itu pun baik baginya.",
+      "author": "Nabi Muhammad SAW",
+      "source_ref": "HR. Muslim no. 2999"
+    },
+    {
+      "id": "q-sabar-02",
+      "category": "Sabar",
+      "text_ar": null,
+      "text_id": "Tidaklah seseorang diberi suatu pemberian yang lebih baik dan lebih luas daripada kesabaran.",
+      "author": "Nabi Muhammad SAW",
+      "source_ref": "HR. Bukhari no. 1469 & Muslim no. 1053"
+    },
+    {
+      "id": "q-sabar-03",
+      "category": "Sabar",
+      "text_ar": null,
+      "text_id": "Kami mendapati kebaikan terbesar dalam hidup kami melalui kesabaran.",
+      "author": "Umar bin Khattab RA",
+      "source_ref": "HR. Bukhari (secara mu'allaq, Kitab ar-Riqaq)"
+    },
+    {
+      "id": "q-syukur-01",
+      "category": "Syukur",
+      "text_ar": null,
+      "text_id": "Lihatlah kepada orang yang berada di bawah kalian (dalam urusan dunia), dan jangan melihat kepada orang yang berada di atas kalian; itu lebih menjaga kalian agar tidak meremehkan nikmat Allah.",
+      "author": "Nabi Muhammad SAW",
+      "source_ref": "HR. Muslim no. 2963"
+    },
+    {
+      "id": "q-syukur-02",
+      "category": "Syukur",
+      "text_ar": null,
+      "text_id": "Barang siapa tidak bersyukur kepada manusia, maka ia tidak bersyukur kepada Allah.",
+      "author": "Nabi Muhammad SAW",
+      "source_ref": "HR. Tirmidzi no. 1954 & Abu Dawud no. 4811"
+    },
+    {
+      "id": "q-syukur-03",
+      "category": "Syukur",
+      "text_ar": null,
+      "text_id": "Dua nikmat yang sering membuat banyak manusia lalai adalah kesehatan dan waktu luang.",
+      "author": "Nabi Muhammad SAW",
+      "source_ref": "HR. Bukhari no. 6412"
+    },
+    {
+      "id": "q-ilmu-01",
+      "category": "Ilmu",
+      "text_ar": null,
+      "text_id": "Barang siapa menempuh jalan untuk mencari ilmu, maka Allah akan memudahkan baginya jalan menuju surga.",
+      "author": "Nabi Muhammad SAW",
+      "source_ref": "HR. Muslim no. 2699"
+    },
+    {
+      "id": "q-ilmu-02",
+      "category": "Ilmu",
+      "text_ar": null,
+      "text_id": "Ilmu itu bukan semata-mata apa yang dihafal, melainkan apa yang memberi manfaat.",
+      "author": "Imam Asy-Syafi'i",
+      "source_ref": "Hilyatul Auliya karya Abu Nu'aim (9/123)"
+    },
+    {
+      "id": "q-ilmu-03",
+      "category": "Ilmu",
+      "text_ar": null,
+      "text_id": "Amalan yang paling dicintai Allah adalah amalan yang dilakukan secara rutin meskipun sedikit.",
+      "author": "Nabi Muhammad SAW",
+      "source_ref": "HR. Bukhari no. 6464 & Muslim no. 782"
+    },
+    {
+      "id": "q-akhlak-01",
+      "category": "Akhlak",
+      "text_ar": "إِنَّمَا الأَعْمَالُ بِالنِّيَّاتِ",
+      "text_id": "Sesungguhnya setiap amalan itu tergantung pada niatnya, dan setiap orang akan mendapatkan sesuai dengan apa yang ia niatkan.",
+      "author": "Nabi Muhammad SAW",
+      "source_ref": "HR. Bukhari no. 1 & Muslim no. 1907"
+    },
+    {
+      "id": "q-akhlak-02",
+      "category": "Akhlak",
+      "text_ar": null,
+      "text_id": "Bertakwalah kepada Allah di mana pun engkau berada, iringilah keburukan dengan kebaikan niscaya kebaikan itu akan menghapusnya, dan pergaulilah manusia dengan akhlak yang baik.",
+      "author": "Nabi Muhammad SAW",
+      "source_ref": "HR. Tirmidzi no. 1987"
+    },
+    {
+      "id": "q-akhlak-03",
+      "category": "Akhlak",
+      "text_ar": null,
+      "text_id": "Barang siapa beriman kepada Allah dan hari akhir, hendaklah ia berkata baik atau diam.",
+      "author": "Nabi Muhammad SAW",
+      "source_ref": "HR. Bukhari no. 6018 & Muslim no. 47"
+    },
+    {
+      "id": "q-akhlak-04",
+      "category": "Akhlak",
+      "text_ar": null,
+      "text_id": "Hisablah diri kalian sebelum kalian dihisab, dan timbanglah amal kalian sebelum ditimbang.",
+      "author": "Umar bin Khattab RA",
+      "source_ref": "HR. Tirmidzi (catatan bab Qiyamah) & Az-Zuhd karya Imam Ahmad"
+    },
+    {
+      "id": "q-akhlak-05",
+      "category": "Akhlak",
+      "text_ar": null,
+      "text_id": "Kuat bukanlah orang yang selalu menang dalam bergulat, tetapi orang yang kuat adalah orang yang mampu menahan dirinya ketika marah.",
+      "author": "Nabi Muhammad SAW",
+      "source_ref": "HR. Bukhari no. 6114 & Muslim no. 2609"
+    },
+    {
+      "id": "q-ilmu-04",
+      "category": "Ilmu",
+      "text_ar": null,
+      "text_id": "Apabila anak Adam meninggal dunia, terputuslah seluruh amalnya kecuali tiga perkara: sedekah jariyah, ilmu yang bermanfaat, dan anak saleh yang mendoakannya.",
+      "author": "Nabi Muhammad SAW",
+      "source_ref": "HR. Muslim no. 1631"
+    }
+  ]
+}

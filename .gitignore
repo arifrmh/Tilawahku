@@ -48,3 +48,10 @@ app.*.map.json
 /web/asr/*.onnx
 /web/asr/*.onnx.*
 /web/asr/*.part
+
+# FVM Version Cache
+.fvm/
+
+# Local Android Gradle build & Graphify cache
+/android/build/
+/graphify-out/

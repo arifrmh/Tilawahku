@@ -61,7 +61,11 @@ class _TajwidLessonScreenState extends State<TajwidLessonScreen> {
     body: ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        Chip(label: Text(widget.lesson.categoryId.title)),
+        Align(
+          alignment: AlignmentDirectional.centerStart,
+          child: Chip(label: Text(widget.lesson.categoryId.title)),
+        ),
+        const SizedBox(height: 12),
         _LessonSection(title: 'Pengertian', body: widget.lesson.definition),
         _LessonSection(
           title: 'Kondisi terjadinya',
@@ -82,7 +86,7 @@ class _TajwidLessonScreenState extends State<TajwidLessonScreen> {
         ),
         const SizedBox(height: 8),
         Text('Contoh dari ayat', style: Theme.of(context).textTheme.titleLarge),
-        const SizedBox(height: 8),
+        const SizedBox(height: 12),
         FutureBuilder<List<AyahEntry?>>(
           future: _examples,
           builder: (context, snapshot) {
@@ -91,7 +95,11 @@ class _TajwidLessonScreenState extends State<TajwidLessonScreen> {
                 icon: Icons.error_outline_rounded,
                 message: 'Contoh ayat gagal dimuat dari penyimpanan lokal.',
                 detail: '${snapshot.error}',
-                onRetry: () => setState(() => _examples = _loadExamples()),
+                onRetry: () {
+                  setState(() {
+                    _examples = _loadExamples();
+                  });
+                },
               );
             }
             if (!snapshot.hasData) {
@@ -122,9 +130,10 @@ class _TajwidLessonScreenState extends State<TajwidLessonScreen> {
         ),
         const SizedBox(height: 8),
         Text('Rujukan materi', style: Theme.of(context).textTheme.titleLarge),
-        const SizedBox(height: 8),
+        const SizedBox(height: 12),
         for (final reference in widget.lesson.references)
           Card(
+            margin: const EdgeInsets.only(bottom: 12),
             child: ListTile(
               leading: const Icon(Icons.library_books_outlined),
               title: Text(reference.title),
@@ -133,6 +142,7 @@ class _TajwidLessonScreenState extends State<TajwidLessonScreen> {
             ),
           ),
         const Card(
+          margin: EdgeInsets.only(bottom: 12),
           child: ListTile(
             leading: Icon(Icons.info_outline_rounded),
             title: Text('Catatan penandaan'),
@@ -143,7 +153,7 @@ class _TajwidLessonScreenState extends State<TajwidLessonScreen> {
             ),
           ),
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: 12),
       ],
     ),
   );
@@ -165,6 +175,7 @@ class _LessonSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Card(
+    margin: const EdgeInsets.only(bottom: 12),
     child: Padding(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -206,6 +217,7 @@ class _ExampleCard extends StatelessWidget {
     final entry = ayah;
     if (entry == null) {
       return Card(
+        margin: const EdgeInsets.only(bottom: 12),
         child: ListTile(
           leading: const Icon(Icons.warning_amber_rounded),
           title: Text('Surah ${reference.surahNumber}:${reference.ayahNumber}'),
@@ -214,6 +226,7 @@ class _ExampleCard extends StatelessWidget {
       );
     }
     return Card(
+      margin: const EdgeInsets.only(bottom: 12),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -274,6 +287,7 @@ class _ExampleMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Card(
+    margin: const EdgeInsets.only(bottom: 12),
     child: ListTile(
       leading: Icon(icon, color: AppColors.gold),
       title: Text(message),

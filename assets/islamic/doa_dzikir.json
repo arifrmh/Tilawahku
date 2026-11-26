@@ -1,0 +1,243 @@
+{
+  "_meta": {
+    "title": "Katalog Doa Harian serta Dzikir Pagi dan Petang TILAWAHKU",
+    "version": "1.0.0",
+    "language": "id",
+    "curation_notes": "Seluruh teks doa dan dzikir merujuk pada Al-Qur'an dan kitab hadis utama (Shahih Al-Bukhari, Shahih Muslim, Sunan Abu Dawud, At-Tirmidzi, Ibnu Majah, dan Ahmad) sebagaimana lazim dihimpun dalam kitab Al-Adzkar dan Hisnul Muslim.",
+    "license": "Disusun untuk TILAWAHKU (GPL-3.0) dengan rujukan teks sumber primer."
+  },
+  "items": [
+    {
+      "id": "doa-sebelum-makan",
+      "category": "harian",
+      "title": "Doa Sebelum Makan",
+      "arabic": "بِسْمِ اللَّهِ",
+      "transliteration": "Bismillah.",
+      "translation_id": "Dengan menyebut nama Allah.",
+      "repeat_count": 1,
+      "notes": "Apabila lupa di awal makan, ucapkan: Bismillahi fi awwalihi wa akhirihi (HR. Abu Dawud no. 3767 dan At-Tirmidzi no. 1858).",
+      "source_ref": "HR. Al-Bukhari no. 5376 dan Muslim no. 2022"
+    },
+    {
+      "id": "doa-sesudah-makan",
+      "category": "harian",
+      "title": "Doa Sesudah Makan",
+      "arabic": "الْحَمْدُ لِلَّهِ الَّذِي أَطْعَمَنِي هَٰذَا وَرَزَقَنِيهِ مِنْ غَيْرِ حَوْلٍ مِنِّي وَلَا قُوَّةٍ",
+      "transliteration": "Alhamdulillahilladzi ath'amani hadza wa razaqanihi min ghairi haulin minni wa la quwwah.",
+      "translation_id": "Segala puji bagi Allah yang telah memberiku makanan ini dan mengaruniakannya kepadaku tanpa daya dan kekuatan dariku.",
+      "repeat_count": 1,
+      "source_ref": "HR. Abu Dawud no. 4023 dan At-Tirmidzi no. 3458"
+    },
+    {
+      "id": "doa-sebelum-tidur",
+      "category": "harian",
+      "title": "Doa Sebelum Tidur",
+      "arabic": "بِاسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا",
+      "transliteration": "Bismikallahumma amutu wa ahya.",
+      "translation_id": "Dengan nama-Mu ya Allah, aku mati dan aku hidup.",
+      "repeat_count": 1,
+      "source_ref": "HR. Al-Bukhari no. 6324"
+    },
+    {
+      "id": "doa-bangun-tidur",
+      "category": "harian",
+      "title": "Doa Bangun Tidur",
+      "arabic": "الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا وَإِلَيْهِ النُّشُورُ",
+      "transliteration": "Alhamdulillahilladzi ahyana ba'da ma amatana wa ilaihin nusyur.",
+      "translation_id": "Segala puji bagi Allah yang telah menghidupkan kami setelah mematikan kami, dan hanya kepada-Nya kami dibangkitkan.",
+      "repeat_count": 1,
+      "source_ref": "HR. Al-Bukhari no. 6312"
+    },
+    {
+      "id": "doa-keluar-rumah",
+      "category": "harian",
+      "title": "Doa Keluar Rumah",
+      "arabic": "بِسْمِ اللَّهِ تَوَكَّلْتُ عَلَى اللَّهِ، وَلَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ",
+      "transliteration": "Bismillahi tawakkaltu 'alallah, wa la haula wa la quwwata illa billah.",
+      "translation_id": "Dengan nama Allah, aku bertawakal kepada Allah; tidak ada daya dan kekuatan melainkan dengan pertolongan Allah.",
+      "repeat_count": 1,
+      "source_ref": "HR. Abu Dawud no. 5095 dan At-Tirmidzi no. 3426"
+    },
+    {
+      "id": "doa-masuk-masjid",
+      "category": "harian",
+      "title": "Doa Masuk Masjid",
+      "arabic": "اللَّهُمَّ افْتَحْ لِي أَبْوَابَ رَحْمَتِكَ",
+      "transliteration": "Allahummaftah li abwaba rahmatik.",
+      "translation_id": "Ya Allah, bukakanlah bagiku pintu-pintu rahmat-Mu.",
+      "repeat_count": 1,
+      "source_ref": "HR. Muslim no. 713"
+    },
+    {
+      "id": "doa-keluar-masjid",
+      "category": "harian",
+      "title": "Doa Keluar Masjid",
+      "arabic": "اللَّهُمَّ إِنِّي أَسْأَلُكَ مِنْ فَضْلِكَ",
+      "transliteration": "Allahumma inni as'aluka min fadhlik.",
+      "translation_id": "Ya Allah, sesungguhnya aku memohon kepada-Mu sebagian dari karunia-Mu.",
+      "repeat_count": 1,
+      "source_ref": "HR. Muslim no. 713"
+    },
+    {
+      "id": "doa-kebaikan-dunia-akhirat",
+      "category": "harian",
+      "title": "Doa Kebaikan Dunia dan Akhirat",
+      "arabic": "رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ",
+      "transliteration": "Rabbana atina fid dunya hasanah wa fil akhirati hasanah wa qina 'adzaban nar.",
+      "translation_id": "Ya Tuhan kami, berilah kami kebaikan di dunia dan kebaikan di akhirat, serta lindungilah kami dari azab neraka.",
+      "repeat_count": 1,
+      "source_ref": "QS. Al-Baqarah (2): 201; HR. Al-Bukhari no. 6389"
+    },
+    {
+      "id": "doa-untuk-orang-tua",
+      "category": "harian",
+      "title": "Doa untuk Kedua Orang Tua",
+      "arabic": "رَبِّ ارْحَمْهُمَا كَمَا رَبَّيَانِي صَغِيرًا",
+      "transliteration": "Rabbirhamhuma kama rabbayani shaghira.",
+      "translation_id": "Ya Tuhanku, kasihilah keduanya sebagaimana mereka berdua telah mendidik aku di waktu kecil.",
+      "repeat_count": 1,
+      "source_ref": "QS. Al-Isra (17): 24"
+    },
+    {
+      "id": "doa-ilmu-bermanfaat",
+      "category": "harian",
+      "title": "Doa Memohon Ilmu yang Bermanfaat",
+      "arabic": "اللَّهُمَّ إِنِّي أَسْأَلُكَ عِلْمًا نَافِعًا، وَرِزْقًا طَيِّبًا، وَعَمَلًا مُتَقَبَّلًا",
+      "transliteration": "Allahumma inni as'aluka 'ilman nafi'a, wa rizqan thayyiba, wa 'amalan mutaqabbala.",
+      "translation_id": "Ya Allah, sesungguhnya aku memohon kepada-Mu ilmu yang bermanfaat, rezeki yang baik, dan amal yang diterima.",
+      "repeat_count": 1,
+      "notes": "Dibaca setelah salam salat Subuh.",
+      "source_ref": "HR. Ibnu Majah no. 925 dan Ahmad 6/322"
+    },
+    {
+      "id": "pagi-ayat-kursi",
+      "category": "pagi",
+      "title": "Ayat Kursi",
+      "arabic": "اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ ۚ لَهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ ۗ مَنْ ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلَّا بِإِذْنِهِ ۚ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ ۖ وَلَا يُحِيطُونَ بِشَيْءٍ مِنْ عِلْمِهِ إِلَّا بِمَا شَاءَ ۚ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ ۖ وَلَا يَئُودُهُ حِفْظُهُمَا ۚ وَهُوَ الْعَلِيُّ الْعَظِيمُ",
+      "transliteration": "Allahu la ilaha illa huwal hayyul qayyum, la ta'khudzuhu sinatun wa la naum, lahu ma fis samawati wa ma fil ardh, man dzalladzi yasyfa'u 'indahu illa bi'idznih, ya'lamu ma baina aidihim wa ma khalfahum, wa la yuhithuna bisyai'in min 'ilmihi illa bima sya'a, wasi'a kursiyyuhus samawati wal ardh, wa la ya'uduhu hifzhuhuma wa huwal 'aliyyul 'azhim.",
+      "translation_id": "Allah, tidak ada Tuhan melainkan Dia Yang Hidup kekal lagi terus-menerus mengurus makhluk-Nya; tidak mengantuk dan tidak tidur. Milik-Nya apa yang di langit dan di bumi. Tiada yang dapat memberi syafaat di sisi-Nya tanpa izin-Nya. Dia mengetahui apa yang di hadapan mereka dan di belakang mereka, dan mereka tidak mengetahui sesuatu pun dari ilmu-Nya melainkan apa yang dikehendaki-Nya. Kursi Allah meliputi langit dan bumi. Dan Dia tidak merasa berat memelihara keduanya, dan Dia Mahatinggi lagi Mahabesar.",
+      "repeat_count": 1,
+      "notes": "Dibaca pada waktu pagi dan petang sebagai perlindungan dengan izin Allah.",
+      "source_ref": "QS. Al-Baqarah (2): 255; HR. Al-Hakim 1/562"
+    },
+    {
+      "id": "pagi-sayyidul-istighfar",
+      "category": "pagi",
+      "title": "Sayyidul Istighfar",
+      "arabic": "اللَّهُمَّ أَنْتَ رَبِّي لَا إِلَٰهَ إِلَّا أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ، وَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ، أَعُوذُ بِكَ مِنْ شَرِّ مَا صَنَعْتُ، أَبُوءُ لَكَ بِنِعْمَتِكَ عَلَيَّ، وَأَبُوءُ بِذَنْبِي فَاغْفِرْ لِي فَإِنَّهُ لَا يَغْفِرُ الذُّنُوبَ إِلَّا أَنْتَ",
+      "transliteration": "Allahumma anta rabbi la ilaha illa anta, khalaqtani wa ana 'abduka, wa ana 'ala 'ahdika wa wa'dika mastatha'tu, a'udzu bika min syarri ma shana'tu, abu'u laka bini'matika 'alayya, wa abu'u bidzanbi faghfir li fa'innahu la yaghfirudz dzunuba illa anta.",
+      "translation_id": "Ya Allah, Engkau adalah Tuhanku, tidak ada sesembahan yang hak selain Engkau. Engkau yang menciptakanku dan aku adalah hamba-Mu. Aku berada di atas perjanjian dan janji-Mu semampuku. Aku berlindung kepada-Mu dari keburukan apa yang aku perbuat. Aku mengakui nikmat-Mu kepadaku dan aku mengakui dosaku, maka ampunilah aku, karena sesungguhnya tidak ada yang dapat mengampuni dosa kecuali Engkau.",
+      "repeat_count": 1,
+      "notes": "Dibaca dengan penuh keyakinan pada waktu pagi dan petang.",
+      "source_ref": "HR. Al-Bukhari no. 6306"
+    },
+    {
+      "id": "pagi-ashbahna",
+      "category": "pagi",
+      "title": "Dzikir Memasuki Waktu Pagi",
+      "arabic": "أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ، لَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ",
+      "transliteration": "Ashbahna wa ashbahal mulku lillah, walhamdulillah, la ilaha illallahu wahdahu la syarika lah, lahul mulku wa lahul hamdu wa huwa 'ala kulli syai'in qadir.",
+      "translation_id": "Kami telah memasuki waktu pagi dan kerajaan hanya milik Allah, segala puji bagi Allah. Tidak ada sesembahan yang berhak disembah kecuali Allah semata, tiada sekutu bagi-Nya. Milik-Nya kerajaan dan bagi-Nya segala pujian, dan Dia Mahakuasa atas segala sesuatu.",
+      "repeat_count": 1,
+      "source_ref": "HR. Muslim no. 2723"
+    },
+    {
+      "id": "pagi-bismillahilladzi",
+      "category": "pagi",
+      "title": "Dzikir Perlindungan di Pagi Hari",
+      "arabic": "بِسْمِ اللَّهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الْأَرْضِ وَلَا فِي السَّمَاءِ وَهُوَ السَّمِيعُ الْعَلِيمُ",
+      "transliteration": "Bismillahilladzi la yadhurru ma'asmihi syai'un fil ardhi wa la fis sama'i wa huwas sami'ul 'alim.",
+      "translation_id": "Dengan nama Allah yang bersama nama-Nya tidak ada sesuatu pun di bumi maupun di langit yang dapat membahayakan, dan Dialah Yang Maha Mendengar lagi Maha Mengetahui.",
+      "repeat_count": 3,
+      "notes": "Dibaca 3 kali pada waktu pagi.",
+      "source_ref": "HR. Abu Dawud no. 5088 dan At-Tirmidzi no. 3388"
+    },
+    {
+      "id": "pagi-radhitu",
+      "category": "pagi",
+      "title": "Ikrar Keridaan kepada Allah, Islam, dan Rasul",
+      "arabic": "رَضِيتُ بِاللَّهِ رَبًّا، وَبِالْإِسْلَامِ دِينًا، وَبِمُحَمَّدٍ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ نَبِيًّا",
+      "transliteration": "Radhitu billahi rabba, wa bil islami dina, wa bi Muhammadin shallallahu 'alaihi wa sallama nabiyya.",
+      "translation_id": "Aku rida Allah sebagai Tuhanku, Islam sebagai agamaku, dan Muhammad shallallahu 'alaihi wa sallam sebagai nabiku.",
+      "repeat_count": 3,
+      "notes": "Dibaca 3 kali pada waktu pagi dan petang.",
+      "source_ref": "HR. Abu Dawud no. 5072, At-Tirmidzi no. 3389, dan Ahmad 4/337"
+    },
+    {
+      "id": "pagi-subhanallah-wabihamdihi",
+      "category": "pagi",
+      "title": "Tasbih Pagi",
+      "arabic": "سُبْحَانَ اللَّهِ وَبِحَمْدِهِ",
+      "transliteration": "Subhanallahi wa bihamdih.",
+      "translation_id": "Mahasuci Allah dan segala puji bagi-Nya.",
+      "repeat_count": 100,
+      "notes": "Dibaca 100 kali pada pagi hari. Bisa juga dihitung lewat fitur Tasbih digital.",
+      "source_ref": "HR. Muslim no. 2692"
+    },
+    {
+      "id": "petang-ayat-kursi",
+      "category": "petang",
+      "title": "Ayat Kursi",
+      "arabic": "اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ ۚ لَهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ ۗ مَنْ ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلَّا بِإِذْنِهِ ۚ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ ۖ وَلَا يُحِيطُونَ بِشَيْءٍ مِنْ عِلْمِهِ إِلَّا بِمَا شَاءَ ۚ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ ۖ وَلَا يَئُودُهُ حِفْظُهُمَا ۚ وَهُوَ الْعَلِيُّ الْعَظِيمُ",
+      "transliteration": "Allahu la ilaha illa huwal hayyul qayyum, la ta'khudzuhu sinatun wa la naum, lahu ma fis samawati wa ma fil ardh, man dzalladzi yasyfa'u 'indahu illa bi'idznih, ya'lamu ma baina aidihim wa ma khalfahum, wa la yuhithuna bisyai'in min 'ilmihi illa bima sya'a, wasi'a kursiyyuhus samawati wal ardh, wa la ya'uduhu hifzhuhuma wa huwal 'aliyyul 'azhim.",
+      "translation_id": "Allah, tidak ada Tuhan melainkan Dia Yang Hidup kekal lagi terus-menerus mengurus makhluk-Nya; tidak mengantuk dan tidak tidur. Milik-Nya apa yang di langit dan di bumi. Tiada yang dapat memberi syafaat di sisi-Nya tanpa izin-Nya. Dia mengetahui apa yang di hadapan mereka dan di belakang mereka, dan mereka tidak mengetahui sesuatu pun dari ilmu-Nya melainkan apa yang dikehendaki-Nya. Kursi Allah meliputi langit dan bumi. Dan Dia tidak merasa berat memelihara keduanya, dan Dia Mahatinggi lagi Mahabesar.",
+      "repeat_count": 1,
+      "notes": "Dibaca pada waktu petang sebagai penjagaan hingga pagi dengan izin Allah.",
+      "source_ref": "QS. Al-Baqarah (2): 255; HR. Al-Hakim 1/562"
+    },
+    {
+      "id": "petang-sayyidul-istighfar",
+      "category": "petang",
+      "title": "Sayyidul Istighfar",
+      "arabic": "اللَّهُمَّ أَنْتَ رَبِّي لَا إِلَٰهَ إِلَّا أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ، وَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ، أَعُوذُ بِكَ مِنْ شَرِّ مَا صَنَعْتُ، أَبُوءُ لَكَ بِنِعْمَتِكَ عَلَيَّ، وَأَبُوءُ بِذَنْبِي فَاغْفِرْ لِي فَإِنَّهُ لَا يَغْفِرُ الذُّنُوبَ إِلَّا أَنْتَ",
+      "transliteration": "Allahumma anta rabbi la ilaha illa anta, khalaqtani wa ana 'abduka, wa ana 'ala 'ahdika wa wa'dika mastatha'tu, a'udzu bika min syarri ma shana'tu, abu'u laka bini'matika 'alayya, wa abu'u bidzanbi faghfir li fa'innahu la yaghfirudz dzunuba illa anta.",
+      "translation_id": "Ya Allah, Engkau adalah Tuhanku, tidak ada sesembahan yang hak selain Engkau. Engkau yang menciptakanku dan aku adalah hamba-Mu. Aku berada di atas perjanjian dan janji-Mu semampuku. Aku berlindung kepada-Mu dari keburukan apa yang aku perbuat. Aku mengakui nikmat-Mu kepadaku dan aku mengakui dosaku, maka ampunilah aku, karena sesungguhnya tidak ada yang dapat mengampuni dosa kecuali Engkau.",
+      "repeat_count": 1,
+      "notes": "Dibaca dengan penuh keyakinan pada waktu petang.",
+      "source_ref": "HR. Al-Bukhari no. 6306"
+    },
+    {
+      "id": "petang-amsaina",
+      "category": "petang",
+      "title": "Dzikir Memasuki Waktu Petang",
+      "arabic": "أَمْسَيْنَا وَأَمْسَى الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ، لَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ",
+      "transliteration": "Amsaina wa amsal mulku lillah, walhamdulillah, la ilaha illallahu wahdahu la syarika lah, lahul mulku wa lahul hamdu wa huwa 'ala kulli syai'in qadir.",
+      "translation_id": "Kami telah memasuki waktu petang dan kerajaan hanya milik Allah, segala puji bagi Allah. Tidak ada sesembahan yang berhak disembah kecuali Allah semata, tiada sekutu bagi-Nya. Milik-Nya kerajaan dan bagi-Nya segala pujian, dan Dia Mahakuasa atas segala sesuatu.",
+      "repeat_count": 1,
+      "source_ref": "HR. Muslim no. 2723"
+    },
+    {
+      "id": "petang-bismillahilladzi",
+      "category": "petang",
+      "title": "Dzikir Perlindungan di Petang Hari",
+      "arabic": "بِسْمِ اللَّهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الْأَرْضِ وَلَا فِي السَّمَاءِ وَهُوَ السَّمِيعُ الْعَلِيمُ",
+      "transliteration": "Bismillahilladzi la yadhurru ma'asmihi syai'un fil ardhi wa la fis sama'i wa huwas sami'ul 'alim.",
+      "translation_id": "Dengan nama Allah yang bersama nama-Nya tidak ada sesuatu pun di bumi maupun di langit yang dapat membahayakan, dan Dialah Yang Maha Mendengar lagi Maha Mengetahui.",
+      "repeat_count": 3,
+      "notes": "Dibaca 3 kali pada waktu petang.",
+      "source_ref": "HR. Abu Dawud no. 5088 dan At-Tirmidzi no. 3388"
+    },
+    {
+      "id": "petang-audzu-bikalimatillah",
+      "category": "petang",
+      "title": "Doa Perlindungan dari Keburukan Makhluk",
+      "arabic": "أَعُوذُ بِكَلِمَاتِ اللَّهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ",
+      "transliteration": "A'udzu bikalimatillahit tammati min syarri ma khalaq.",
+      "translation_id": "Aku berlindung dengan kalimat-kalimat Allah yang sempurna dari kejahatan apa yang Dia ciptakan.",
+      "repeat_count": 3,
+      "notes": "Dibaca 3 kali pada waktu petang.",
+      "source_ref": "HR. Muslim no. 2709"
+    },
+    {
+      "id": "petang-subhanallah-wabihamdihi",
+      "category": "petang",
+      "title": "Tasbih Petang",
+      "arabic": "سُبْحَانَ اللَّهِ وَبِحَمْدِهِ",
+      "transliteration": "Subhanallahi wa bihamdih.",
+      "translation_id": "Mahasuci Allah dan segala puji bagi-Nya.",
+      "repeat_count": 100,
+      "notes": "Dibaca 100 kali pada petang hari. Bisa juga dihitung lewat fitur Tasbih digital.",
+      "source_ref": "HR. Muslim no. 2692"
+    }
+  ]
+}

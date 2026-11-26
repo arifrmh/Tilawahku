@@ -92,7 +92,15 @@ class NotificationPrayerReminderScheduler implements PrayerReminderScheduler {
   @override
   Future<void> sync(List<PrayerReminder> reminders) async {
     if (!supportsPlatform) return;
-    await _plugin.cancelAllPendingNotifications();
+    await clear();
+    final android = _plugin
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >();
+    final canExact = await android?.canScheduleExactNotifications() ?? false;
+    final scheduleMode = canExact
+        ? AndroidScheduleMode.exactAllowWhileIdle
+        : AndroidScheduleMode.inexactAllowWhileIdle;
     for (final reminder in reminders) {
       await _plugin.zonedSchedule(
         id: reminder.id,
@@ -110,7 +118,7 @@ class NotificationPrayerReminderScheduler implements PrayerReminderScheduler {
           ),
           iOS: DarwinNotificationDetails(),
         ),
-        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+        androidScheduleMode: scheduleMode,
       );
     }
   }

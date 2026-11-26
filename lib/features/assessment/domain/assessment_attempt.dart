@@ -7,12 +7,14 @@ class AssessmentAttempt {
     required this.transcript,
     required this.comparison,
     required this.audioSeconds,
+    this.alignment,
     this.note,
   });
 
   final String transcript;
   final WordComparison comparison;
   final double audioSeconds;
+  final AyahWordAlignment? alignment;
 
   /// Penjelasan tambahan saat bacaan sengaja tidak dikirim ke mesin, misalnya
   /// rekaman lebih pendek dari minimum yang bisa diproses model.

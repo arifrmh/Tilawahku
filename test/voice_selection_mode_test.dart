@@ -37,6 +37,8 @@ void main() {
     final luhaidanCard = find.byKey(
       const ValueKey('voice-selection-muhammad-al-luhaidan'),
     );
+    await tester.ensureVisible(luhaidanCard);
+    await tester.pumpAndSettle();
     expect(find.text('Audio Per Surah'), findsOneWidget);
     expect(
       find.textContaining(

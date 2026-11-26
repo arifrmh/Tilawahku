@@ -7,7 +7,10 @@ import '../domain/hijri_models.dart';
 import 'hijri_calendar_controller.dart';
 
 class HijriCalendarScreen extends StatefulWidget {
-  const HijriCalendarScreen({super.key});
+  const HijriCalendarScreen({super.key, this.controller});
+
+  /// Hanya untuk pengujian.
+  final HijriCalendarController? controller;
 
   @override
   State<HijriCalendarScreen> createState() => _HijriCalendarScreenState();
@@ -15,31 +18,43 @@ class HijriCalendarScreen extends StatefulWidget {
 
 class _HijriCalendarScreenState extends State<HijriCalendarScreen> {
   late final HijriCalendarController _controller;
-  late final PrayerRepository _prayerRepository;
+  late final bool _ownsController;
 
   @override
   void initState() {
     super.initState();
-    _prayerRepository = PrayerRepository();
-    _controller = HijriCalendarController(prayerRepository: _prayerRepository);
+    _ownsController = widget.controller == null;
+    _controller =
+        widget.controller ??
+        HijriCalendarController(prayerRepository: PrayerRepository());
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    if (_ownsController) {
+      _controller.dispose();
+    }
     super.dispose();
+  }
+
+  Future<void> _openLocationSettings() async {
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute<void>(builder: (_) => const PrayerTimesScreen()),
+    );
+    if (!mounted) return;
+    await _controller.reloadLocation();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Kalender Hijri'),
+        title: const Text('Kalender Hijriah'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh),
+            icon: const Icon(Icons.refresh_rounded),
             onPressed: _controller.busy ? null : _controller.refresh,
-            tooltip: 'Refresh',
+            tooltip: 'Muat ulang',
           ),
         ],
       ),
@@ -50,47 +65,45 @@ class _HijriCalendarScreenState extends State<HijriCalendarScreen> {
             case HijriLoadState.loading:
               return const Center(child: CircularProgressIndicator());
             case HijriLoadState.needsLocation:
-              return _buildNeedsLocation();
+              return _buildNeedsLocation(context);
             case HijriLoadState.failed:
-              return _buildError();
+              return _buildError(context);
             case HijriLoadState.ready:
-              return _buildCalendar();
+              return _buildCalendar(context);
           }
         },
       ),
     );
   }
 
-  Widget _buildNeedsLocation() {
+  Widget _buildNeedsLocation(BuildContext context) {
+    final theme = Theme.of(context);
+    final muted = theme.colorScheme.onSurface.withValues(alpha: 0.76);
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.location_off, size: 64, color: AppColors.blue),
+            Icon(Icons.location_off_outlined, size: 56, color: muted),
             const SizedBox(height: 16),
-            const Text(
-              'Kalender Hijri membutuhkan lokasi',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+            Text(
+              'Kalender Hijriah membutuhkan lokasi',
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w700,
+              ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
-            const Text(
-              'Atur lokasi di menu Waktu Sholat',
-              style: TextStyle(color: AppColors.blue),
+            Text(
+              'Atur lokasi terlebih dahulu di menu Waktu Salat.',
+              style: theme.textTheme.bodyMedium?.copyWith(color: muted),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
             FilledButton.icon(
-              onPressed: () {
-                Navigator.of(context).push<void>(
-                  MaterialPageRoute<void>(
-                    builder: (_) => const PrayerTimesScreen(),
-                  ),
-                );
-              },
-              icon: const Icon(Icons.settings),
+              onPressed: _openLocationSettings,
+              icon: const Icon(Icons.place_outlined),
               label: const Text('Buka Pengaturan Lokasi'),
             ),
           ],
@@ -99,30 +112,34 @@ class _HijriCalendarScreenState extends State<HijriCalendarScreen> {
     );
   }
 
-  Widget _buildError() {
+  Widget _buildError(BuildContext context) {
+    final theme = Theme.of(context);
+    final muted = theme.colorScheme.onSurface.withValues(alpha: 0.76);
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.error_outline, size: 64, color: AppColors.blue),
+            Icon(Icons.error_outline_rounded, size: 56, color: muted),
             const SizedBox(height: 16),
-            const Text(
+            Text(
               'Kalender tidak dapat dimuat',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w700,
+              ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
             Text(
-              _controller.errorMessage ?? 'Terjadi kesalahan',
-              style: const TextStyle(color: AppColors.blue),
+              _controller.errorMessage ?? 'Terjadi kesalahan.',
+              style: theme.textTheme.bodyMedium?.copyWith(color: muted),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
             FilledButton.icon(
               onPressed: _controller.refresh,
-              icon: const Icon(Icons.refresh),
+              icon: const Icon(Icons.refresh_rounded),
               label: const Text('Coba Lagi'),
             ),
           ],
@@ -131,35 +148,33 @@ class _HijriCalendarScreenState extends State<HijriCalendarScreen> {
     );
   }
 
-  Widget _buildCalendar() {
+  Widget _buildCalendar(BuildContext context) {
     final month = _controller.month;
     if (month == null) return const SizedBox();
+    final theme = Theme.of(context);
+    final muted = theme.colorScheme.onSurface.withValues(alpha: 0.74);
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildCurrentDateCard(),
+          _buildCurrentDateCard(context),
           const SizedBox(height: 16),
-          _buildMonthNavigation(),
+          _buildMonthNavigation(context),
+          const SizedBox(height: 12),
+          _buildCalendarGrid(context),
           const SizedBox(height: 16),
-          _buildCalendarGrid(),
+          _buildSelectedDateDetails(context),
           const SizedBox(height: 16),
-          _buildSelectedDateDetails(),
+          _buildIslamicEvents(context),
           const SizedBox(height: 16),
-          _buildIslamicEvents(),
-          const SizedBox(height: 16),
-          _buildAdjustmentSettings(),
+          _buildAdjustmentSettings(context),
           if (_controller.notice != null) ...[
-            const SizedBox(height: 8),
+            const SizedBox(height: 12),
             Text(
               _controller.notice!,
-              style: const TextStyle(
-                fontSize: 12,
-                color: AppColors.blue,
-                fontStyle: FontStyle.italic,
-              ),
+              style: theme.textTheme.bodySmall?.copyWith(color: muted),
             ),
           ],
         ],
@@ -167,46 +182,53 @@ class _HijriCalendarScreenState extends State<HijriCalendarScreen> {
     );
   }
 
-  Widget _buildCurrentDateCard() {
+  Widget _buildCurrentDateCard(BuildContext context) {
     final current = _controller.month?.currentHijriDate;
     if (current == null) return const SizedBox();
+    final theme = Theme.of(context);
+    final weekday = gregorianWeekdayNameId(
+      current.gregorianDate,
+      fallback: current.weekdayEn,
+    );
 
     return Card(
+      color: AppColors.navy,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Tanggal Hijri Hari Ini',
-              style: TextStyle(
-                fontSize: 14,
-                color: AppColors.blue,
-                fontWeight: FontWeight.w500,
+            Text(
+              'Tanggal Hijriah Hari Ini',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: AppColors.parchment.withValues(alpha: 0.8),
               ),
             ),
             const SizedBox(height: 8),
             Text(
               current.displayLabel,
-              style: const TextStyle(
-                fontSize: 24,
+              style: theme.textTheme.headlineSmall?.copyWith(
                 fontWeight: FontWeight.w700,
-                color: AppColors.navy,
+                color: AppColors.parchment,
               ),
             ),
             const SizedBox(height: 4),
             Text(
               current.arabicLabel,
+              textDirection: TextDirection.rtl,
               style: const TextStyle(
-                fontSize: 18,
+                fontSize: 20,
+                height: 1.5,
                 fontFamily: 'AmiriQuran',
                 color: AppColors.gold,
               ),
             ),
             const SizedBox(height: 4),
             Text(
-              '${current.weekdayEn} • ${current.gregorianDate}',
-              style: const TextStyle(fontSize: 14, color: AppColors.blue),
+              '$weekday · ${current.gregorianDate}',
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: AppColors.parchment.withValues(alpha: 0.85),
+              ),
             ),
           ],
         ),
@@ -214,11 +236,11 @@ class _HijriCalendarScreenState extends State<HijriCalendarScreen> {
     );
   }
 
-  Widget _buildMonthNavigation() {
+  Widget _buildMonthNavigation(BuildContext context) {
     final month = _controller.month;
     if (month == null) return const SizedBox();
 
-    final monthNames = [
+    const monthNames = [
       'Januari',
       'Februari',
       'Maret',
@@ -236,53 +258,70 @@ class _HijriCalendarScreenState extends State<HijriCalendarScreen> {
     return Row(
       children: [
         IconButton(
+          tooltip: 'Bulan sebelumnya',
           onPressed: _controller.busy ? null : _controller.previousMonth,
-          icon: const Icon(Icons.chevron_left),
+          icon: const Icon(Icons.chevron_left_rounded),
         ),
         Expanded(
           child: Text(
             '${monthNames[month.gregorianMonth - 1]} ${month.gregorianYear}',
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
             textAlign: TextAlign.center,
           ),
         ),
         IconButton(
+          tooltip: 'Bulan berikutnya',
           onPressed: _controller.busy ? null : _controller.nextMonth,
-          icon: const Icon(Icons.chevron_right),
+          icon: const Icon(Icons.chevron_right_rounded),
         ),
       ],
     );
   }
 
-  Widget _buildCalendarGrid() {
+  Widget _buildCalendarGrid(BuildContext context) {
     final month = _controller.month;
     if (month == null) return const SizedBox();
 
     final days = month.days;
-    if (days.isEmpty) return const SizedBox();
+    if (days.isEmpty) {
+      return Card(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Text(
+            'Data tanggal untuk bulan ini belum tersedia.',
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+        ),
+      );
+    }
 
-    // Group by week (7 days)
-    final weeks = <List<HijriCalendarDay>>[];
-    var currentWeek = <HijriCalendarDay>[];
-    for (final day in days) {
-      currentWeek.add(day);
-      if (currentWeek.length == 7) {
-        weeks.add(currentWeek);
-        currentWeek = [];
-      }
+    // Geser hari pertama ke kolom hari yang tepat (Min=0, Sen=1, ..., Sab=6).
+    final firstDate =
+        DateTime.tryParse(days.first.gregorianDate) ??
+        DateTime(month.gregorianYear, month.gregorianMonth, 1);
+    final leadingEmpty = firstDate.weekday % 7;
+
+    final cells = <HijriCalendarDay?>[
+      for (var i = 0; i < leadingEmpty; i++) null,
+      ...days,
+    ];
+    while (cells.length % 7 != 0) {
+      cells.add(null);
     }
-    if (currentWeek.isNotEmpty) {
-      weeks.add(currentWeek);
-    }
+
+    final weeks = <List<HijriCalendarDay?>>[
+      for (var i = 0; i < cells.length; i += 7) cells.sublist(i, i + 7),
+    ];
 
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            // Weekday headers
-            Row(
-              children: const [
+            const Row(
+              children: [
                 Expanded(child: _WeekdayLabel('Min')),
                 Expanded(child: _WeekdayLabel('Sen')),
                 Expanded(child: _WeekdayLabel('Sel')),
@@ -292,35 +331,40 @@ class _HijriCalendarScreenState extends State<HijriCalendarScreen> {
                 Expanded(child: _WeekdayLabel('Sab')),
               ],
             ),
-            const Divider(),
-            // Calendar days
-            ...weeks.map(
-              (week) => Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4),
+            const Divider(height: 16),
+            for (final week in weeks)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 2),
                 child: Row(
-                  children: week
-                      .map(
-                        (day) => Expanded(
-                          child: _CalendarDayTile(
-                            day: day,
-                            isSelected: _controller.selectedDay == day,
-                            onTap: () => _controller.selectDay(day),
-                          ),
-                        ),
-                      )
-                      .toList(),
+                  children: [
+                    for (final day in week)
+                      Expanded(
+                        child: day == null
+                            ? const SizedBox(height: 48)
+                            : _CalendarDayTile(
+                                day: day,
+                                isSelected: _controller.selectedDay == day,
+                                onTap: () => _controller.selectDay(day),
+                              ),
+                      ),
+                  ],
                 ),
               ),
-            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildSelectedDateDetails() {
+  Widget _buildSelectedDateDetails(BuildContext context) {
     final selected = _controller.selectedDay;
     if (selected == null) return const SizedBox();
+    final theme = Theme.of(context);
+    final muted = theme.colorScheme.onSurface.withValues(alpha: 0.76);
+    final weekday = gregorianWeekdayNameId(
+      selected.gregorianDate,
+      fallback: selected.weekdayEn,
+    );
 
     return Card(
       child: Padding(
@@ -328,46 +372,54 @@ class _HijriCalendarScreenState extends State<HijriCalendarScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Tanggal Terpilih',
-              style: TextStyle(
-                fontSize: 14,
-                color: AppColors.blue,
-                fontWeight: FontWeight.w500,
-              ),
+              style: theme.textTheme.bodySmall?.copyWith(color: muted),
             ),
             const SizedBox(height: 8),
             Text(
               selected.displayLabel,
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-                color: AppColors.navy,
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.w700,
               ),
             ),
             const SizedBox(height: 4),
             Text(
               selected.arabicLabel,
+              textDirection: TextDirection.rtl,
               style: const TextStyle(
-                fontSize: 16,
+                fontSize: 18,
+                height: 1.5,
                 fontFamily: 'AmiriQuran',
                 color: AppColors.gold,
               ),
             ),
             const SizedBox(height: 4),
             Text(
-              '${selected.weekdayEn} • ${selected.gregorianDate}',
-              style: const TextStyle(fontSize: 14, color: AppColors.blue),
+              '$weekday · ${selected.gregorianDate}',
+              style: theme.textTheme.bodyMedium?.copyWith(color: muted),
             ),
+            if (selected.events.isNotEmpty) ...[
+              const SizedBox(height: 12),
+              for (final event in selected.events)
+                Text(
+                  '${event.nameId}: ${event.description}',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+            ],
           ],
         ),
       ),
     );
   }
 
-  Widget _buildIslamicEvents() {
+  Widget _buildIslamicEvents(BuildContext context) {
     final events = IslamicEvents.instance.all;
     if (events.isEmpty) return const SizedBox();
+    final theme = Theme.of(context);
+    final muted = theme.colorScheme.onSurface.withValues(alpha: 0.74);
 
     return Card(
       child: Padding(
@@ -375,30 +427,22 @@ class _HijriCalendarScreenState extends State<HijriCalendarScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Tanggal Penting Islam',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: AppColors.navy,
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w700,
               ),
             ),
             const SizedBox(height: 12),
-            ...events.map(
-              (event) => Padding(
+            for (final event in events)
+              Padding(
                 padding: const EdgeInsets.only(bottom: 12),
                 child: _EventTile(event: event),
               ),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              'Catatan: Tanggal di atas berdasarkan perhitungan. '
-              'Tanggal resmi mungkin berbeda sesuai rukyat lokal.',
-              style: TextStyle(
-                fontSize: 12,
-                color: AppColors.blue,
-                fontStyle: FontStyle.italic,
-              ),
+            Text(
+              'Catatan: Tanggal di atas berdasarkan perhitungan layanan. '
+              'Penetapan resmi dapat berbeda sesuai rukyat lokal.',
+              style: theme.textTheme.bodySmall?.copyWith(color: muted),
             ),
           ],
         ),
@@ -406,63 +450,37 @@ class _HijriCalendarScreenState extends State<HijriCalendarScreen> {
     );
   }
 
-  Widget _buildAdjustmentSettings() {
+  Widget _buildAdjustmentSettings(BuildContext context) {
+    final theme = Theme.of(context);
+    final muted = theme.colorScheme.onSurface.withValues(alpha: 0.76);
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Penyesuaian Tanggal Hijri',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: AppColors.navy,
+            Text(
+              'Penyesuaian Tanggal Hijriah',
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w700,
               ),
             ),
             const SizedBox(height: 8),
             Text(
               _controller.adjustmentLabel,
-              style: const TextStyle(fontSize: 14, color: AppColors.blue),
+              style: theme.textTheme.bodyMedium?.copyWith(color: muted),
             ),
             const SizedBox(height: 12),
             Row(
               children: [
-                _AdjustmentButton(
-                  label: '-2',
-                  value: -2,
-                  selected: _controller.adjustment.days == -2,
-                  onTap: () => _controller.setAdjustment(-2),
-                ),
-                const SizedBox(width: 8),
-                _AdjustmentButton(
-                  label: '-1',
-                  value: -1,
-                  selected: _controller.adjustment.days == -1,
-                  onTap: () => _controller.setAdjustment(-1),
-                ),
-                const SizedBox(width: 8),
-                _AdjustmentButton(
-                  label: '0',
-                  value: 0,
-                  selected: _controller.adjustment.days == 0,
-                  onTap: () => _controller.setAdjustment(0),
-                ),
-                const SizedBox(width: 8),
-                _AdjustmentButton(
-                  label: '+1',
-                  value: 1,
-                  selected: _controller.adjustment.days == 1,
-                  onTap: () => _controller.setAdjustment(1),
-                ),
-                const SizedBox(width: 8),
-                _AdjustmentButton(
-                  label: '+2',
-                  value: 2,
-                  selected: _controller.adjustment.days == 2,
-                  onTap: () => _controller.setAdjustment(2),
-                ),
+                for (final value in const [-2, -1, 0, 1, 2]) ...[
+                  if (value != -2) const SizedBox(width: 8),
+                  _AdjustmentButton(
+                    label: value > 0 ? '+$value' : '$value',
+                    selected: _controller.adjustment.days == value,
+                    onTap: () => _controller.setAdjustment(value),
+                  ),
+                ],
               ],
             ),
           ],
@@ -479,13 +497,13 @@ class _WeekdayLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Center(
       child: Text(
         label,
-        style: const TextStyle(
-          fontSize: 12,
+        style: theme.textTheme.labelMedium?.copyWith(
           fontWeight: FontWeight.w600,
-          color: AppColors.blue,
+          color: theme.colorScheme.onSurface.withValues(alpha: 0.76),
         ),
       ),
     );
@@ -505,50 +523,75 @@ class _CalendarDayTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     final hasEvent = day.events.isNotEmpty;
+    final dateParts = day.gregorianDate.split('-');
+    final gregorianDayLabel = dateParts.length >= 3
+        ? '${int.tryParse(dateParts[2]) ?? dateParts[2]}'
+        : day.gregorianDate;
 
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        margin: const EdgeInsets.all(2),
-        decoration: BoxDecoration(
-          color: isSelected ? AppColors.navy : null,
-          borderRadius: BorderRadius.circular(8),
-          border: day.isToday
-              ? Border.all(color: AppColors.gold, width: 2)
-              : null,
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(8),
-          child: Column(
-            children: [
-              Text(
-                day.gregorianDate.split('-')[2],
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: isSelected ? AppColors.parchment : AppColors.navy,
+    final fillColor = isSelected ? colorScheme.primary : Colors.transparent;
+    final primaryText = isSelected
+        ? colorScheme.onPrimary
+        : colorScheme.onSurface;
+    final secondaryText = isSelected
+        ? colorScheme.onPrimary.withValues(alpha: 0.85)
+        : colorScheme.onSurface.withValues(alpha: 0.72);
+
+    return Semantics(
+      button: true,
+      selected: isSelected,
+      label: '${day.gregorianDate}, ${day.displayLabel}',
+      child: Padding(
+        padding: const EdgeInsets.all(2),
+        child: Material(
+          color: fillColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+            side: day.isToday
+                ? const BorderSide(color: AppColors.gold, width: 2)
+                : BorderSide.none,
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: onTap,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: 48),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 2),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      gregorianDayLabel,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: primaryText,
+                        fontFeatures: const [FontFeature.tabularFigures()],
+                      ),
+                    ),
+                    Text(
+                      '${day.hijriDay}',
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: secondaryText,
+                        fontFeatures: const [FontFeature.tabularFigures()],
+                      ),
+                    ),
+                    if (hasEvent)
+                      Container(
+                        margin: const EdgeInsets.only(top: 2),
+                        width: 4,
+                        height: 4,
+                        decoration: const BoxDecoration(
+                          color: AppColors.gold,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                  ],
                 ),
               ),
-              const SizedBox(height: 2),
-              Text(
-                '${day.hijriDay}',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: isSelected ? AppColors.parchment : AppColors.blue,
-                ),
-              ),
-              if (hasEvent)
-                Container(
-                  margin: const EdgeInsets.only(top: 2),
-                  width: 4,
-                  height: 4,
-                  decoration: const BoxDecoration(
-                    color: AppColors.gold,
-                    shape: BoxShape.circle,
-                  ),
-                ),
-            ],
+            ),
           ),
         ),
       ),
@@ -563,72 +606,61 @@ class _EventTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final muted = theme.colorScheme.onSurface.withValues(alpha: 0.76);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           event.nameId,
-          style: const TextStyle(
-            fontSize: 14,
+          style: theme.textTheme.titleSmall?.copyWith(
             fontWeight: FontWeight.w600,
-            color: AppColors.navy,
           ),
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 2),
         Text(
-          '${event.hijriDay} ${_monthNameId(event.hijriMonth)}',
-          style: const TextStyle(fontSize: 12, color: AppColors.blue),
+          '${event.hijriDay} ${hijriMonthNameIdFor(event.hijriMonth)}',
+          style: theme.textTheme.bodySmall?.copyWith(color: muted),
         ),
         const SizedBox(height: 2),
         Text(
           event.description,
-          style: const TextStyle(fontSize: 12, color: AppColors.blue),
+          style: theme.textTheme.bodySmall?.copyWith(color: muted),
         ),
       ],
     );
-  }
-
-  String _monthNameId(int month) {
-    const names = [
-      'Muharram',
-      'Safar',
-      'Rabiul Awal',
-      'Rabiul Akhir',
-      'Jumadil Ula',
-      'Jumadil Akhir',
-      'Rajab',
-      'Sya\'ban',
-      'Ramadan',
-      'Syawal',
-      'Dzulqa\'dah',
-      'Dzulhijjah',
-    ];
-    return month >= 1 && month <= 12 ? names[month - 1] : 'Bulan $month';
   }
 }
 
 class _AdjustmentButton extends StatelessWidget {
   const _AdjustmentButton({
     required this.label,
-    required this.value,
     required this.selected,
     required this.onTap,
   });
 
   final String label;
-  final int value;
   final bool selected;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Expanded(
       child: OutlinedButton(
         onPressed: onTap,
         style: OutlinedButton.styleFrom(
-          backgroundColor: selected ? AppColors.navy : null,
-          foregroundColor: selected ? AppColors.parchment : AppColors.navy,
-          side: BorderSide(color: selected ? AppColors.navy : AppColors.blue),
+          padding: EdgeInsets.zero,
+          minimumSize: const Size(48, 48),
+          backgroundColor: selected ? colorScheme.primary : null,
+          foregroundColor: selected
+              ? colorScheme.onPrimary
+              : colorScheme.onSurface,
+          side: BorderSide(
+            color: selected
+                ? colorScheme.primary
+                : colorScheme.onSurface.withValues(alpha: 0.35),
+          ),
         ),
         child: Text(label),
       ),

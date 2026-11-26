@@ -53,8 +53,11 @@ class _MemorizationProgramDetailScreenState
   }
 
   Future<void> _refresh() async {
-    setState(() => _details = _load());
-    await _details;
+    final next = _load();
+    setState(() {
+      _details = next;
+    });
+    await next;
   }
 
   Future<void> _startPractice(
@@ -112,7 +115,7 @@ class _MemorizationProgramDetailScreenState
     );
     if (shouldDelete != true || !mounted) return;
     await widget.repository.deleteProgram(program.id);
-    if (mounted) Navigator.of(context).pop();
+    if (mounted) Navigator.of(context).pop(true);
   }
 
   @override
@@ -212,6 +215,7 @@ class _MemorizationProgramDetailScreenState
                 icon: const Icon(Icons.menu_book_rounded),
                 label: const Text('Mulai belajar'),
               ),
+              const SizedBox(height: 8),
               OutlinedButton.icon(
                 onPressed: () => _startPractice(
                   details.program,
@@ -220,6 +224,7 @@ class _MemorizationProgramDetailScreenState
                 icon: const Icon(Icons.visibility_off_outlined),
                 label: const Text('Sembunyikan & buka ayat'),
               ),
+              const SizedBox(height: 8),
               OutlinedButton.icon(
                 onPressed: () => _startPractice(
                   details.program,
@@ -228,6 +233,7 @@ class _MemorizationProgramDetailScreenState
                 icon: const Icon(Icons.psychology_alt_outlined),
                 label: const Text('Latihan mengingat'),
               ),
+              const SizedBox(height: 8),
               OutlinedButton.icon(
                 onPressed: () => _startPractice(
                   details.program,
@@ -236,6 +242,7 @@ class _MemorizationProgramDetailScreenState
                 icon: const Icon(Icons.headphones_rounded),
                 label: const Text('Pengulangan audio'),
               ),
+              const SizedBox(height: 4),
               TextButton.icon(
                 onPressed: () => Navigator.of(context).push<void>(
                   MaterialPageRoute(
@@ -254,9 +261,11 @@ class _MemorizationProgramDetailScreenState
                 'Ayat dalam program',
                 style: Theme.of(context).textTheme.titleLarge,
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 12),
               for (final ayah in details.ayahs)
                 Card(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  clipBehavior: Clip.antiAlias,
                   child: ListTile(
                     title: Text(
                       '${ayah.surahNameIndonesian ?? 'Surah ${ayah.surahNumber}'} '
@@ -270,7 +279,7 @@ class _MemorizationProgramDetailScreenState
                     onTap: () => _openReader(ayah),
                   ),
                 ),
-              const SizedBox(height: 56),
+              const SizedBox(height: 12),
               TextButton.icon(
                 onPressed: () => _openReader(nextAyah),
                 icon: const Icon(Icons.chrome_reader_mode_outlined),

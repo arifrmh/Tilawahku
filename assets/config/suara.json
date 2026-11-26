@@ -9,7 +9,8 @@
       "audio_mode": "ayah",
       "edition_id": "ar.husary",
       "bitrate_kbps": 128,
-      "attribution": "Recitation by Mahmoud Khalil Al-Husary; source: AlQuran.cloud"
+      "avatar_asset": "assets/voices/husary.jpg",
+      "attribution": "Recitation by Mahmoud Khalil Al-Husary; source: AlQuran.cloud; portrait: Wikimedia Commons (Public domain)"
     },
     {
       "id": "minshawi",
@@ -19,7 +20,8 @@
       "audio_mode": "ayah",
       "edition_id": "ar.minshawi",
       "bitrate_kbps": 128,
-      "attribution": "Recitation by Mohamed Siddiq Al-Minshawi; source: AlQuran.cloud"
+      "avatar_asset": "assets/voices/minshawi.jpg",
+      "attribution": "Recitation by Mohamed Siddiq Al-Minshawi; source: AlQuran.cloud; portrait: Wikimedia Commons (Public domain)"
     },
     {
       "id": "alafasy",
@@ -29,7 +31,8 @@
       "audio_mode": "ayah",
       "edition_id": "ar.alafasy",
       "bitrate_kbps": 128,
-      "attribution": "Recitation by Mishary Rashid Alafasy; edition ar.alafasy; source: AlQuran.cloud / Islamic Network CDN"
+      "avatar_asset": "assets/voices/alafasy.jpg",
+      "attribution": "Recitation by Mishary Rashid Alafasy; edition ar.alafasy; source: AlQuran.cloud / Islamic Network CDN; portrait: Wikimedia Commons (Copyrighted free use)"
     },
     {
       "id": "abdulbasit",
@@ -39,7 +42,8 @@
       "audio_mode": "ayah",
       "edition_id": "ar.abdulsamad",
       "bitrate_kbps": 64,
-      "attribution": "Recitation by Abdul Basit Abdus-Samad; edition ar.abdulsamad; source: AlQuran.cloud / Islamic Network CDN"
+      "avatar_asset": "assets/voices/abdulbasit.png",
+      "attribution": "Recitation by Abdul Basit Abdus-Samad; edition ar.abdulsamad; source: AlQuran.cloud / Islamic Network CDN; portrait: Wikimedia Commons (Public domain)"
     },
     {
       "id": "sudais",
@@ -49,7 +53,8 @@
       "audio_mode": "ayah",
       "edition_id": "ar.abdurrahmaansudais",
       "bitrate_kbps": 192,
-      "attribution": "Recitation by Abdurrahmaan As-Sudais; edition ar.abdurrahmaansudais; source: AlQuran.cloud / Islamic Network CDN"
+      "avatar_asset": "assets/voices/sudais.jpg",
+      "attribution": "Recitation by Abdurrahmaan As-Sudais; edition ar.abdurrahmaansudais; source: AlQuran.cloud / Islamic Network CDN; portrait: Wikimedia Commons (GODL-India)"
     },
     {
       "id": "hani-rifai",
@@ -69,7 +74,8 @@
       "audio_mode": "ayah",
       "edition_id": "ar.mahermuaiqly",
       "bitrate_kbps": 128,
-      "attribution": "Recitation by Maher Al Muaiqly; edition ar.mahermuaiqly; source: AlQuran.cloud / Islamic Network CDN"
+      "avatar_asset": "assets/voices/maher-muaiqly.jpg",
+      "attribution": "Recitation by Maher Al Muaiqly; edition ar.mahermuaiqly; source: AlQuran.cloud / Islamic Network CDN; portrait: Wikimedia Commons (CC BY-SA 3.0)"
     },
     {
       "id": "muhammad-ayyoub",
@@ -89,7 +95,8 @@
       "audio_mode": "ayah",
       "edition_id": "ar.saoodshuraym",
       "bitrate_kbps": 64,
-      "attribution": "Recitation by Saood bin Ibraaheem Ash-Shuraym; edition ar.saoodshuraym; source: AlQuran.cloud / Islamic Network CDN"
+      "avatar_asset": "assets/voices/saood-shuraym.png",
+      "attribution": "Recitation by Saood bin Ibraaheem Ash-Shuraym; edition ar.saoodshuraym; source: AlQuran.cloud / Islamic Network CDN; portrait: Wikimedia Commons (CC BY-SA 4.0)"
     },
     {
       "id": "muhammad-al-luhaidan",

@@ -326,15 +326,15 @@ class AladhanPrayerClient implements PrayerDaySource {
       final gregorian = date['gregorian'];
       if (gregorian is! Map) continue;
 
-      final gregorianDay = gregorian['day'];
+      final gregorianDay = int.tryParse('${gregorian['day']}');
       final gregorianMonthNum = gregorian['month'] is Map
-          ? (gregorian['month'] as Map)['number']
-          : null;
-      final gregorianYearNum = gregorian['year'];
+          ? int.tryParse('${(gregorian['month'] as Map)['number']}')
+          : int.tryParse('${gregorian['month']}');
+      final gregorianYearNum = int.tryParse('${gregorian['year']}');
 
-      if (gregorianDay is! int ||
-          gregorianMonthNum is! int ||
-          gregorianYearNum is! int) {
+      if (gregorianDay == null ||
+          gregorianMonthNum == null ||
+          gregorianYearNum == null) {
         continue;
       }
 
@@ -364,8 +364,7 @@ class AladhanPrayerClient implements PrayerDaySource {
           ? '${(hijri['weekday'] as Map)['ar'] ?? ''}'
           : '';
 
-      // Map nama bulan Inggris ke Indonesia
-      final monthNameId = _mapMonthNameId(monthNameEn);
+      final monthNameId = hijriMonthNameIdFor(hijriMonth);
 
       final dateKey =
           '$gregorianYearNum-${gregorianMonthNum.toString().padLeft(2, '0')}-${gregorianDay.toString().padLeft(2, '0')}';
@@ -398,25 +397,6 @@ class AladhanPrayerClient implements PrayerDaySource {
       days: days,
       currentHijriDate: currentHijriDate,
     );
-  }
-
-  /// Map nama bulan Hijri dari Inggris ke Indonesia.
-  static String _mapMonthNameId(String enName) {
-    final mapping = {
-      'Muharram': 'Muharram',
-      'Safar': 'Safar',
-      'Rabiul Awal': 'Rabiul Awal',
-      'Rabiul Akhir': 'Rabiul Akhir',
-      'Jumādá al-ūlá': 'Jumadil Ula',
-      'Jumādá al-ākhirah': 'Jumadil Akhir',
-      'Rajab': 'Rajab',
-      "Sya'ban": 'Sya\'ban',
-      'Ramadan': 'Ramadan',
-      'Shawwal': 'Syawal',
-      "Dzulqa'dah": 'Dzulqa\'dah',
-      'Dzulhijjah': 'Dzulhijjah',
-    };
-    return mapping[enName] ?? enName;
   }
 
   /// Map tanggal Hijri ke event Islam penting.

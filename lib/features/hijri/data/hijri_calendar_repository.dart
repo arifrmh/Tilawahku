@@ -184,6 +184,10 @@ class HijriCalendarRepository {
     final json =
         jsonDecode(row['month_json'] as String) as Map<String, dynamic>;
     final daysJson = json['days'] as List;
+    final now = DateTime.now();
+    final dateKey =
+        '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+
     final days = [
       for (final dayJson in daysJson)
         HijriCalendarDay(
@@ -193,29 +197,24 @@ class HijriCalendarRepository {
           hijriYear: dayJson['hijri_year'] as int,
           hijriMonthNameEn: dayJson['hijri_month_name_en'] as String,
           hijriMonthNameAr: dayJson['hijri_month_name_ar'] as String,
-          hijriMonthNameId: dayJson['hijri_month_name_id'] as String,
+          hijriMonthNameId: hijriMonthNameIdFor(dayJson['hijri_month'] as int),
           weekdayEn: dayJson['weekday_en'] as String,
           weekdayAr: dayJson['weekday_ar'] as String,
-          isToday: dayJson['is_today'] as bool,
-          events: (dayJson['events'] as List).map((e) {
-            final event = e as Map<String, dynamic>;
-            return IslamicEvent(
-              hijriDay: event['hijri_day'] as int,
-              hijriMonth: event['hijri_month'] as int,
-              nameId: event['name_id'] as String,
-              description: event['description'] as String,
-            );
-          }).toList(),
+          isToday: (dayJson['gregorian_date'] as String) == dateKey,
+          events: () {
+            final m = dayJson['hijri_month'] as int;
+            final d = dayJson['hijri_day'] as int;
+            final key =
+                '${m.toString().padLeft(2, '0')}-${d.toString().padLeft(2, '0')}';
+            final event = IslamicEvents.instance.findByHijriKey(key);
+            return event != null ? [event] : const <IslamicEvent>[];
+          }(),
         ),
     ];
 
-    // Cari hari ini
-    final now = DateTime.now();
-    final dateKey =
-        '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
     HijriCalendarDay? currentHijriDate;
     for (final day in days) {
-      if (day.gregorianDate == dateKey) {
+      if (day.isToday) {
         currentHijriDate = day;
         break;
       }

@@ -1,0 +1,541 @@
+{
+  "_meta": {
+    "title": "Tokoh Islam Kurasi TILAWAHKU",
+    "version": "1.0.0",
+    "language": "id",
+    "curation_notes": "Ringkasan biografi disusun dari rujukan klasik dan sejarah Islam arus utama. Tahun kelahiran atau wafat pada sejumlah tokoh klasik memiliki variasi riwayat antar sejarawan dan dicantumkan secara jujur pada bidang era_label dan date_note.",
+    "license": "Disusun asli untuk TILAWAHKU (GPL-3.0) dengan rujukan literatur terbuka dan kitab klasik."
+  },
+  "items": [
+    {
+      "id": "nabi-muhammad",
+      "name": "Nabi Muhammad SAW",
+      "arabic_name": "مُحَمَّدٌ ﷺ",
+      "epithet": "Rasulullah, Penutup Para Nabi dan Rasul",
+      "category": "nabi_rasul",
+      "era_label": "570/571 - 632 M (12 Rabiul Awal Tahun Gajah - 11 H)",
+      "date_note": "Sejarawan klasik mencatat kelahiran beliau pada Tahun Gajah, bertepatan sekitar 570 atau 571 M.",
+      "summary": "Utusan Allah terakhir yang menerima wahyu Al-Qur'an dan membangun masyarakat berlandaskan tauhid, keadilan, serta kasih sayang bagi semesta alam.",
+      "biography_sections": [
+        {
+          "title": "Latar Belakang dan Masa Muda",
+          "body": "Lahir di Makkah dalam keadaan yatim dari pasangan Abdullah bin Abdul Muthalib dan Aminah binti Wahb. Sejak muda beliau dikenal jujur dan terpercaya hingga masyarakat Quraisy memberinya gelar Al-Amin."
+        },
+        {
+          "title": "Kerasulan di Makkah dan Madinah",
+          "body": "Pada usia 40 tahun beliau menerima wahyu pertama di Gua Hira. Selama tiga belas tahun di Makkah beliau menanamkan akidah tauhid di tengah berbagai penolakan, lalu berhijrah ke Madinah dan menyusun Piagam Madinah sebagai dasar kehidupan bermasyarakat yang adil dan majemuk."
+        },
+        {
+          "title": "Warisan bagi Umat",
+          "body": "Beliau mewariskan Al-Qur'an dan Sunnah sebagai pedoman hidup umat Islam, mengangkat martabat manusia tanpa membedakan suku maupun status sosial, serta meneladankan akhlak lemah lembut dalam keluarga dan kepemimpinan."
+        }
+      ],
+      "key_lessons": [
+        "Kejujuran dan amanah menjadi modal utama kepercayaan sebelum berdakwah.",
+        "Keteguhan prinsip selalu dibarengi kesabaran dan kasih sayang terhadap sesama.",
+        "Kepemimpinan yang adil melindungi seluruh warga yang terikat perjanjian damai."
+      ],
+      "references": [
+        "Al-Qur'an Surah Al-Ahzab (33): 21 dan Al-Anbiya (21): 107",
+        "Ibnu Hisyam, As-Sirah an-Nabawiyah",
+        "Shafiyurrahman al-Mubarakfuri, Ar-Rahiq al-Makhtum"
+      ]
+    },
+    {
+      "id": "nabi-ibrahim",
+      "name": "Nabi Ibrahim AS",
+      "arabic_name": "إِبْرَاهِيمُ عليه السلام",
+      "epithet": "Khalilullah, Bapak Para Nabi",
+      "category": "nabi_rasul",
+      "era_label": "Periode Nabi terdahulu (sekitar milenium ke-2 SM)",
+      "date_note": "Penanggalan pasti Nabi Ibrahim AS tidak ditetapkan secara tunggal dalam sumber klasik.",
+      "summary": "Nabi Ulul Azmi yang menegakkan tauhid dengan nalar yang jernih, ketaatan penuh kepada Allah, dan membangun kembali Ka'bah bersama Nabi Ismail AS.",
+      "biography_sections": [
+        {
+          "title": "Pencarian Kebenaran dan Dakwah Tauhid",
+          "body": "Tumbuh di tengah masyarakat penyembah berhala dan benda langit, Nabi Ibrahim AS mengajak kaumnya merenungkan keterbatasan ciptaan hingga menegaskan bahwa hanya Allah Pencipta langit dan bumi yang berhak disembah."
+        },
+        {
+          "title": "Ujian Ketaatan dan Pembangunan Ka'bah",
+          "body": "Beliau menghadapi berbagai ujian berat, mulai dari perlawanan penguasa Namrud, hijrah panjang bersama keluarganya, hingga perintah membangun kembali Baitullah di Makkah bersama putranya, Nabi Ismail AS."
+        },
+        {
+          "title": "Pengaruh dalam Syariat Islam",
+          "body": "Keteladanan keluarga Nabi Ibrahim AS diabadikan dalam rangkaian ibadah haji, qurban, serta doa-doa yang dibaca umat Islam setiap hari dalam tasyahud salat."
+        }
+      ],
+      "key_lessons": [
+        "Iman yang kokoh memadukan perenungan akal sehat dan kepasrahan kepada wahyu.",
+        "Kesantunan tetap dijaga saat berdialog dengan orang tua maupun penguasa.",
+        "Pengorbanan tulus melahirkan keberkahan lintas generasi."
+      ],
+      "references": [
+        "Al-Qur'an Surah Al-Baqarah (2): 124-129, Al-An'am (6): 74-79, dan Ash-Shaffat (37): 99-111",
+        "Ibnu Katsir, Qashash al-Anbiya"
+      ]
+    },
+    {
+      "id": "nabi-musa",
+      "name": "Nabi Musa AS",
+      "arabic_name": "مُوسَىٰ عليه السلام",
+      "epithet": "Kalimullah, Penerima Kitab Taurat",
+      "category": "nabi_rasul",
+      "era_label": "Periode Nabi terdahulu di Mesir kuno",
+      "date_note": "Sejarawan berbeda pendapat mengenai abad pasti masa kenabian Nabi Musa AS.",
+      "summary": "Nabi Ulul Azmi yang diutus membebaskan Bani Israil dari penindasan Fir'aun dan menerima wahyu langsung dari Allah di Bukit Thur.",
+      "biography_sections": [
+        {
+          "title": "Penyelamatan dan Masa Pembinaan",
+          "body": "Lahir pada masa pembantaian bayi laki-laki Bani Israil oleh Fir'aun, atas pertolongan Allah beliau diselamatkan melalui Sungai Nil dan justru dibesarkan di lingkungan istana sebelum hijrah sementara ke Madyan."
+        },
+        {
+          "title": "Dakwah kepada Fir'aun",
+          "body": "Setelah menerima wahyu di Lembah Suci Thuwa bersama saudaranya Nabi Harun AS, beliau diperintahkan menyampaikan dakwah dengan tutur kata yang lembut kepada Fir'aun serta menuntut pembebasan kaum yang tertindas."
+        },
+        {
+          "title": "Pembimbingan Umat dan Semangat Menuntut Ilmu",
+          "body": "Di samping memimpin perjalanan panjang Bani Israil, Al-Qur'an juga merekam kerendahan hati beliau saat menempuh perjalanan jauh demi menimba hikmah bersama Nabi Khidir AS."
+        }
+      ],
+      "key_lessons": [
+        "Keberanian melawan kezaliman tetap mengedepankan tutur kata yang santun.",
+        "Kerja sama dan dukungan keluarga menguatkan amanah yang berat.",
+        "Setinggi apa pun kedudukan seseorang, kerendahan hati dalam menuntut ilmu tetap utama."
+      ],
+      "references": [
+        "Al-Qur'an Surah Thaha (20): 9-48, Al-Qashash (28): 3-35, dan Al-Kahfi (18): 60-82",
+        "Ibnu Katsir, Qashash al-Anbiya"
+      ]
+    },
+    {
+      "id": "abu-bakar",
+      "name": "Abu Bakar Ash-Shiddiq RA",
+      "arabic_name": "أَبُو بَكْرٍ الصِّدِّيقُ",
+      "epithet": "Khalifah Pertama, Sahabat Paling Dekat Rasulullah",
+      "category": "sahabat",
+      "era_label": "573 - 634 M (51 SH - 13 H)",
+      "summary": "Sahabat laki-laki dewasa pertama yang memeluk Islam, pendamping setia hijrah ke Madinah, dan pemimpin yang menjaga persatuan umat serta memprakarsai pengumpulan mushaf Al-Qur'an.",
+      "biography_sections": [
+        {
+          "title": "Keimanan dan Gelar Ash-Shiddiq",
+          "body": "Bernama asli Abdullah bin Utsman at-Taimi. Ia langsung membenarkan risalah Islam dan peristiwa Isra Mi'raj tanpa keraguan sehingga mendapat gelar Ash-Shiddiq. Hartanya banyak digunakan untuk membebaskan budak muslim yang disiksa, termasuk Bilal bin Rabah."
+        },
+        {
+          "title": "Pendamping Hijrah dan Masa Kekhalifahan",
+          "body": "Ia mendampingi Rasulullah SAW bersembunyi di Gua Tsur saat hijrah ke Madinah. Setelah wafatnya Nabi, ia terpilih menjadi khalifah pertama, menenangkan kaum muslimin, serta menertibkan pemberontakan dan penolakan zakat."
+        },
+        {
+          "title": "Pengumpulan Mushaf Al-Qur'an",
+          "body": "Atas usul Umar bin Khattab setelah gugurnya banyak penghafal Al-Qur'an pada Perang Yamamah, Abu Bakar menugaskan Zaid bin Tsabit untuk menghimpun lembaran Al-Qur'an dalam satu mushaf terjaga."
+        }
+      ],
+      "key_lessons": [
+        "Keimanan sejati tampak dari kesiapan berkorban harta dan jiwa secara tulus.",
+        "Kebijaksanaan pemimpin dibutuhkan saat umat berada dalam masa krisis.",
+        "Menjaga kemurnian ilmu dan kitab suci adalah investasi sepanjang masa."
+      ],
+      "references": [
+        "Al-Qur'an Surah At-Taubah (9): 40",
+        "Shahih Al-Bukhari, Kitab Fadha'il Ashhab an-Nabi dan Kitab Fadha'il al-Qur'an",
+        "Adz-Dzahabi, Siyar A'lam an-Nubala"
+      ]
+    },
+    {
+      "id": "umar-bin-khattab",
+      "name": "Umar bin Khattab RA",
+      "arabic_name": "عُمَرُ بْنُ الْخَطَّابِ",
+      "epithet": "Al-Faruq, Khalifah Kedua",
+      "category": "sahabat",
+      "era_label": "584 - 644 M (40 SH - 23 H)",
+      "date_note": "Sebagian riwayat menyebut tahun kelahiran Umar sekitar 583 atau 584 M.",
+      "summary": "Pemimpin tegas dan sederhana yang memperluas tata kelola pemerintahan Islam, mendirikan baitulmal, dan menetapkan penanggalan Hijriah.",
+      "biography_sections": [
+        {
+          "title": "Masuk Islam dan Penguatan Dakwah",
+          "body": "Sebelum memeluk Islam, Umar dikenal sangat tegas terhadap kaum muslimin. Keislamannya membawa semangat baru hingga kaum muslimin dapat beribadah secara terbuka di sekitar Ka'bah."
+        },
+        {
+          "title": "Inovasi Tata Kelola dan Keadilan Sosial",
+          "body": "Sebagai khalifah kedua (13-23 H), ia menata administrasi wilayah, membentuk lembaga peradilan yang mandiri, menertibkan baitulmal untuk kesejahteraan rakyat, dan memprakarsai kalender Hijriah bersama musyawarah para sahabat."
+        },
+        {
+          "title": "Kesederhanaan Pemimpin",
+          "body": "Umar terkenal sering berkeliling pada malam hari memeriksa langsung kondisi warganya, hidup sangat sederhana, dan menolak penggunaan fasilitas negara untuk urusan pribadi."
+        }
+      ],
+      "key_lessons": [
+        "Ketegasan dalam menegakkan hukum harus diiringi empati kepada rakyat kecil.",
+        "Musyawarah melahirkan kebijakan strategis yang bertahan berabad-abad.",
+        "Jabatan adalah amanah berat yang menuntut integritas dan kesederhanaan."
+      ],
+      "references": [
+        "Shahih Al-Bukhari, Kitab Fadha'il Ashhab an-Nabi",
+        "Ibnu Katsir, Al-Bidayah wan-Nihayah",
+        "Ali Muhammad ash-Shallabi, Biografi Umar bin Khattab"
+      ]
+    },
+    {
+      "id": "khadijah-binti-khuwailid",
+      "name": "Khadijah binti Khuwailid RA",
+      "arabic_name": "خَدِيجَةُ بِنْتُ خُوَيْلِدٍ",
+      "epithet": "Ummul Mukminin, Orang Pertama yang Beriman",
+      "category": "sahabat",
+      "era_label": "Sekitar 555 - 619 M (wafat 3 SH)",
+      "date_note": "Tahun lahir Khadijah RA diperkirakan sekitar 555 M berdasarkan riwayat usia beliau saat menikah dan wafat.",
+      "summary": "Pengusaha dermawan dan istri pertama Rasulullah SAW yang menenangkan beliau saat menerima wahyu pertama serta menopang dakwah pada masa tersulit.",
+      "biography_sections": [
+        {
+          "title": "Kemuliaan sebelum Islam",
+          "body": "Di kalangan masyarakat Quraisy, Khadijah dikenal cerdas, mandiri dalam perniagaan, dan menjaga kehormatan diri hingga dijuluki Ath-Thahirah."
+        },
+        {
+          "title": "Penopang Pertama Dakwah",
+          "body": "Ketika Rasulullah SAW pulang dari Gua Hira dalam keadaan gemetar, Khadijah langsung menenangkan beliau dengan kata-kata penuh keyakinan, menjadi orang pertama yang beriman, dan mengantarkan beliau menemui Waraqah bin Naufal."
+        },
+        {
+          "title": "Keteguhan hingga Masa Pemboikotan",
+          "body": "Ia mendampingi perjuangan dakwah selama 25 tahun pernikahan, termasuk bertahan bersama kaum muslimin saat pemboikotan ekonomi dan sosial di Syi'ib Abi Thalib hingga wafat pada Tahun Kesedihan."
+        }
+      ],
+      "key_lessons": [
+        "Dukungan emosional dan keyakinan pasangan menjadi kekuatan besar di saat genting.",
+        "Harta dan kecakapan usaha bernilai mulia ketika digunakan untuk kebaikan.",
+        "Kesetiaan teruji paling nyata pada masa kesulitan."
+      ],
+      "references": [
+        "Shahih Al-Bukhari, Kitab Bad' al-Wahy dan Kitab Manaqib al-Anshar",
+        "Ibnu Sa'd, Ath-Thabaqat al-Kubra"
+      ]
+    },
+    {
+      "id": "aisyah-binti-abu-bakar",
+      "name": "Aisyah binti Abu Bakar RA",
+      "arabic_name": "عَائِشَةُ بِنْتُ أَبِي بَكْرٍ",
+      "epithet": "Ummul Mukminin, Perawi Hadis dan Ahli Fikih",
+      "category": "sahabat",
+      "era_label": "Sekitar 614 - 678 M (wafat 58 H)",
+      "date_note": "Sumber klasik menyebut tahun wafat Aisyah RA pada 57 atau 58 H.",
+      "summary": "Salah satu ulama terbesar generasi sahabat yang meriwayatkan lebih dari dua ribu hadis serta menjadi rujukan fikih, tafsir, dan adab bagi para sahabat maupun tabiin.",
+      "biography_sections": [
+        {
+          "title": "Kecerdasan dan Ketajaman Ingatan",
+          "body": "Tumbuh di lingkungan rumah Abu Bakar dan kemudian rumah kenabian, Aisyah memiliki daya hafal kuat, rasa ingin tahu kritis terhadap ilmu, serta penguasaan tinggi atas bahasa Arab, syair, dan sejarah."
+        },
+        {
+          "title": "Rujukan Hadis dan Fikih",
+          "body": "Setelah wafatnya Rasulullah SAW, Aisyah mengajar puluhan murid dari kalangan sahabat dan tabiin seperti Urwah bin az-Zubair dan Amrah binti Abdurrahman. Ia dikenal teliti memverifikasi riwayat hadis dengan kaidah Al-Qur'an."
+        },
+        {
+          "title": "Kedermawanan dan Keteladanan",
+          "body": "Di samping keilmuannya, Aisyah hidup bersahaja dan gemar menyedekahkan pemberian yang diterimanya kepada fakir miskin tanpa menunda."
+        }
+      ],
+      "key_lessons": [
+        "Perempuan memiliki peran sentral dalam menjaga dan mengajarkan ilmu agama.",
+        "Menuntut ilmu membutuhkan sikap kritis, teliti, dan merujuk pada sumber utama.",
+        "Ilmu yang bermanfaat selalu diiringi kedermawanan dan ketawaduan."
+      ],
+      "references": [
+        "Shahih Al-Bukhari dan Shahih Muslim, Kitab Fadha'il ash-Shahabah",
+        "Adz-Dzahabi, Siyar A'lam an-Nubala",
+        "Ibnu Hajar al-Asqalani, Al-Ishabah fi Tamyiz ash-Shahabah"
+      ]
+    },
+    {
+      "id": "imam-al-bukhari",
+      "name": "Imam Al-Bukhari",
+      "arabic_name": "الإِمَامُ الْبُخَارِيُّ",
+      "epithet": "Amirul Mukminin fil Hadis, Penyusun Shahih Al-Bukhari",
+      "category": "ulama_imam",
+      "era_label": "810 - 870 M (194 - 256 H)",
+      "summary": "Ulama hadis asal Bukhara yang mendedikasikan hidupnya melakukan rihlah keilmuan dan menyusun kitab hadis paling otoritatif dalam tradisi Ahlussunnah, Al-Jami' ash-Shahih.",
+      "biography_sections": [
+        {
+          "title": "Masa Kecil dan Ketekunan Menghafal",
+          "body": "Bernama lengkap Muhammad bin Ismail al-Bukhari. Tumbuh yatim di bawah asuhan ibunya yang salehah, ia mulai menghafal hadis dan mengenal sanad sejak usia belasan tahun."
+        },
+        {
+          "title": "Perjalanan Ilmiah dan Metode Verifikasi",
+          "body": "Selama belasan tahun ia menempuh perjalanan ke Makkah, Madinah, Mesir, Syam, Irak, dan Khurasan untuk berguru kepada lebih dari seribu ulama. Ia menetapkan syarat ketat ketersambungan sanad dan integritas perawi."
+        },
+        {
+          "title": "Karya Monumental",
+          "body": "Dari ratusan ribu riwayat yang ia kumpulkan, ia menyeleksi secara ketat sekitar tujuh ribuan hadis (termasuk pengulangan) ke dalam Shahih Al-Bukhari selama enam belas tahun, selain menyusun At-Tarikh al-Kabir dan Al-Adab al-Mufrad."
+        }
+      ],
+      "key_lessons": [
+        "Ketelitian verifikasi sumber adalah bentuk tanggung jawab ilmiah dan agama.",
+        "Karya besar lahir dari ketekunan panjang dan kesabaran bertahun-tahun.",
+        "Doa dan pendidikan ibu berperan besar membentuk generasi berilmu."
+      ],
+      "references": [
+        "Adz-Dzahabi, Siyar A'lam an-Nubala",
+        "Ibnu Hajar al-Asqalani, Hadyu as-Sari Muqaddimah Fath al-Bari"
+      ]
+    },
+    {
+      "id": "imam-asy-syafii",
+      "name": "Imam Asy-Syafi'i",
+      "arabic_name": "الإِمَامُ الشَّافِعِيُّ",
+      "epithet": "Nashir as-Sunnah, Perumus Sistematika Ushul Fikih",
+      "category": "ulama_imam",
+      "era_label": "767 - 820 M (150 - 204 H)",
+      "summary": "Imam mazhab fikih yang memadukan metode ahli hadis dan ahli ra'yi serta menulis Ar-Risalah sebagai kitab sistematika ushul fikih pertama yang sampai kepada kita.",
+      "biography_sections": [
+        {
+          "title": "Latar Belakang dan Semangat Belajar",
+          "body": "Bernama lengkap Muhammad bin Idris asy-Syafi'i, lahir di Gaza dan dibesarkan di Makkah dalam kondisi sederhana. Ia menghafal Al-Qur'an sejak kecil, mempelajari bahasa Arab murni, dan berguru kepada Imam Malik di Madinah serta murid-murid Imam Abu Hanifah di Irak."
+        },
+        {
+          "title": "Ar-Risalah dan Qaul Qadim - Qaul Jadid",
+          "body": "Melalui kitab Ar-Risalah, ia merumuskan metodologi penggalian hukum dari Al-Qur'an, Sunnah, ijma, dan qiyas. Keterbukaan ilmiahnya tampak ketika ia meninjau ulang sebagian fatwa lamanya (Qaul Qadim) saat menetap di Mesir (Qaul Jadid)."
+        },
+        {
+          "title": "Pengaruh di Nusantara",
+          "body": "Mazhab Syafi'i berkembang luas di berbagai kawasan dunia Islam, termasuk menjadi mazhab fikih utama yang diajarkan di pesantren dan masyarakat muslim Indonesia hingga hari ini."
+        }
+      ],
+      "key_lessons": [
+        "Keterbatasan ekonomi tidak menghalangi seseorang meraih derajat keilmuan tinggi.",
+        "Kejujuran intelektual berarti siap memperbaiki pendapat bila menemukan dalil lebih kuat.",
+        "Perbedaan pendapat ilmiah disikapi dengan adab dan penghormatan kepada guru."
+      ],
+      "references": [
+        "Al-Baihaqi, Manaqib asy-Syafi'i",
+        "Imam Asy-Syafi'i, Ar-Risalah",
+        "Adz-Dzahabi, Siyar A'lam an-Nubala"
+      ]
+    },
+    {
+      "id": "imam-al-ghazali",
+      "name": "Imam Al-Ghazali",
+      "arabic_name": "الإِمَامُ الْغَزَالِيُّ",
+      "epithet": "Hujjatul Islam, Pemikir Fikih, Kalam, dan Tasawuf",
+      "category": "ulama_imam",
+      "era_label": "1058 - 1111 M (450 - 505 H)",
+      "summary": "Ulama besar asal Thus yang mengharmoniskan syariat dan penyucian jiwa melalui karya monumentalnya, Ihya Ulumuddin.",
+      "biography_sections": [
+        {
+          "title": "Karier Akademik di Nizamiyah",
+          "body": "Bernama Abu Hamid Muhammad al-Ghazali. Berguru kepada Imam al-Haramain al-Juwaini, kecemerlangannya membawanya menjadi guru besar di Madrasah Nizamiyah Baghdad pada usia relatif muda."
+        },
+        {
+          "title": "Pencarian Spiritual dan Karya Besar",
+          "body": "Di puncak kemasyhuran, ia mengalami perenungan mendalam tentang keikhlasan niat dalam berilmu, lalu meninggalkan jabatan untuk menempuh jalan penyucian hati di Damaskus, Yerusalem, dan Makkah sebelum kembali mengajar di Naisabur dan Thus."
+        },
+        {
+          "title": "Warisan Keilmuan",
+          "body": "Karyanya mencakup ushul fikih (Al-Mustashfa), etika dan penyucian jiwa (Ihya Ulumuddin, Bidayatul Hidayah), hingga autobiografi intelektual (Al-Munqidz min adh-Dhalal)."
+        }
+      ],
+      "key_lessons": [
+        "Ilmu harus membersihkan hati dan memperbaiki amal, bukan sekadar mengejar pujian.",
+        "Keberanian mengevaluasi diri diperlukan bahkan saat berada di puncak karier.",
+        "Keseimbangan antara syariat lahir dan keikhlasan batin menjaga kesehatan ruhani."
+      ],
+      "references": [
+        "Imam Al-Ghazali, Al-Munqidz min adh-Dhalal",
+        "Adz-Dzahabi, Siyar A'lam an-Nubala",
+        "Tajuddin as-Subki, Thabaqat asy-Syafi'iyah al-Kubra"
+      ]
+    },
+    {
+      "id": "al-khawarizmi",
+      "name": "Al-Khawarizmi",
+      "arabic_name": "مُحَمَّدُ بْنُ مُوسَى الْخَوَارِزْمِيُّ",
+      "epithet": "Perintis Aljabar dan Asal Istilah Algoritma",
+      "category": "ilmuwan",
+      "era_label": "Sekitar 780 - 850 M",
+      "date_note": "Tahun lahir dan wafat Al-Khawarizmi diperkirakan sejarawan sains sekitar 780 dan 850 M.",
+      "summary": "Matematikawan, astronom, dan ahli geografi di Baitul Hikmah Baghdad yang meletakkan dasar ilmu aljabar sistematis dan memperkenalkan sistem angka desimal Hindu-Arab.",
+      "biography_sections": [
+        {
+          "title": "Kiprah di Baitul Hikmah",
+          "body": "Muhammad bin Musa al-Khawarizmi berkarya di Baghdad pada masa Khalifah Al-Ma'mun di lembaga keilmuan Baitul Hikmah. Ia memadukan warisan matematika Yunani, India, dan Persia menjadi kerangka kerja praktis."
+        },
+        {
+          "title": "Aljabar dan Algoritma",
+          "body": "Kitabnya Al-Kitab al-Mukhtashar fi Hisab al-Jabr wal-Muqabalah menjadi titik lahir aljabar sebagai disiplin ilmu tersendiri, lengkap dengan penerapan praktis untuk pembagian waris, ukur tanah, dan perdagangan. Terjemahan Latin atas namanya melahirkan istilah algorithm."
+        },
+        {
+          "title": "Astronomi dan Geografi",
+          "body": "Ia juga menyusun tabel astronomi Zij as-Sindhind serta kitab geografi Kitab Shurat al-Ardh yang memperbaiki peta koordinat dunia klasik."
+        }
+      ],
+      "key_lessons": [
+        "Sains berkembang pesat ketika diarahkan untuk memecahkan masalah nyata masyarakat.",
+        "Keterbukaan mempelajari ilmu lintas peradaban melahirkan inovasi baru.",
+        "Penyusunan metode langkah demi langkah memudahkan ilmu diwariskan lintas zaman."
+      ],
+      "references": [
+        "Al-Khawarizmi, Al-Kitab al-Mukhtashar fi Hisab al-Jabr wal-Muqabalah",
+        "Ibnu an-Nadim, Al-Fihrist",
+        "Roshdi Rashed, Al-Khwarizmi: The Beginnings of Algebra"
+      ]
+    },
+    {
+      "id": "ibnu-sina",
+      "name": "Ibnu Sina",
+      "arabic_name": "ابْنُ سِينَا",
+      "epithet": "Asy-Syaikh ar-Ra'is, Pelopor Kedokteran Sistematis",
+      "category": "ilmuwan",
+      "era_label": "980 - 1037 M (370 - 428 H)",
+      "summary": "Dokter dan polimatik muslim penulis Al-Qanun fi ath-Thibb yang menjadi rujukan utama pendidikan kedokteran di dunia Islam dan Eropa selama berabad-abad.",
+      "biography_sections": [
+        {
+          "title": "Pendidikan Dini",
+          "body": "Bernama lengkap Abu Ali al-Husain bin Abdullah bin Sina, lahir dekat Bukhara. Ia menghafal Al-Qur'an sejak kecil dan menguasai kedokteran, matematika, logika, serta ilmu alam pada usia muda."
+        },
+        {
+          "title": "Kontribusi Kedokteran dalam Al-Qanun",
+          "body": "Melalui Al-Qanun fi ath-Thibb (Canon of Medicine), ia mengklasifikasikan penyakit secara sistematis, menjelaskan konsep penularan dan karantina, serta merumuskan kaidah uji klinis obat yang terstruktur."
+        },
+        {
+          "title": "Karya Ensiklopedis",
+          "body": "Di samping kedokteran, ia menulis kitab ensiklopedia ilmu pengetahuan Asy-Syifa yang membahas fisika, astronomi, logika, dan psikologi."
+        }
+      ],
+      "key_lessons": [
+        "Pengamatan empiris dan pencatatan sistematis menjadi kunci kemajuan ilmu kedokteran.",
+        "Ketekunan membaca dan meneliti secara mandiri mampu melampaui keterbatasan zaman.",
+        "Ilmu kesehatan bertujuan meringankan penderitaan manusia secara bertanggung jawab."
+      ],
+      "references": [
+        "Ibnu Sina, Al-Qanun fi ath-Thibb",
+        "Ibnu Abi Usaibi'ah, Uyun al-Anba fi Thabaqat al-Athibba"
+      ]
+    },
+    {
+      "id": "ibnu-khaldun",
+      "name": "Ibnu Khaldun",
+      "arabic_name": "ابْنُ خَلْدُون",
+      "epithet": "Perintis Sosiologi, Historiografi, dan Ilmu Ekonomi Modern",
+      "category": "ilmuwan",
+      "era_label": "1332 - 1406 M (732 - 808 H)",
+      "summary": "Sejarawan, hakim, dan pemikir sosial asal Tunisia yang menulis Muqaddimah sebagai kerangka ilmiah untuk membaca naik-turunnya peradaban.",
+      "biography_sections": [
+        {
+          "title": "Latar Belakang dan Pengalaman Kenegaraan",
+          "body": "Bernama Abdurrahman bin Muhammad bin Khaldun. Ia lahir di Tunis dari keluarga terpelajar asal Andalusia, dan pernah bertugas sebagai penasihat politik, diplomat, hingga hakim agung Mazhab Maliki di Kairo."
+        },
+        {
+          "title": "Muqaddimah dan Ilmu Umran",
+          "body": "Dalam Muqaddimah (pengantar kitab sejarah Kitab al-Ibar), ia memperkenalkan ilmu sosial (Ilm al-Umran), konsep solidaritas sosial (ashabiyah), kritik sumber sejarah agar terhindar dari bias, serta analisis siklus ekonomi dan pajak."
+        },
+        {
+          "title": "Relevansi bagi Dunia Modern",
+          "body": "Gagasannya tentang pembagian kerja, nilai produksi, pendidikan yang bertahap, dan kritik fakta menjadikan Muqaddimah tetap dikaji sejarawan, sosiolog, dan ekonom hingga masa kini."
+        }
+      ],
+      "key_lessons": [
+        "Membaca berita dan sejarah memerlukan verifikasi fakta dan kesadaran akan bias.",
+        "Solidaritas sosial dan keadilan pajak menopang keberlangsungan masyarakat.",
+        "Pengalaman lapangan memperkaya kedalaman pemikiran teoretis."
+      ],
+      "references": [
+        "Ibnu Khaldun, Al-Muqaddimah dan At-Ta'rif bi Ibni Khaldun",
+        "Franz Rosenthal (penerjemah), The Muqaddimah: An Introduction to History"
+      ]
+    },
+    {
+      "id": "sunan-kalijaga",
+      "name": "Sunan Kalijaga",
+      "arabic_name": "سُونَان كَالِيجَاكَا",
+      "epithet": "Wali Songo, Pendakwah Islam melalui Budaya Nusantara",
+      "category": "nusantara",
+      "era_label": "Sekitar abad ke-15 hingga ke-16 M",
+      "date_note": "Penanggalan pasti lahir dan wafat Sunan Kalijaga memiliki beberapa variasi dalam historiografi Jawa.",
+      "summary": "Salah satu tokoh Wali Songo yang menyebarkan Islam di Jawa dengan pendekatan damai, santun, dan memanfaatkan seni budaya lokal sebagai media dakwah.",
+      "biography_sections": [
+        {
+          "title": "Latar Belakang dan Perjalanan Dakwah",
+          "body": "Dikenal dalam tradisi Jawa bernama Raden Said, putra bangsawan Tuban. Setelah berguru kepada Sunan Bonang, ia mendedikasikan hidupnya berdakwah secara keliling di berbagai wilayah pesisir dan pedalaman Jawa."
+        },
+        {
+          "title": "Dakwah Kultural yang Damai",
+          "body": "Sunan Kalijaga memadukan ajaran tauhid dan akhlak Islam dengan media yang akrab di tengah masyarakat seperti tembang, wayang, dan tradisi perayaan keagamaan, serta terlibat dalam pendirian Masjid Agung Demak."
+        },
+        {
+          "title": "Warisan Kebangsaan dan Keislaman",
+          "body": "Pendekatannya menunjukkan bahwa dakwah Islam di Nusantara tumbuh secara persuasif tanpa kekerasan, menghargai kearifan lokal selama selaras dengan nilai tauhid."
+        }
+      ],
+      "key_lessons": [
+        "Dakwah yang menyentuh hati dimulai dengan memahami bahasa dan budaya masyarakat.",
+        "Perubahan sosial yang langgeng dibangun melalui keteladanan dan pendekatan damai.",
+        "Kearifan lokal dapat menjadi jembatan kebaikan ketika diarahkan kepada nilai Islam."
+      ],
+      "references": [
+        "Agus Sunyoto, Atlas Walisongo",
+        "M.C. Ricklefs, Sejarah Indonesia Modern",
+        "Babad Demak dan tradisi historiografi Jawa"
+      ]
+    },
+    {
+      "id": "kh-ahmad-dahlan",
+      "name": "KH. Ahmad Dahlan",
+      "arabic_name": "الحَاج أَحْمَد دَحْلَان",
+      "epithet": "Pendiri Muhammadiyah, Pelopor Pendidikan dan Amal Sosial Modern",
+      "category": "nusantara",
+      "era_label": "1868 - 1923 M",
+      "summary": "Ulama pembaru asal Yogyakarta yang menggerakkan pendidikan Islam modern, layanan kesehatan, serta kepedulian nyata terhadap kaum dhuafa melalui Muhammadiyah.",
+      "biography_sections": [
+        {
+          "title": "Latar Belakang dan Pembinaan Ilmu",
+          "body": "Lahir di Kauman, Yogyakarta, dengan nama Muhammad Darwis. Ia menimba ilmu agama di Nusantara dan Makkah, termasuk mempelajari ilmu falak yang kelak digunakannya meluruskan arah kiblat beberapa masjid di Yogyakarta."
+        },
+        {
+          "title": "Pendirian Muhammadiyah dan Gerakan Al-Ma'un",
+          "body": "Pada 18 November 1912 ia mendirikan Muhammadiyah. Ia meneladankan tafsir amal dari Surah Al-Ma'un: ayat tentang menyantuni anak yatim dan fakir miskin diwujudkan langsung melalui sekolah, rumah sakit, dan panti asuhan."
+        },
+        {
+          "title": "Warisan bagi Indonesia",
+          "body": "Ia memadukan pengajaran agama dengan ilmu pengetahuan umum, mendorong pemberdayaan perempuan melalui Aisyiyah, dan ditetapkan sebagai Pahlawan Nasional Indonesia."
+        }
+      ],
+      "key_lessons": [
+        "Pemahaman Al-Qur'an harus terwujud dalam aksi nyata membantu sesama.",
+        "Pendidikan dan kesehatan adalah fondasi kebangkitan umat.",
+        "Keberanian memperbaiki tradisi yang keliru tetap dijalani dengan ketenangan."
+      ],
+      "references": [
+        "Al-Qur'an Surah Al-Ma'un (107): 1-7",
+        "Abdul Munir Mulkhan, Pesan-Pesan Dua Pemimpin Besar Islam Indonesia",
+        "Keputusan Presiden RI No. 657 Tahun 1961 tentang Pahlawan Nasional"
+      ]
+    },
+    {
+      "id": "kh-hasyim-asyari",
+      "name": "KH. Hasyim Asy'ari",
+      "arabic_name": "الحَاج هَاشِم أَشْعَرِي",
+      "epithet": "Hadratussyaikh, Pendiri Nahdlatul Ulama dan Pesantren Tebuireng",
+      "category": "nusantara",
+      "era_label": "1871 - 1947 M",
+      "summary": "Ulama besar pesantren yang menjaga sanad keilmuan Ahlussunnah wal Jamaah, menulis Adabul Alim wal Muta'allim, dan menyerukan Resolusi Jihad mempertahankan kemerdekaan Indonesia.",
+      "biography_sections": [
+        {
+          "title": "Sanad Keilmuan dan Pesantren Tebuireng",
+          "body": "Lahir di Jombang, Jawa Timur. Ia belajar di berbagai pesantren Nusantara lalu bermukim bertahun-tahun di Makkah berguru kepada ulama besar termasuk Syekh Mahfudz at-Tarmasi dan Syekh Ahmad Khatib al-Minangkabawi. Sekembalinya ke tanah air ia mendirikan Pesantren Tebuireng pada 1899."
+        },
+        {
+          "title": "Pendirian Nahdlatul Ulama dan Karya Adab Ilmu",
+          "body": "Pada 31 Januari 1926 bersama para kiai pesantren ia mendirikan Nahdlatul Ulama. Ia juga menulis banyak kitab, di antaranya Adabul Alim wal Muta'allim tentang etika guru dan murid dalam menuntut ilmu."
+        },
+        {
+          "title": "Resolusi Jihad dan Kemerdekaan",
+          "body": "Pada 22 Oktober 1945 ia memelopori Resolusi Jihad yang membangkitkan semangat santri dan rakyat mempertahankan kemerdekaan Republik Indonesia, yang kini diperingati setiap tahun sebagai Hari Santri Nasional."
+        }
+      ],
+      "key_lessons": [
+        "Adab kepada guru dan ilmu mendahului penguasaan materi pelajaran.",
+        "Cinta tanah air dan menjaga kemerdekaan sejalan dengan nilai keislaman.",
+        "Pesantren berperan penting membina akhlak, keilmuan, dan kemandirian umat."
+      ],
+      "references": [
+        "KH. Hasyim Asy'ari, Adabul Alim wal Muta'allim",
+        "Zuhairi Misrawi, Hadratussyaikh Hasyim Asy'ari: Moderasi, Keumatan, dan Kebangsaan",
+        "Keputusan Presiden RI No. 294 Tahun 1964 tentang Pahlawan Nasional"
+      ]
+    }
+  ]
+}

@@ -178,7 +178,12 @@ class _HeadingCard extends StatelessWidget {
     final reading = controller.reading;
     return Card(
       color: AppColors.navy,
+      elevation: 0,
       clipBehavior: Clip.antiAlias,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(18),
+        side: BorderSide(color: AppColors.gold.withValues(alpha: 0.35)),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(18),
         child: Column(
@@ -189,12 +194,13 @@ class _HeadingCard extends StatelessWidget {
                 const Icon(
                   Icons.place_outlined,
                   color: AppColors.gold,
-                  size: 20,
+                  size: 18,
                 ),
-                const SizedBox(width: 6),
+                const SizedBox(width: 8),
                 Expanded(
                   child: InkWell(
                     onTap: onChangeLocation,
+                    borderRadius: BorderRadius.circular(6),
                     child: Text(
                       location?.name ?? 'Lokasi belum dipilih',
                       overflow: TextOverflow.ellipsis,
@@ -205,26 +211,34 @@ class _HeadingCard extends StatelessWidget {
                     ),
                   ),
                 ),
-                if (location != null)
+                if (location != null) ...[
+                  const SizedBox(width: 8),
                   Text(
                     '${location.latitude.toStringAsFixed(3)}, '
                     '${location.longitude.toStringAsFixed(3)}',
-                    style: const TextStyle(
-                      color: AppColors.parchment,
-                      fontSize: 12.5,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: AppColors.parchment.withValues(alpha: 0.8),
+                      fontFeatures: const [FontFeature.tabularFigures()],
                     ),
                   ),
+                ],
               ],
             ),
-            const SizedBox(height: 10),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Chip(
-                visualDensity: VisualDensity.compact,
-                label: Text(controller.headingModeLabel),
-                backgroundColor: AppColors.gold.withValues(alpha: 0.18),
-                labelStyle: const TextStyle(
-                  color: AppColors.parchment,
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              decoration: BoxDecoration(
+                color: AppColors.gold.withValues(alpha: 0.16),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: AppColors.gold.withValues(alpha: 0.38),
+                ),
+              ),
+              child: Text(
+                controller.headingModeLabel,
+                style: const TextStyle(
+                  color: AppColors.gold,
+                  fontSize: 12,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -232,16 +246,16 @@ class _HeadingCard extends StatelessWidget {
             const SizedBox(height: 14),
             Text(
               'Arah kiblat dari utara sejati',
-              style: theme.textTheme.titleSmall?.copyWith(
-                color: AppColors.parchment,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: AppColors.parchment.withValues(alpha: 0.82),
               ),
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 4),
             Text(
-              reading?.bearingLabel ?? '—',
+              reading?.bearingLabel ?? '--',
               style: theme.textTheme.displayMedium?.copyWith(
                 color: AppColors.gold,
-                fontWeight: FontWeight.w800,
+                fontWeight: FontWeight.w700,
                 fontFeatures: const [FontFeature.tabularFigures()],
               ),
             ),
@@ -249,17 +263,20 @@ class _HeadingCard extends StatelessWidget {
             Text(
               reading == null
                   ? 'Belum ada arah'
-                  : '${reading.compassPoint} • '
+                  : '${reading.compassPoint} · '
                         '${reading.distanceLabel} ke Ka\'bah',
-              style: const TextStyle(color: AppColors.parchment),
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: AppColors.parchment,
+                fontFeatures: const [FontFeature.tabularFigures()],
+              ),
             ),
             if (controller.deviceHeadingLabel != null) ...[
-              const SizedBox(height: 10),
+              const SizedBox(height: 6),
               Text(
                 'Heading perangkat ${controller.deviceHeadingLabel}',
-                style: const TextStyle(
-                  color: AppColors.parchment,
-                  fontSize: 13,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: AppColors.parchment.withValues(alpha: 0.8),
+                  fontFeatures: const [FontFeature.tabularFigures()],
                 ),
               ),
             ],
@@ -283,10 +300,23 @@ class _DialCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
     final aligned = controller.hasReading && controller.turnDelta.abs() < 0.75;
     return Card(
+      elevation: 0,
+      color: colors.surfaceContainerHighest,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(18),
+        side: BorderSide(
+          color: aligned
+              ? AppColors.gold
+              : colors.outlineVariant.withValues(alpha: 0.45),
+          width: aligned ? 1.5 : 1.0,
+        ),
+      ),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -297,12 +327,17 @@ class _DialCard extends StatelessWidget {
                     controller.isLiveCompass
                         ? 'Kompas perangkat'
                         : 'Dial manual',
-                    style: Theme.of(context).textTheme.titleMedium,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
                 Text(
                   'Utara dial ${controller.dialDegrees.toStringAsFixed(0)}°',
-                  style: Theme.of(context).textTheme.bodySmall,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: colors.onSurface.withValues(alpha: 0.72),
+                    fontFeatures: const [FontFeature.tabularFigures()],
+                  ),
                 ),
               ],
             ),
@@ -316,9 +351,11 @@ class _DialCard extends StatelessWidget {
                   : 'Geser lingkaran sampai penanda Ka\'bah berada di ujung '
                         'atas, atau gunakan penggeser di bawah. Dial ini '
                         'bukan heading fisik perangkat.',
-              style: Theme.of(context).textTheme.bodySmall,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: colors.onSurface.withValues(alpha: 0.76),
+              ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 16),
             AspectRatio(
               aspectRatio: 1,
               child: LayoutBuilder(
@@ -341,6 +378,8 @@ class _DialCard extends StatelessWidget {
                         markerDegrees: controller.markerDegrees,
                         showMarker: controller.hasReading,
                         aligned: aligned,
+                        ringColor: colors.onSurface,
+                        pointerColor: colors.primary,
                       ),
                     ),
                   );
@@ -356,24 +395,40 @@ class _DialCard extends StatelessWidget {
                 label: '${controller.dialDegrees.toStringAsFixed(0)}°',
                 onChanged: controller.setDial,
               ),
+            const SizedBox(height: 8),
             Row(
               children: [
                 Expanded(
-                  child: Text(
-                    controller.hasReading
-                        ? controller.turnHintLabel
-                        : 'Belum ada arah untuk dituju',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.navy,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color: aligned
+                          ? AppColors.gold.withValues(alpha: 0.16)
+                          : colors.primary.withValues(alpha: 0.08),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      controller.hasReading
+                          ? controller.turnHintLabel
+                          : 'Belum ada arah untuk dituju',
+                      style: theme.textTheme.labelLarge?.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: aligned ? AppColors.gold : colors.onSurface,
+                        fontFeatures: const [FontFeature.tabularFigures()],
+                      ),
                     ),
                   ),
                 ),
-                if (!controller.isLiveCompass)
+                if (!controller.isLiveCompass) ...[
+                  const SizedBox(width: 8),
                   TextButton(
                     onPressed: controller.resetDial,
                     child: const Text('Ke utara'),
                   ),
+                ],
               ],
             ),
           ],
@@ -420,12 +475,16 @@ class _DialPainter extends CustomPainter {
     required this.markerDegrees,
     required this.showMarker,
     required this.aligned,
+    required this.ringColor,
+    required this.pointerColor,
   });
 
   final double dialDegrees;
   final double markerDegrees;
   final bool showMarker;
   final bool aligned;
+  final Color ringColor;
+  final Color pointerColor;
 
   static const List<(String, double)> _cardinals = [
     ('U', 0),
@@ -436,13 +495,21 @@ class _DialPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final center = Offset(size.width / 2, size.height / 2);
-    final radius = size.width / 2 - 16;
+    const topInset = 42.0;
+    const edgeInset = 18.0;
+    final radius = math.max(
+      24.0,
+      math.min(
+        size.width / 2 - edgeInset,
+        (size.height - topInset - edgeInset) / 2,
+      ),
+    );
+    final center = Offset(size.width / 2, topInset + radius);
 
     final ring = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2
-      ..color = aligned ? AppColors.gold : AppColors.navy;
+      ..color = aligned ? AppColors.gold : ringColor.withValues(alpha: 0.85);
     canvas.drawCircle(center, radius, ring);
     canvas.drawCircle(
       center,
@@ -450,7 +517,7 @@ class _DialPainter extends CustomPainter {
       Paint()
         ..style = PaintingStyle.stroke
         ..strokeWidth = 1
-        ..color = AppColors.navy.withValues(alpha: 0.18),
+        ..color = ringColor.withValues(alpha: 0.16),
     );
 
     for (var degrees = 0; degrees < 360; degrees += 15) {
@@ -460,21 +527,28 @@ class _DialPainter extends CustomPainter {
       final inner =
           center +
           Offset(math.sin(angle), -math.cos(angle)) *
-              (radius - (major ? 14 : 7));
+              (radius - (major ? 12 : 6));
       canvas.drawLine(
         inner,
         outer,
         Paint()
           ..strokeWidth = major ? 2 : 1
-          ..color = AppColors.navy.withValues(alpha: major ? 0.7 : 0.35),
+          ..color = ringColor.withValues(alpha: major ? 0.65 : 0.3),
       );
     }
 
     for (final (label, degrees) in _cardinals) {
       final angle = _radians(degrees - dialDegrees);
       final at =
-          center + Offset(math.sin(angle), -math.cos(angle)) * (radius * 0.55);
-      _text(canvas, label, at, AppColors.navy, 16, FontWeight.w800);
+          center + Offset(math.sin(angle), -math.cos(angle)) * (radius * 0.54);
+      _text(
+        canvas,
+        label,
+        at,
+        label == 'U' ? pointerColor : ringColor.withValues(alpha: 0.85),
+        15,
+        FontWeight.w800,
+      );
     }
 
     if (showMarker) {
@@ -488,10 +562,11 @@ class _DialPainter extends CustomPainter {
           ..color = AppColors.gold
           ..strokeCap = StrokeCap.round,
       );
+      canvas.drawCircle(center, 4.5, Paint()..color = AppColors.gold);
       final marker = center + direction * radius;
       canvas.drawCircle(
         marker,
-        11,
+        12,
         Paint()..color = aligned ? AppColors.gold : AppColors.navy,
       );
       _text(
@@ -504,19 +579,23 @@ class _DialPainter extends CustomPainter {
       );
     }
 
-    // Penanda tetap: tepi atas ponsel.
+    // Penanda tetap: tepi atas ponsel, tetap di dalam area canvas.
+    final pointerTipY = center.dy - radius - 10;
     final pointer = Path()
-      ..moveTo(center.dx, center.dy - radius - 13)
-      ..lineTo(center.dx - 7, center.dy - radius - 25)
-      ..lineTo(center.dx + 7, center.dy - radius - 25)
+      ..moveTo(center.dx, pointerTipY)
+      ..lineTo(center.dx - 6, pointerTipY - 11)
+      ..lineTo(center.dx + 6, pointerTipY - 11)
       ..close();
-    canvas.drawPath(pointer, Paint()..color = AppColors.blue);
+    canvas.drawPath(
+      pointer,
+      Paint()..color = aligned ? AppColors.gold : pointerColor,
+    );
     _text(
       canvas,
       'PONSEL',
-      Offset(center.dx, center.dy - radius - 34),
-      AppColors.blue,
-      9,
+      Offset(center.dx, pointerTipY - 21),
+      aligned ? AppColors.gold : pointerColor,
+      10,
       FontWeight.w700,
     );
   }
@@ -547,7 +626,9 @@ class _DialPainter extends CustomPainter {
       old.dialDegrees != dialDegrees ||
       old.markerDegrees != markerDegrees ||
       old.showMarker != showMarker ||
-      old.aligned != aligned;
+      old.aligned != aligned ||
+      old.ringColor != ringColor ||
+      old.pointerColor != pointerColor;
 }
 
 class _NeedsLocationPanel extends StatelessWidget {
@@ -563,7 +644,11 @@ class _NeedsLocationPanel extends StatelessWidget {
   Widget build(BuildContext context) => ListView(
     padding: const EdgeInsets.all(20),
     children: [
-      const Icon(Icons.explore_outlined, size: 46, color: AppColors.navy),
+      Icon(
+        Icons.explore_outlined,
+        size: 46,
+        color: Theme.of(context).colorScheme.primary,
+      ),
       const SizedBox(height: 12),
       Text(
         'Tentukan lokasi untuk menghitung kiblat',

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../app/app_theme.dart';
 import '../domain/assessment_attempt.dart';
+import 'highlighted_ayah_text.dart';
 import 'recitation_assessment_controller.dart';
 
 const TextStyle _arabicStyle = TextStyle(
@@ -15,10 +16,12 @@ class AssessmentPanel extends StatelessWidget {
     super.key,
     required this.controller,
     required this.targetText,
+    this.showHighlightedAyah = true,
   });
 
   final RecitationAssessmentController controller;
   final String targetText;
+  final bool showHighlightedAyah;
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +30,7 @@ class AssessmentPanel extends StatelessWidget {
       listenable: controller,
       builder: (context, _) => Card(
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+          padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -47,6 +50,7 @@ class AssessmentPanel extends StatelessWidget {
               const SizedBox(height: 8),
               Wrap(
                 spacing: 8,
+                runSpacing: 8,
                 children: [
                   for (final mode in AssessmentMode.values)
                     ChoiceChip(
@@ -57,19 +61,22 @@ class AssessmentPanel extends StatelessWidget {
                     ),
                 ],
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: 8),
               Text(
                 controller.mode == AssessmentMode.latihan
                     ? 'Teks ayat tetap terlihat selama rekaman.'
-                    : 'Teks ayat disembunyikan sampai hasil penilaian muncul.',
+                    : 'Teks ayat disembunyikan sampai rekaman selesai.',
                 style: theme.textTheme.bodySmall,
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 12),
               ..._body(context),
               const SizedBox(height: 8),
               Text(
-                'Penilaian hanya membandingkan kata dengan teks ayat. '
-                'Tajwid, makhraj, dan sifat huruf tidak dinilai.',
+                controller.isLocalRecordingOnly
+                    ? 'Rekaman disimpan sementara selama halaman terbuka untuk '
+                          'diputar ulang dan memeriksa hafalan secara mandiri.'
+                    : 'Penilaian hanya membandingkan kata dengan teks ayat. '
+                          'Tajwid, makhraj, dan sifat huruf tidak dinilai.',
                 style: theme.textTheme.bodySmall,
               ),
             ],
@@ -84,12 +91,69 @@ class AssessmentPanel extends StatelessWidget {
     final attempt = controller.attempt;
     if (controller.phase == AssessmentPhase.scored && attempt != null) {
       return [
-        _Result(attempt: attempt),
-        const SizedBox(height: 6),
-        TextButton.icon(
-          onPressed: controller.canRecord ? controller.startRecording : null,
-          icon: const Icon(Icons.refresh_rounded, size: 18),
-          label: const Text('Rekam ulang'),
+        _Result(attempt: attempt, showHighlightedAyah: showHighlightedAyah),
+        if (controller.message != null) ...[
+          const SizedBox(height: 8),
+          Text(
+            controller.message!,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.error,
+            ),
+          ),
+        ],
+        const SizedBox(height: 8),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            if (controller.hasRecording) _playbackButton(),
+            TextButton.icon(
+              onPressed: controller.canRecord
+                  ? controller.startRecording
+                  : null,
+              icon: const Icon(Icons.refresh_rounded, size: 18),
+              label: const Text('Rekam ulang'),
+            ),
+          ],
+        ),
+      ];
+    }
+    if (controller.phase == AssessmentPhase.recorded) {
+      final seconds = (controller.recordedSeconds ?? 0).toStringAsFixed(1);
+      return [
+        Text(
+          'Rekaman siap didengar · $seconds dtk',
+          style: theme.textTheme.titleSmall,
+        ),
+        const SizedBox(height: 4),
+        Text(
+          'Model penilaian otomatis belum terpasang di perangkat ini. '
+          'Putar rekaman untuk memeriksa hafalan Anda secara mandiri.',
+          style: theme.textTheme.bodySmall,
+        ),
+        if (controller.message != null) ...[
+          const SizedBox(height: 8),
+          Text(
+            controller.message!,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.error,
+            ),
+          ),
+        ],
+        const SizedBox(height: 12),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            _playbackButton(),
+            TextButton.icon(
+              onPressed: controller.canRecord
+                  ? controller.startRecording
+                  : null,
+              icon: const Icon(Icons.refresh_rounded, size: 18),
+              label: const Text('Rekam ulang'),
+            ),
+          ],
         ),
       ];
     }
@@ -121,8 +185,8 @@ class AssessmentPanel extends StatelessWidget {
               child: Text(
                 controller.progressMessage ??
                     (controller.phase == AssessmentPhase.preparing
-                        ? 'Menyiapkan mesin penilaian…'
-                        : 'Menganalisis bacaan…'),
+                        ? 'Menyiapkan mikrofon…'
+                        : 'Memproses rekaman…'),
               ),
             ),
           ],
@@ -159,10 +223,12 @@ class AssessmentPanel extends StatelessWidget {
         const SizedBox(height: 10),
         _recordButton(context),
       ],
-      AssessmentPhase.scored || AssessmentPhase.idle => [
+      AssessmentPhase.recorded ||
+      AssessmentPhase.scored ||
+      AssessmentPhase.idle => [
         Text(
-          'Rekam bacaan ayat ini, lalu mesin akan menyamakannya dengan teks '
-          'ayat kata per kata.',
+          'Rekam bacaan ayat ini untuk mendengarkan ulang atau menilai '
+          'kesesuaian kata dengan teks ayat.',
           style: theme.textTheme.bodySmall,
         ),
         const SizedBox(height: 10),
@@ -170,6 +236,15 @@ class AssessmentPanel extends StatelessWidget {
       ],
     };
   }
+
+  Widget _playbackButton() => FilledButton.tonalIcon(
+    onPressed: controller.togglePlayback,
+    icon: Icon(
+      controller.isPlaying ? Icons.stop_rounded : Icons.play_arrow_rounded,
+      size: 18,
+    ),
+    label: Text(controller.isPlaying ? 'Hentikan' : 'Putar rekaman'),
+  );
 
   Widget _recordButton(BuildContext context) => FilledButton.icon(
     onPressed: controller.isRecording
@@ -181,7 +256,13 @@ class AssessmentPanel extends StatelessWidget {
       controller.isRecording ? Icons.stop_rounded : Icons.mic_rounded,
       size: 18,
     ),
-    label: Text(controller.isRecording ? 'Berhenti & nilai' : 'Rekam bacaan'),
+    label: Text(
+      controller.isRecording
+          ? (controller.isLocalRecordingOnly
+                ? 'Berhenti & simpan'
+                : 'Berhenti & nilai')
+          : 'Rekam bacaan',
+    ),
   );
 }
 
@@ -198,27 +279,38 @@ class _PhaseBadge extends StatelessWidget {
       AssessmentPhase.preparing => 'menyiapkan',
       AssessmentPhase.recording => 'merekam',
       AssessmentPhase.processing => 'memproses',
+      AssessmentPhase.recorded => 'terekam',
       AssessmentPhase.scored => 'selesai',
       AssessmentPhase.failed => 'gagal',
     },
-    style: Theme.of(
-      context,
-    ).textTheme.bodySmall?.copyWith(color: AppColors.gold),
+    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+      color: Theme.of(context).colorScheme.primary,
+      fontWeight: FontWeight.w600,
+    ),
   );
 }
 
 class _Result extends StatelessWidget {
-  const _Result({required this.attempt});
+  const _Result({
+    required this.attempt,
+    required this.showHighlightedAyah,
+  });
 
   final AssessmentAttempt attempt;
+  final bool showHighlightedAyah;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final comparison = attempt.comparison;
+    final alignment = attempt.alignment;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        if (alignment != null) ...[
+          RecitationVerdictBanner(alignment: alignment),
+          const SizedBox(height: 10),
+        ],
         Row(
           children: [
             Expanded(
@@ -240,6 +332,19 @@ class _Result extends StatelessWidget {
         if (attempt.note != null) ...[
           const SizedBox(height: 6),
           Text(attempt.note!, style: theme.textTheme.bodySmall),
+        ],
+        if (showHighlightedAyah && comparison.assessable && alignment != null) ...[
+          const SizedBox(height: 10),
+          Text(
+            'Sorotan koreksi per kata',
+            style: theme.textTheme.bodySmall,
+          ),
+          const SizedBox(height: 6),
+          HighlightedAyahText(
+            alignment: alignment,
+            fontSize: 22,
+            showCorrectionDetails: false,
+          ),
         ],
         if (comparison.assessable) ...[
           const SizedBox(height: 8),

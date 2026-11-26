@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../core/preferences/app_preferences.dart';
@@ -42,10 +44,12 @@ class _TilawahkuAppState extends State<TilawahkuApp> {
     }
   }
 
-  Future<void> _setDarkMode(bool enabled) async {
-    await _preferences.setDarkMode(enabled);
-    if (!mounted) return;
-    setState(() => _themeMode = enabled ? ThemeMode.dark : ThemeMode.light);
+  void _setDarkMode(bool enabled) {
+    final nextMode = enabled ? ThemeMode.dark : ThemeMode.light;
+    if (_themeMode != nextMode && mounted) {
+      setState(() => _themeMode = nextMode);
+    }
+    unawaited(_preferences.setDarkMode(enabled));
   }
 
   @override
@@ -56,6 +60,8 @@ class _TilawahkuAppState extends State<TilawahkuApp> {
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
       themeMode: _themeMode,
+      themeAnimationDuration: const Duration(milliseconds: 350),
+      themeAnimationCurve: Curves.easeInOutCubic,
       home: !_themeLoaded
           ? const _StartupLoadingScreen()
           : _themeError != null
@@ -164,7 +170,7 @@ class _StartupScreenState extends State<_StartupScreen> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    backgroundColor: AppColors.navy,
+    backgroundColor: const Color(0xFF0B2A5B),
     body: Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
@@ -173,8 +179,8 @@ class _StartupScreenState extends State<_StartupScreen> {
           children: [
             Image.asset(
               'assets/branding/tilawahku_icon.png',
-              width: 112,
-              height: 112,
+              width: 128,
+              height: 128,
               fit: BoxFit.contain,
             ),
             const SizedBox(height: 16),
@@ -183,15 +189,17 @@ class _StartupScreenState extends State<_StartupScreen> {
               style: TextStyle(
                 color: AppColors.parchment,
                 fontSize: 26,
-                fontWeight: FontWeight.w800,
-                letterSpacing: 3,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 2.5,
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               'Baca, dengar, dan ulangi dengan tenang',
               textAlign: TextAlign.center,
-              style: TextStyle(color: AppColors.parchment),
+              style: TextStyle(
+                color: AppColors.parchment.withValues(alpha: 0.82),
+              ),
             ),
             if (_error != null) ...[
               const SizedBox(height: 24),

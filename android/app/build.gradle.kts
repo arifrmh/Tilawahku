@@ -11,12 +11,9 @@ android {
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
+        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
-    }
-
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_17.toString()
     }
 
     defaultConfig {
@@ -29,21 +26,32 @@ android {
         versionCode = flutter.versionCode
         versionName = flutter.versionName
         multiDexEnabled = true
-        // sherpa_onnx mengirim paket ffiPlugin per ABI (total 109,1 MB .so), jadi
-        // tanpa filter semua library ASR masuk APK. x86/x86_64 sengaja tidak
-        // dibawa; tambahkan "x86_64" di sini hanya bila pengujian memakai
-        // emulator x86_64.
-        ndk {
-            abiFilters += listOf("arm64-v8a", "armeabi-v7a")
-        }
     }
 
     buildTypes {
+        debug {
+            // x86_64 disertakan di debug agar dapat berjalan pada emulator x86_64.
+            ndk {
+                abiFilters += listOf("arm64-v8a", "armeabi-v7a", "x86_64")
+            }
+        }
         release {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.getByName("debug")
+            // sherpa_onnx mengirim paket ffiPlugin per ABI (total 109,1 MB .so), jadi
+            // tanpa filter semua library ASR masuk APK. x86/x86_64 tidak dibawa pada
+            // build release.
+            ndk {
+                abiFilters += listOf("arm64-v8a", "armeabi-v7a")
+            }
         }
+    }
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
     }
 }
 

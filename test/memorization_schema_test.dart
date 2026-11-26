@@ -3,7 +3,7 @@ import 'package:tilawahku/core/database/database_schema.dart';
 
 void main() {
   test('memorization schema is a forward-only additive migration', () {
-    expect(DatabaseSchema.version, 9);
+    expect(DatabaseSchema.version, 10);
     expect(
       DatabaseSchema.memorizationCreateStatements,
       contains(DatabaseSchema.createMemorizationProgram),

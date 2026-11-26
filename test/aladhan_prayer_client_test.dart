@@ -259,6 +259,65 @@ void main() {
       expect(AladhanPrayerClient.parseInstant('bukan waktu'), isNull);
     });
   });
+
+  group('parseCalendar respons nyata AlAdhan (string day dan year)', () {
+    test(
+      'mem-parsing gregorian day/year bertipe String, nama bulan Indonesia, dan event',
+      () {
+        final payload = {
+          'code': 200,
+          'status': 'OK',
+          'data': [
+            {
+              'date': {
+                'gregorian': {
+                  'day': '20',
+                  'month': {'number': 11, 'en': 'November'},
+                  'year': '2026',
+                },
+                'hijri': {
+                  'day': '10',
+                  'month': {
+                    'number': 6,
+                    'en': 'Jumādá al-ākhirah',
+                    'ar': 'جُمادى الآخرة',
+                  },
+                  'year': '1448',
+                  'weekday': {'en': "Al Juma'a", 'ar': 'الجمعة'},
+                },
+              },
+            },
+            {
+              'date': {
+                'gregorian': {
+                  'day': '18',
+                  'month': {'number': 2, 'en': 'February'},
+                  'year': '2026',
+                },
+                'hijri': {
+                  'day': '01',
+                  'month': {
+                    'number': 9,
+                    'en': 'Ramaḍān',
+                    'ar': 'رَمَضان',
+                  },
+                  'year': '1447',
+                  'weekday': {'en': "Al Arba'a", 'ar': 'الأربعاء'},
+                },
+              },
+            },
+          ],
+        };
+
+        final month = AladhanPrayerClient.parseCalendar(payload, 2026, 11);
+        expect(month.days, hasLength(2));
+        expect(month.days[0].gregorianDate, '2026-11-20');
+        expect(month.days[0].hijriMonthNameId, 'Jumadil Akhir');
+        expect(month.days[1].hijriMonthNameId, 'Ramadan');
+        expect(month.days[1].events.map((e) => e.nameId), ['Awal Ramadan']);
+      },
+    );
+  });
 }
 
 Map<String, dynamic> _fixture(String name) {

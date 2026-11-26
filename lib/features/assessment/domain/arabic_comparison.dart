@@ -7,6 +7,75 @@ class WordChange {
   final String recognized;
 }
 
+enum AyahWordVerdict {
+  correct('Benar'),
+  substituted('Salah'),
+  missing('Terlewat');
+
+  const AyahWordVerdict(this.label);
+
+  final String label;
+}
+
+class AlignedAyahWord {
+  const AlignedAyahWord({
+    required this.displayWord,
+    required this.normalizedWord,
+    required this.verdict,
+    this.recognizedWord,
+  });
+
+  final String displayWord;
+  final String normalizedWord;
+  final AyahWordVerdict verdict;
+  final String? recognizedWord;
+}
+
+enum RecitationVerdict {
+  unscorable(
+    'Bacaan belum dapat dinilai',
+    'Suara terlalu singkat atau belum cukup kata yang dikenali. Coba baca satu ayat penuh dengan jelas.',
+  ),
+  accurate(
+    'Bacaan sudah sesuai',
+    'Seluruh kata pada ayat ini terbaca sesuai dengan teks mushaf.',
+  ),
+  needsReview(
+    'Hampir tepat, periksa sorotan',
+    'Sebagian besar kata sudah benar. Perhatikan kata bertanda merah atau kuning untuk diperbaiki.',
+  ),
+  needsCorrection(
+    'Perlu perbaikan bacaan',
+    'Masih ada beberapa kata yang tertukar atau terlewat. Dengarkan bacaan qari lalu coba rekam ulang.',
+  );
+
+  const RecitationVerdict(this.title, this.guidance);
+
+  final String title;
+  final String guidance;
+}
+
+class AyahWordAlignment {
+  const AyahWordAlignment({
+    required this.assessable,
+    required this.words,
+    required this.extraWords,
+    required this.comparison,
+  });
+
+  final bool assessable;
+  final List<AlignedAyahWord> words;
+  final List<String> extraWords;
+  final WordComparison comparison;
+
+  RecitationVerdict get verdict {
+    if (!assessable) return RecitationVerdict.unscorable;
+    if (comparison.wordEdits == 0) return RecitationVerdict.accurate;
+    if (comparison.matchPercent >= 80) return RecitationVerdict.needsReview;
+    return RecitationVerdict.needsCorrection;
+  }
+}
+
 class WordComparison {
   const WordComparison({
     required this.assessable,
@@ -107,6 +176,161 @@ WordComparison compareArabicWords(
     extra: extra.reversed.toList(),
     referenceWordCount: expected.length,
     wordEdits: costs[expected.length][recognized.length],
+  );
+}
+
+AyahWordAlignment alignArabicAyahWords(
+  String uthmaniTarget,
+  String transcript, {
+  Map<String, String> spellingMap = const {},
+}) {
+  final comparison = compareArabicWords(
+    uthmaniTarget,
+    transcript,
+    spellingMap: spellingMap,
+  );
+  final displayTokens = uthmaniTarget
+      .trim()
+      .split(RegExp(r'\s+'))
+      .where((token) => token.isNotEmpty)
+      .toList(growable: false);
+
+  final expected = <String>[];
+  final tokenToExpectedRange = <({int start, int end, String normalized})>[];
+  for (final token in displayTokens) {
+    final normalized = normalizeArabic(token);
+    if (normalized.isEmpty) {
+      tokenToExpectedRange.add((
+        start: expected.length,
+        end: expected.length,
+        normalized: '',
+      ));
+      continue;
+    }
+    final expanded = (spellingMap[normalized] ?? normalized)
+        .split(RegExp(r'\s+'))
+        .where((word) => word.isNotEmpty)
+        .toList(growable: false);
+    final start = expected.length;
+    expected.addAll(expanded);
+    tokenToExpectedRange.add((
+      start: start,
+      end: expected.length,
+      normalized: normalized,
+    ));
+  }
+
+  final recognized = _words(transcript, spellingMap);
+  if (!comparison.assessable || expected.isEmpty) {
+    return AyahWordAlignment(
+      assessable: false,
+      words: [
+        for (var i = 0; i < displayTokens.length; i++)
+          AlignedAyahWord(
+            displayWord: displayTokens[i],
+            normalizedWord: tokenToExpectedRange[i].normalized,
+            verdict: AyahWordVerdict.missing,
+          ),
+      ],
+      extraWords: recognized,
+      comparison: comparison,
+    );
+  }
+
+  final costs = List.generate(
+    expected.length + 1,
+    (_) => List<int>.filled(recognized.length + 1, 0),
+  );
+  for (var i = 0; i <= expected.length; i++) {
+    costs[i][0] = i;
+  }
+  for (var j = 0; j <= recognized.length; j++) {
+    costs[0][j] = j;
+  }
+  for (var i = 1; i <= expected.length; i++) {
+    for (var j = 1; j <= recognized.length; j++) {
+      final substitution = expected[i - 1] == recognized[j - 1] ? 0 : 1;
+      costs[i][j] = math.min(
+        costs[i - 1][j - 1] + substitution,
+        math.min(costs[i - 1][j] + 1, costs[i][j - 1] + 1),
+      );
+    }
+  }
+
+  final expectedVerdicts = List<AyahWordVerdict>.filled(
+    expected.length,
+    AyahWordVerdict.missing,
+  );
+  final expectedRecognized = List<String?>.filled(expected.length, null);
+  final extraWords = <String>[];
+
+  var i = expected.length;
+  var j = recognized.length;
+  while (i > 0 || j > 0) {
+    if (i > 0 &&
+        j > 0 &&
+        costs[i][j] ==
+            costs[i - 1][j - 1] +
+                (expected[i - 1] == recognized[j - 1] ? 0 : 1)) {
+      if (expected[i - 1] == recognized[j - 1]) {
+        expectedVerdicts[i - 1] = AyahWordVerdict.correct;
+      } else {
+        expectedVerdicts[i - 1] = AyahWordVerdict.substituted;
+        expectedRecognized[i - 1] = recognized[j - 1];
+      }
+      i--;
+      j--;
+    } else if (i > 0 && costs[i][j] == costs[i - 1][j] + 1) {
+      expectedVerdicts[--i] = AyahWordVerdict.missing;
+    } else {
+      extraWords.add(recognized[--j]);
+    }
+  }
+
+  final alignedWords = <AlignedAyahWord>[];
+  for (var index = 0; index < displayTokens.length; index++) {
+    final range = tokenToExpectedRange[index];
+    if (range.start == range.end) {
+      // Simbol waqaf berdiri sendiri tanpa huruf Arab tidak ditandai salah.
+      alignedWords.add(
+        AlignedAyahWord(
+          displayWord: displayTokens[index],
+          normalizedWord: '',
+          verdict: AyahWordVerdict.correct,
+        ),
+      );
+      continue;
+    }
+
+    final subVerdicts = expectedVerdicts.sublist(range.start, range.end);
+    final subRecognized = expectedRecognized
+        .sublist(range.start, range.end)
+        .whereType<String>()
+        .toList(growable: false);
+    final AyahWordVerdict mergedVerdict;
+    if (subVerdicts.every((v) => v == AyahWordVerdict.correct)) {
+      mergedVerdict = AyahWordVerdict.correct;
+    } else if (subVerdicts.any((v) => v == AyahWordVerdict.substituted)) {
+      mergedVerdict = AyahWordVerdict.substituted;
+    } else {
+      mergedVerdict = AyahWordVerdict.missing;
+    }
+
+    alignedWords.add(
+      AlignedAyahWord(
+        displayWord: displayTokens[index],
+        normalizedWord: range.normalized,
+        verdict: mergedVerdict,
+        recognizedWord: subRecognized.isEmpty ? null : subRecognized.join(' '),
+      ),
+    );
+  }
+
+  return AyahWordAlignment(
+    assessable: true,
+    words: List.unmodifiable(alignedWords),
+    extraWords: List.unmodifiable(extraWords.reversed),
+    comparison: comparison,
   );
 }
 

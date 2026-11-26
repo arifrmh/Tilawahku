@@ -13,41 +13,40 @@ abstract final class AppColors {
 abstract final class AppTheme {
   static ThemeData get light => _buildTheme(
     brightness: Brightness.light,
-    background: AppColors.lightSurface,
     foreground: AppColors.navy,
   );
 
   static ThemeData get dark => _buildTheme(
     brightness: Brightness.dark,
-    background: AppColors.darkNavy,
     foreground: AppColors.parchment,
   );
 
   static ThemeData _buildTheme({
     required Brightness brightness,
-    required Color background,
     required Color foreground,
   }) {
     final isDark = brightness == Brightness.dark;
-    final colorScheme =
-        ColorScheme.fromSeed(
-          seedColor: AppColors.navy,
-          brightness: brightness,
-          primary: isDark ? AppColors.gold : AppColors.navy,
-          secondary: isDark ? AppColors.blue : AppColors.gold,
-          surface: background,
-        ).copyWith(
-          onPrimary: isDark ? AppColors.navy : AppColors.parchment,
-          onSecondary: isDark ? AppColors.parchment : AppColors.navy,
-          tertiary: isDark ? AppColors.parchment : AppColors.blue,
-          onTertiary: isDark ? AppColors.navy : AppColors.parchment,
-          surface: background,
-          onSurface: foreground,
-          surfaceContainerHighest: isDark
-              ? AppColors.blue
-              : AppColors.parchment,
-        );
-    final surface = isDark ? AppColors.blue : AppColors.parchment;
+    final seedScheme = ColorScheme.fromSeed(
+      seedColor: AppColors.navy,
+      brightness: brightness,
+      primary: isDark ? AppColors.gold : AppColors.navy,
+      secondary: isDark ? AppColors.blue : AppColors.gold,
+    );
+    // Samakan latar halaman dengan warna latar NavigationBar (surfaceContainer)
+    // agar tampilan layar dan bar navigasi bawah menyatu di mode terang & gelap.
+    final background = seedScheme.surfaceContainer;
+    final surface = isDark
+        ? seedScheme.surfaceContainerHigh
+        : seedScheme.surfaceContainerLowest;
+    final colorScheme = seedScheme.copyWith(
+      onPrimary: isDark ? AppColors.navy : AppColors.parchment,
+      onSecondary: isDark ? AppColors.parchment : AppColors.navy,
+      tertiary: isDark ? AppColors.parchment : AppColors.blue,
+      onTertiary: isDark ? AppColors.navy : AppColors.parchment,
+      surface: background,
+      onSurface: foreground,
+      surfaceContainerHighest: surface,
+    );
 
     return ThemeData(
       useMaterial3: true,
@@ -80,8 +79,14 @@ abstract final class AppTheme {
       ),
       appBarTheme: AppBarTheme(
         backgroundColor: background,
+        surfaceTintColor: Colors.transparent,
         foregroundColor: foreground,
         centerTitle: false,
+      ),
+      navigationBarTheme: NavigationBarThemeData(
+        backgroundColor: background,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
       ),
       tabBarTheme: TabBarThemeData(
         indicatorColor: AppColors.gold,
@@ -102,6 +107,10 @@ abstract final class AppTheme {
         iconColor: AppColors.gold,
         textColor: foreground,
       ),
+      dividerTheme: DividerThemeData(
+        color: colorScheme.outlineVariant.withValues(alpha: 0.4),
+      ),
+      iconTheme: IconThemeData(color: foreground),
       switchTheme: SwitchThemeData(
         thumbColor: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) return AppColors.navy;

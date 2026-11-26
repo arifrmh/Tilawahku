@@ -96,12 +96,18 @@ flutter:
   #   - images/a_dot_burr.jpeg
   assets:
     - assets/config/suara.json
+    - assets/voices/
     - assets/data/tilawahku_content.db
     - assets/data/quran_web_preview.json
     - assets/branding/tilawahku_icon.png
     - assets/assessment/spelling.json
     - assets/fonts/OFL.txt
     - assets/prayer/city_locations.json
+    - assets/islamic/asmaul_husna.json
+    - assets/islamic/quotes.json
+    - assets/islamic/stories.json
+    - assets/islamic/islamic_figures.json
+    - assets/islamic/doa_dzikir.json
   fonts:
     - family: AmiriQuran
       fonts:

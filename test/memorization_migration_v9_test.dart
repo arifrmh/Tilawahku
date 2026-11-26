@@ -145,54 +145,79 @@ void main() {
           'repeated_ayah_count': 3,
         });
       }
-
-      // Execute migration
-      await db.transaction((txn) async {
-        final oldRows = await txn.rawQuery('SELECT COUNT(*) as cnt FROM memorization_session');
-        final initialCount = Sqflite.firstIntValue(oldRows) ?? 0;
-
-        await txn.execute('''
-          CREATE TABLE memorization_session_v9 (
-            id TEXT PRIMARY KEY,
-            program_id TEXT NOT NULL,
-            mode TEXT NOT NULL CHECK (
-              mode IN ('learn', 'hide_reveal', 'recall', 'audio_repetition', 'ai_assessment')
-            ),
-            day_key TEXT NOT NULL,
-            started_at TEXT NOT NULL,
-            completed_at TEXT,
-            new_ayah_count INTEGER NOT NULL DEFAULT 0,
-            repeated_ayah_count INTEGER NOT NULL DEFAULT 0,
-            FOREIGN KEY (program_id) REFERENCES memorization_program (id)
-              ON DELETE CASCADE
-          )
-        ''');
-
-        await txn.execute('''
-          INSERT INTO memorization_session_v9 (
-            id, program_id, mode, day_key, started_at, completed_at,
-            new_ayah_count, repeated_ayah_count
-          )
-          SELECT
-            id, program_id, mode, day_key, started_at, completed_at,
-            new_ayah_count, repeated_ayah_count
-          FROM memorization_session
-        ''');
-
-        final newRows = await txn.rawQuery('SELECT COUNT(*) as cnt FROM memorization_session_v9');
-        final migratedCount = Sqflite.firstIntValue(newRows) ?? 0;
-
-        if (initialCount != migratedCount) {
-          throw StateError(
-            'Migration v8->v9 row count mismatch: '
-            '$initialCount rows before, $migratedCount rows after',
-          );
-        }
-
-        await txn.execute('DROP TABLE memorization_session');
-        await txn.execute('ALTER TABLE memorization_session_v9 RENAME TO memorization_session');
-        await txn.execute(DatabaseSchema.createMemorizationSessionsIndex);
+      // Seed child row referencing memorization_session so FK preservation is verified.
+      await db.insert('memorization_session_ayah', {
+        'session_id': 'sess-learn',
+        'nomor_global': 5673,
+        'attempts': 1,
+        'newly_learned': 1,
+        'first_practiced_at': '2026-11-21T00:00:00Z',
+        'last_practiced_at': '2026-11-21T00:01:00Z',
       });
+
+      // Execute migration with FK temporarily disabled outside the transaction
+      await db.execute('PRAGMA foreign_keys = OFF');
+      try {
+        await db.transaction((txn) async {
+          final oldRows = await txn.rawQuery(
+            'SELECT COUNT(*) as cnt FROM memorization_session',
+          );
+          final initialCount = Sqflite.firstIntValue(oldRows) ?? 0;
+
+          await txn.execute('''
+            CREATE TABLE memorization_session_v9 (
+              id TEXT PRIMARY KEY,
+              program_id TEXT NOT NULL,
+              mode TEXT NOT NULL CHECK (
+                mode IN ('learn', 'hide_reveal', 'recall', 'audio_repetition', 'ai_assessment')
+              ),
+              day_key TEXT NOT NULL,
+              started_at TEXT NOT NULL,
+              completed_at TEXT,
+              new_ayah_count INTEGER NOT NULL DEFAULT 0,
+              repeated_ayah_count INTEGER NOT NULL DEFAULT 0,
+              FOREIGN KEY (program_id) REFERENCES memorization_program (id)
+                ON DELETE CASCADE
+            )
+          ''');
+
+          await txn.execute('''
+            INSERT INTO memorization_session_v9 (
+              id, program_id, mode, day_key, started_at, completed_at,
+              new_ayah_count, repeated_ayah_count
+            )
+            SELECT
+              id, program_id, mode, day_key, started_at, completed_at,
+              new_ayah_count, repeated_ayah_count
+            FROM memorization_session
+          ''');
+
+          final newRows = await txn.rawQuery(
+            'SELECT COUNT(*) as cnt FROM memorization_session_v9',
+          );
+          final migratedCount = Sqflite.firstIntValue(newRows) ?? 0;
+
+          if (initialCount != migratedCount) {
+            throw StateError(
+              'Migration v8->v9 row count mismatch: '
+              '$initialCount rows before, $migratedCount rows after',
+            );
+          }
+
+          await txn.execute('DROP TABLE memorization_session');
+          await txn.execute(
+            'ALTER TABLE memorization_session_v9 RENAME TO memorization_session',
+          );
+          await txn.execute(DatabaseSchema.createMemorizationSessionsIndex);
+        });
+      } finally {
+        await db.execute('PRAGMA foreign_keys = ON');
+      }
+
+      // Verify child rows in memorization_session_ayah survived migration
+      final childRows = await db.query('memorization_session_ayah');
+      expect(childRows.length, 1);
+      expect(childRows.first['session_id'], 'sess-learn');
 
       // Verify row count preservation
       final migratedRows = await db.query('memorization_session');

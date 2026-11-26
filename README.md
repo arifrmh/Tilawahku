@@ -1,80 +1,46 @@
 # TILAWAHKU
 
-TILAWAHKU is an offline-first Qur'an reader and recitation app built with
-Flutter. Qur'an text and Indonesian translation are bundled in SQLite; reciter
-audio is downloaded per ayah and stored on the device, not included in the APK.
-The downloads screen groups audio progress and storage use by juz.
+TILAWAHKU is an offline-first Qur'an reader, memorization companion, and daily Islamic ibadah app built with Flutter. Qur'an text, Indonesian translation, transliteration, and Islamic reference content are bundled locally; reciter audio is streamed or downloaded per juz/surah on demand and stored on the device.
 
 ## Project structure
 
-- `lib/app/` — application bootstrap and centralized light/dark themes.
-- `lib/core/database/` — SQLite schema, migration, and bundled database copy.
-- `lib/core/preferences/` — onboarding and local preferences.
-- `lib/features/reading/` — home, page and surah reader, scroll-saved reading
-  progress, bookmark management, and content repository.
-- `lib/features/voices/` — local voice catalog and voice selection.
-- `lib/features/player/` — local audio repository, background playback, and
-  repeat/player screens.
-- `lib/features/repeat/` — repeat settings for ayah, range, surah, juz, or queue.
-- `lib/features/download/` — per-ayah and per-juz audio download manager and
-  juz summary screen.
-- `lib/features/settings/` — accessibility, theme, and application settings.
-- `lib/features/about/` — source and attribution information.
-- `assets/config/suara.json` — voice catalogue and CDN edition identifiers.
-- `assets/data/tilawahku_content.db` — bundled text, translation, and audio
-  manifests.
-- `assets/fonts/` — Amiri Quran font and its SIL Open Font License.
-- `tools/build_quran_database.py` — offline-database build/import script.
+- `lib/app/`: application bootstrap and centralized light/dark themes.
+- `lib/core/database/`: SQLite schema (v10), migrations, and bundled content seeding.
+- `lib/core/preferences/`: onboarding and local preferences.
+- `lib/features/navigation/`: bottom navigation shell (Beranda, Al-Qur'an, Aktivitas, Lainnya).
+- `lib/features/reading/`: surah/juz/page Mushaf reader, search, scroll-saved progress, and bookmarks.
+- `lib/features/voices/`: reciter catalog, portraits/monogram avatars, and audio preview selection.
+- `lib/features/player/` & `lib/features/repeat/`: local/streaming playback, background controls, and ayah/range/surah/juz repeat.
+- `lib/features/download/`: per-juz and per-surah offline audio download manager.
+- `lib/features/memorization/`: memorization programs, practice modes, and daily progress tracking.
+- `lib/features/assessment/`: on-device recitation checking (`sherpa-onnx` + `Abdou/quran-asr-small`) with word-level Arabic highlights.
+- `lib/features/tajwid/`: interactive Tajwid lessons and quizzes.
+- `lib/features/prayer/`, `lib/features/qibla/`, `lib/features/hijri/`: prayer schedules (AlAdhan API + local cache), reminders, local Qibla compass/manual dial, and Hijri calendar.
+- `lib/features/asmaul_husna/`, `lib/features/doa_dzikir/`, `lib/features/tasbih/`, `lib/features/islamic_figures/`, `lib/features/quotes_stories/`, `lib/features/reading_stats/`: offline daily ibadah tools, Islamic knowledge, and reading statistics.
+- `lib/features/kajian/`: ready-to-use Islamic lecture podcast streaming with local SQLite catalog cache.
+- `lib/features/settings/` & `lib/features/about/`: display/audio settings and app attribution.
+- `assets/config/suara.json` & `assets/voices/`: reciter catalogue and open-licensed Wikimedia Commons portraits.
+- `assets/data/tilawahku_content.db`: bundled Qur'an text, translation, transliteration, and audio manifests.
+- `assets/islamic/`: bundled offline Asmaul Husna, doa & dzikir, quotes, stories, and Islamic figures datasets.
+- `assets/fonts/`: Amiri Quran font and its SIL Open Font License.
+- `docs/`: product requirements, scope, design, roadmap tasks, and feature notes (see [docs/README.md](docs/README.md)).
+- `tools/build_quran_database.py`: offline-database build/import script.
 
 ## Bundled content and provenance
 
-The checked-in database contains 114 surahs and 6,236 ayahs with the
-`quran-uthmani` Arabic edition, `id.indonesian` translation, and
-`en.transliteration` transliteration from AlQuran.cloud. It also contains three
-per-ayah audio manifests (Husary,
-Minshawi, and Alafasy) with 30 juz packages per reciter. The manifest only
-stores filenames and CDN metadata; MP3 files are not bundled. Audio is downloaded automatically
-when an ayah is first played, or a juz or surah can be downloaded from the
-downloads screen for offline use.
+The checked-in database contains 114 surahs and 6,236 ayahs with the `quran-uthmani` Arabic edition, `id.indonesian` translation, and `en.transliteration` transliteration from AlQuran.cloud. `assets/config/suara.json` defines 9 active per-ayah reciters (Husary, Minshawi, Alafasy, Abdul Basit, As-Sudais, Hani Rifai, Maher Al Muaiqly, Muhammad Ayyoub, and Saood Ash-Shuraym) whose 30-juz audio manifests are seeded locally in SQLite on startup, plus 1 surah-based streaming reciter (Muhammad al-Luhaidan, `ar.muhammadalluhaidan`, 128 kbps MP3 via Islamic Network CDN). MP3 files are not bundled in the APK.
 
-The `id.indonesian` API edition metadata currently identifies its translator as
-`Unknown`. Therefore this database must not be represented as a verified
-Kementerian Agama edition unless the exact text is matched against the
-authorized Kemenag source. The app owner has stated that written permission is
-available, but the permission and dataset-to-edition match are not verified by
-this repository. Confirm those before distribution.
+The `id.indonesian` API edition metadata identifies its translator as `Unknown`. Confirm exact Kemenag edition alignment and redistribution permissions before public distribution. Recording-specific redistribution permission for Muhammad al-Luhaidan is likewise unverified; confirm before distributing audio.
 
-Muhammad al-Luhaidan is streamed as complete surah files from the
-`ar.muhammadalluhaidan` AlQuran.cloud edition through the Islamic Network CDN.
-Its API currently maps all 114 surahs to 128 kbps MP3 URLs. Ayah/range repeat
-and offline downloads are not available for this source. The license or
-redistribution permission for the specific recording has not been verified;
-confirm it before distributing the audio.
+Selected reciter portraits in `assets/voices/` are sourced from Wikimedia Commons under open licenses (Public Domain, CC BY-SA 3.0/4.0, GODL-India, Copyrighted free use); reciters without a verified solo portrait use a monogram avatar.
 
-The Latin transliteration is displayed below each Arabic ayah and comes from
-AlQuran.cloud's `en.transliteration` edition.
+The Arabic reader uses Amiri Quran from Google Fonts under the SIL Open Font License 1.1 (`assets/fonts/OFL.txt`). Prayer times and Hijri dates are fetched from AlAdhan API v1 (`api.aladhan.com`) with city coordinates from OpenStreetMap Nominatim (ODbL 1.0); Qibla bearing is computed locally via great-circle formulas. Kajian dan ceramah loads built-in public RSS 2.0 podcast feeds (Anchor / Spotify for Podcasters) and caches metadata locally.
 
-The Arabic reader uses Amiri Quran from Google Fonts, a Quran-focused font
-distributed under the SIL Open Font License 1.1; the license is included in
-`assets/fonts/OFL.txt`.
-
-Arabic edition and source information, the translation edition, audio source,
-and build timestamp are stored in `content_metadata`. Review source terms and
-include the required attribution when distributing the app. Audio can be
-withdrawn by its rights holder; the current voice catalogue is local and does
-not yet provide remote revocation.
-
-The build script downloads content only when explicitly run; the app itself
-does not call AlQuran.cloud at runtime. Rebuild the database after reviewing
-the source editions and applicable permissions:
+Rebuild the bundled database after reviewing source editions and permissions:
 
 ```shell
 python tools/build_quran_database.py
 ```
-
-The importer checks the surah and ayah totals, source ordering, translation
-coverage, audio manifest completeness, and SQLite foreign keys before
-replacing the bundled database.
 
 ## Run and verify
 
@@ -85,57 +51,38 @@ flutter analyze
 flutter test
 ```
 
-Background audio uses `just_audio` and `audio_service`. The Android activity
-and manifest are configured for background playback and system media controls.
+Background audio uses `just_audio` and `audio_service`. The Android activity and manifest are configured for background playback and system media controls.
 
 ## Flutter Web preview
 
-The browser preview uses the experimental `sqflite_common_ffi_web` SQLite
-driver, which stores its database in IndexedDB. After `flutter pub get`, install
-the driver's WebAssembly and worker files into `web/`:
+The browser preview uses `sqflite_common_ffi_web` (IndexedDB). After `flutter pub get`, install its WebAssembly and worker files into `web/`:
 
 ```shell
 dart run sqflite_common_ffi_web:setup
 flutter run -d chrome
 ```
 
-The Web database is initialized from `assets/data/quran_web_preview.json`.
-That fixture is generated from the project's bundled SQLite content with
-`python tools/build_quran_web_preview.py`; it contains the same 114 surahs and
-6,236 ayahs, translations, and transliterations. Bookmarks and reading
-preferences are stored by the browser's SQLite/IndexedDB and
-SharedPreferences/Web implementations, respectively. Web preview does not
-enable audio playback or audio downloads; it displays this limitation instead
-of claiming that audio is stored locally.
+Web preview initializes from `assets/data/quran_web_preview.json` (generated with `python tools/build_quran_web_preview.py`). Audio playback and offline audio downloads are disabled in Web preview.
 
 ## Current operational limitations
 
-- Text and translation are available offline from the bundled database.
-- Audio is available offline after its ayah has been downloaded to the device.
-- Downloading requires internet access and sufficient storage.
-- The audio downloads screen summarizes downloaded ayahs and storage use per
-  juz or surah. Users can download a whole juz or surah, pause or resume
-  downloads, and delete audio by juz or surah. Since both groupings reference
-  the same per-ayah files, deleting one group also removes those ayahs from
-  overlapping downloads in the other grouping.
-- Choosing a different reciter offers an optional download of one selected juz.
-  Additional juz are downloaded individually from the downloads screen.
-- On upgrade, the app now seeds missing Qur'an text and audio manifests from
-  the bundled database while retaining existing bookmark and progress rows.
-- The source API does not identify the `id.indonesian` translator by name.
-- Remote voice revocation and verification of the exact Kemenag translation
-  edition remain outstanding.
+- Qur'an text, translation, transliteration, bookmarks, memorization, tajwid, and `assets/islamic/` content work fully offline.
+- Per-ayah reciter audio works offline once downloaded by juz or surah; deleting one grouping removes overlapping ayah files from the other.
+- On-device recitation checking requires a one-time download of the `Abdou/quran-asr-small` ONNX model; it checks word-level match and does not grade tajwid or makhraj.
+- Prayer schedules, Hijri calendar updates, and Kajian audio streaming require internet access (cached metadata remains readable offline).
+- Remote voice revocation and verification of the exact Kemenag translation edition remain outstanding.
 
 ## License
 
 Copyright (C) 2026 Arif Rahmaanul Hakim and TILAWAHKU contributors.
 
-The source code of TILAWAHKU is licensed under the **GNU General Public License v3.0 (GPL-3.0)** — see the [LICENSE](LICENSE) file for the full license text.
+The source code of TILAWAHKU is licensed under the **GNU General Public License v3.0 (GPL-3.0)** (see [LICENSE](LICENSE)).
 
 ### Third-party assets and content
 
 The GPL-3.0 license applies only to the TILAWAHKU application source code. Bundled and streamed third-party assets remain subject to their respective licenses and source terms:
 
-- **Amiri Quran font** (`assets/fonts/`): licensed under the SIL Open Font License 1.1 ([assets/fonts/OFL.txt](assets/fonts/OFL.txt)).
-- **Web ASR model metadata/assets** (`web/asr/`): `Abdou/quran-asr-small`, licensed under the MIT License ([web/asr/LICENSE](web/asr/LICENSE)).
-- **Qur'an Arabic text, Indonesian translation, transliteration, and reciter audio** (`assets/data/tilawahku_content.db`, `assets/data/quran_web_preview.json`, and CDN audio streams): subject to the original providers' terms and permissions described in [Bundled content and provenance](#bundled-content-and-provenance) above (non-commercial use, attribution, and rights-holder terms apply).
+- **Amiri Quran font** (`assets/fonts/`): SIL Open Font License 1.1 ([assets/fonts/OFL.txt](assets/fonts/OFL.txt)).
+- **Reciter portraits** (`assets/voices/`): Wikimedia Commons open-licensed portraits (see `assets/config/suara.json` attribution fields).
+- **ASR model metadata/assets** (`web/asr/`, on-device download): `Abdou/quran-asr-small`, MIT License ([web/asr/LICENSE](web/asr/LICENSE)).
+- **Qur'an text, translation, transliteration, audio streams, prayer/Hijri APIs, and public podcast feeds**: subject to each provider's terms and attribution requirements described in [Bundled content and provenance](#bundled-content-and-provenance).

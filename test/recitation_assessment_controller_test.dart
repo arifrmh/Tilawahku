@@ -2,7 +2,9 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:tilawahku/features/assessment/data/asr_model_provisioner.dart';
 import 'package:tilawahku/features/assessment/data/asr_runtime.dart';
+import 'package:tilawahku/features/assessment/data/recitation_playback.dart';
 import 'package:tilawahku/features/assessment/data/recitation_recorder.dart';
 import 'package:tilawahku/features/assessment/domain/recitation_audio.dart';
 import 'package:tilawahku/features/assessment/presentation/recitation_assessment_controller.dart';
@@ -15,10 +17,12 @@ void main() {
   RecitationAssessmentController build({
     AsrRuntime? runtime,
     _FakeCapture? capture,
+    _FakePlayback? playback,
     Map<String, String> spellingMap = const {},
   }) => RecitationAssessmentController(
     runtime: runtime,
     createCapture: () => capture ?? _FakeCapture(),
+    createPlayback: () => playback ?? _FakePlayback(),
     loadSpellingMap: () async => spellingMap,
   );
 
@@ -429,6 +433,51 @@ void main() {
       expect(controller.attempt!.comparison.matched, hasLength(3));
       controller.dispose();
     });
+
+    test(
+      'falls back to local mic recording and playback when ASR model is not configured',
+      () async {
+        final capture = _FakeCapture();
+        final playback = _FakePlayback();
+        final runtime = _FakeRuntime(_basmalahSpoken)
+          ..prepareError = const AsrModelProvisioningException(
+            AsrModelFailureKind.notConfigured,
+            'Sumber model belum dikonfigurasi.',
+          );
+        final controller = build(
+          runtime: runtime,
+          capture: capture,
+          playback: playback,
+        );
+
+        await controller.startRecording();
+        expect(controller.phase, AssessmentPhase.recording);
+        expect(controller.isLocalRecordingOnly, isTrue);
+        expect(capture.startCalls, 1);
+
+        await controller.stopAndScore(_basmalah);
+        expect(controller.phase, AssessmentPhase.recorded);
+        expect(controller.attempt, isNull);
+        expect(controller.hasRecording, isTrue);
+        expect(controller.recordedSeconds, 2);
+        expect(runtime.recognized, isEmpty);
+
+        await controller.togglePlayback();
+        expect(controller.isPlaying, isTrue);
+        expect(playback.playCalls, 1);
+
+        playback.completePlayback();
+        expect(controller.isPlaying, isFalse);
+
+        await controller.discardRecording();
+        expect(controller.hasRecording, isFalse);
+        expect(controller.phase, AssessmentPhase.idle);
+
+        controller.dispose();
+        await controller.released;
+        expect(playback.disposeCalls, 1);
+      },
+    );
   });
 }
 
@@ -441,6 +490,7 @@ class _FakeRuntime implements AsrRuntime {
   final recognized = <RecitationAudio>[];
   Completer<void>? prepareGate;
   Completer<void>? recognizeGate;
+  Object? prepareError;
   Object? recognizeError;
   int prepareCalls = 0;
   int disposeCalls = 0;
@@ -450,6 +500,8 @@ class _FakeRuntime implements AsrRuntime {
     prepareCalls++;
     onProgress?.call(0.5, 'mengunduh model');
     await prepareGate?.future;
+    final error = prepareError;
+    if (error != null) throw error;
   }
 
   @override
@@ -497,6 +549,32 @@ class _FakeCapture implements RecitationCapture {
 
   @override
   Future<void> cancel() async => cancelCalls++;
+
+  @override
+  Future<void> dispose() async => disposeCalls++;
+}
+
+class _FakePlayback implements RecitationPlayback {
+  int playCalls = 0;
+  int stopCalls = 0;
+  int disposeCalls = 0;
+  void Function()? _onCompleted;
+
+  @override
+  Future<void> play(
+    RecitationAudio audio, {
+    required void Function() onCompleted,
+  }) async {
+    playCalls++;
+    _onCompleted = onCompleted;
+  }
+
+  void completePlayback() {
+    _onCompleted?.call();
+  }
+
+  @override
+  Future<void> stop() async => stopCalls++;
 
   @override
   Future<void> dispose() async => disposeCalls++;

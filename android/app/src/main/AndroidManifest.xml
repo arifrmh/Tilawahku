@@ -1,6 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
@@ -11,9 +12,10 @@
     <uses-feature
         android:name="android.hardware.sensor.compass"
         android:required="false" />
-    <!-- RECORD_AUDIO dibawa sendiri oleh plugin record saat merge manifest.
+    <!-- Izin mikrofon untuk merekam bacaan pada fitur Hafalan Al-Qur'an.
          Mikrofon dibuat opsional agar perangkat tanpa mikrofon tetap bisa
          memasang aplikasi untuk fitur lainnya. -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-feature
         android:name="android.hardware.microphone"
         android:required="false" />

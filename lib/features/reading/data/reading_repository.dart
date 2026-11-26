@@ -235,12 +235,14 @@ class ReadingRepository {
     final db = await _appDatabase.database;
     final rows = await db.rawQuery(
       '''
-      SELECT ayah.*, transliterasi.teks_latin, terjemah.teks_id
+      SELECT ayah.*, transliterasi.teks_latin, terjemah.teks_id,
+             surah.nama_id AS nama_surah_id
       FROM ayah
+      JOIN surah ON surah.id = ayah.surah
       LEFT JOIN terjemah USING (nomor_global)
       LEFT JOIN transliterasi USING (nomor_global)
-      WHERE surah = ?
-      ORDER BY ayat
+      WHERE ayah.surah = ?
+      ORDER BY ayah.ayat
       ${limit == null ? '' : 'LIMIT ?'}
       ''',
       [surahNumber, ?limit],
@@ -252,12 +254,14 @@ class ReadingRepository {
     final db = await _appDatabase.database;
     final rows = await db.rawQuery(
       '''
-      SELECT ayah.*, transliterasi.teks_latin, terjemah.teks_id
+      SELECT ayah.*, transliterasi.teks_latin, terjemah.teks_id,
+             surah.nama_id AS nama_surah_id
       FROM ayah
+      JOIN surah ON surah.id = ayah.surah
       LEFT JOIN terjemah USING (nomor_global)
       LEFT JOIN transliterasi USING (nomor_global)
-      WHERE juz = ?
-      ORDER BY nomor_global
+      WHERE ayah.juz = ?
+      ORDER BY ayah.nomor_global
       ''',
       [juzNumber],
     );
@@ -300,12 +304,14 @@ class ReadingRepository {
     final db = await _appDatabase.database;
     final rows = await db.rawQuery(
       '''
-      SELECT ayah.*, transliterasi.teks_latin, terjemah.teks_id
+      SELECT ayah.*, transliterasi.teks_latin, terjemah.teks_id,
+             surah.nama_id AS nama_surah_id
       FROM ayah
+      JOIN surah ON surah.id = ayah.surah
       LEFT JOIN terjemah USING (nomor_global)
       LEFT JOIN transliterasi USING (nomor_global)
-      WHERE halaman = ?
-      ORDER BY nomor_global
+      WHERE ayah.halaman = ?
+      ORDER BY ayah.nomor_global
       ''',
       [pageNumber],
     );

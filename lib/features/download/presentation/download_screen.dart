@@ -6,24 +6,43 @@ import 'package:flutter/material.dart';
 import '../../../app/app_theme.dart';
 import '../../../core/preferences/app_preferences.dart';
 import '../../voices/data/voice_catalog.dart';
-import '../data/surah_audio_repository.dart';
+import '../../voices/presentation/qari_avatar.dart';
+import '../../voices/presentation/voice_selection_screen.dart';
 import '../data/audio_download_manager.dart';
 import '../data/audio_package_repository.dart';
+import '../data/surah_audio_repository.dart';
 
 class DownloadScreen extends StatefulWidget {
-  const DownloadScreen({super.key, required this.preferences});
+  const DownloadScreen({
+    super.key,
+    required this.preferences,
+    this.onSetDarkMode,
+    this.catalog,
+    this.packageRepository,
+    this.surahPackageRepository,
+    this.downloadManager,
+  });
 
   final AppPreferences preferences;
+  final ValueChanged<bool>? onSetDarkMode;
+  final VoiceCatalog? catalog;
+  final AudioPackageRepository? packageRepository;
+  final SurahAudioRepository? surahPackageRepository;
+  final AudioDownloadManager? downloadManager;
 
   @override
   State<DownloadScreen> createState() => _DownloadScreenState();
 }
 
 class _DownloadScreenState extends State<DownloadScreen> {
-  final VoiceCatalog _catalog = const VoiceCatalog();
-  final AudioPackageRepository _packageRepository = AudioPackageRepository();
-  final SurahAudioRepository _surahPackageRepository = SurahAudioRepository();
-  final AudioDownloadManager _downloadManager = AudioDownloadManager.instance;
+  late final VoiceCatalog _catalog = widget.catalog ?? const VoiceCatalog();
+  late final AudioPackageRepository _packageRepository =
+      widget.packageRepository ?? AudioPackageRepository();
+  late final SurahAudioRepository _surahPackageRepository =
+      widget.surahPackageRepository ?? SurahAudioRepository();
+  late final AudioDownloadManager _downloadManager =
+      widget.downloadManager ?? AudioDownloadManager.instance;
+
   Voice? _selectedVoice;
   List<AudioPackage>? _packages;
   List<SurahAudioPackage>? _surahPackages;
@@ -53,19 +72,29 @@ class _DownloadScreenState extends State<DownloadScreen> {
     try {
       final voices = await _catalog.load();
       final selectedId = await widget.preferences.selectedVoiceId;
-      if (selectedId == null) {
-        throw StateError('Pilih suara terlebih dahulu di menu Pengaturan.');
+      Voice? voice;
+      if (selectedId != null) {
+        for (final item in voices) {
+          if (item.id == selectedId && item.status == VoiceStatus.active) {
+            voice = item;
+            break;
+          }
+        }
       }
-      final voice = voices.firstWhere(
-        (item) => item.id == selectedId && item.status == VoiceStatus.active,
-        orElse: () => throw StateError(
-          'Suara terpilih tidak tersedia atau telah dinonaktifkan.',
-        ),
-      );
+      if (voice == null) {
+        if (!mounted) return;
+        setState(() {
+          _selectedVoice = null;
+          _packages = null;
+          _loading = false;
+        });
+        return;
+      }
       if (voice.audioMode == VoiceAudioMode.surah) {
         if (!mounted) return;
         setState(() {
           _selectedVoice = voice;
+          _packages = null;
           _loading = false;
         });
         return;
@@ -86,7 +115,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
     } catch (error) {
       if (mounted) {
         setState(() {
-          _error = error.toString();
+          _error = _formatError(error);
           _loading = false;
         });
       }
@@ -158,8 +187,23 @@ class _DownloadScreenState extends State<DownloadScreen> {
       if (!mounted || _selectedVoice?.id != voice.id) return;
       setState(() {
         _loadingSurahPackages = false;
-        _surahLoadError = error.toString();
+        _surahLoadError = _formatError(error);
       });
+    }
+  }
+
+  Future<void> _openVoiceSelection() async {
+    await Navigator.of(context).push<String>(
+      MaterialPageRoute<String>(
+        builder: (_) => VoiceSelectionScreen(
+          preferences: widget.preferences,
+          onSetDarkMode: widget.onSetDarkMode ?? (_) {},
+          allowBack: true,
+        ),
+      ),
+    );
+    if (mounted) {
+      await _load();
     }
   }
 
@@ -206,12 +250,16 @@ class _DownloadScreenState extends State<DownloadScreen> {
             )
             .catchError((Object error) {
               if (mounted) {
-                _showMessage('Unduhan Juz ${package.juz} gagal: $error');
+                _showMessage(
+                  'Unduhan Juz ${package.juz} gagal: ${_formatError(error)}',
+                );
               }
             }),
       );
     } catch (error) {
-      if (mounted) _showMessage('Tidak dapat memulai unduhan: $error');
+      if (mounted) {
+        _showMessage('Tidak dapat memulai unduhan: ${_formatError(error)}');
+      }
     }
   }
 
@@ -248,7 +296,9 @@ class _DownloadScreenState extends State<DownloadScreen> {
       await _downloadManager.deletePackage(voice: voice, juz: package.juz);
       await _reloadPackages();
     } catch (error) {
-      if (mounted) _showMessage('Gagal menghapus audio: $error');
+      if (mounted) {
+        _showMessage('Gagal menghapus audio: ${_formatError(error)}');
+      }
     }
   }
 
@@ -293,7 +343,8 @@ class _DownloadScreenState extends State<DownloadScreen> {
             .catchError((Object error) {
               if (mounted) {
                 _showMessage(
-                  'Unduhan Surah ${package.surahName} gagal: $error',
+                  'Unduhan Surah ${package.surahName} gagal: '
+                  '${_formatError(error)}',
                 );
               }
             }),
@@ -301,7 +352,8 @@ class _DownloadScreenState extends State<DownloadScreen> {
     } catch (error) {
       if (mounted) {
         _showMessage(
-          'Tidak dapat menyiapkan unduhan Surah ${package.surahName}: $error',
+          'Tidak dapat menyiapkan unduhan Surah ${package.surahName}: '
+          '${_formatError(error)}',
         );
       }
     }
@@ -343,7 +395,9 @@ class _DownloadScreenState extends State<DownloadScreen> {
       );
       await _reloadPackages();
     } catch (error) {
-      if (mounted) _showMessage('Gagal menghapus audio surah: $error');
+      if (mounted) {
+        _showMessage('Gagal menghapus audio surah: ${_formatError(error)}');
+      }
     }
   }
 
@@ -366,7 +420,9 @@ class _DownloadScreenState extends State<DownloadScreen> {
         });
       }
     } catch (error) {
-      if (mounted) setState(() => _error = 'Gagal memuat paket audio: $error');
+      if (mounted) {
+        setState(() => _error = 'Gagal memuat paket audio: ${_formatError(error)}');
+      }
     } finally {
       _reloadingPackages = false;
     }
@@ -398,69 +454,133 @@ class _DownloadScreenState extends State<DownloadScreen> {
     super.dispose();
   }
 
+  bool get _hasDownloadablePackages =>
+      !kIsWeb &&
+      !_loading &&
+      _error == null &&
+      _selectedVoice != null &&
+      _selectedVoice?.audioMode != VoiceAudioMode.surah;
+
   @override
-  Widget build(BuildContext context) => DefaultTabController(
-    length: 2,
-    child: Scaffold(
-      appBar: AppBar(
-        title: const Text('Unduhan audio'),
-        bottom: _selectedVoice?.audioMode == VoiceAudioMode.surah
-            ? null
-            : TabBar(
-                onTap: _onTabSelected,
-                tabs: [
-                  Tab(text: 'Juz'),
-                  Tab(text: 'Surah'),
-                ],
-              ),
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Unduhan audio'),
+          bottom: !_hasDownloadablePackages
+              ? null
+              : PreferredSize(
+                  preferredSize: const Size.fromHeight(52),
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
+                    child: Container(
+                      height: 40,
+                      padding: const EdgeInsets.all(3),
+                      decoration: BoxDecoration(
+                        color: colors.surfaceContainerHighest,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: colors.outlineVariant.withValues(alpha: 0.45),
+                        ),
+                      ),
+                      child: TabBar(
+                        onTap: _onTabSelected,
+                        indicatorSize: TabBarIndicatorSize.tab,
+                        dividerColor: Colors.transparent,
+                        indicator: BoxDecoration(
+                          color: colors.primary,
+                          borderRadius: BorderRadius.circular(9),
+                        ),
+                        labelColor: colors.onPrimary,
+                        unselectedLabelColor: colors.onSurface.withValues(
+                          alpha: 0.72,
+                        ),
+                        labelStyle: const TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 13,
+                        ),
+                        tabs: const [
+                          Tab(text: 'Juz'),
+                          Tab(text: 'Surah'),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+        ),
+        body: kIsWeb
+            ? const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(24),
+                  child: Text(
+                    'Audio belum tersedia secara lokal. Pengunduhan dan '
+                    'penyimpanan audio tidak diaktifkan di Web preview.',
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              )
+            : _loading
+            ? const Center(child: CircularProgressIndicator())
+            : _error != null
+            ? _DownloadMessage(
+                icon: Icons.error_outline_rounded,
+                title: 'Paket audio belum dapat dimuat',
+                message: _error!,
+                action: FilledButton(
+                  onPressed: _load,
+                  child: const Text('Coba lagi'),
+                ),
+              )
+            : _selectedVoice == null
+            ? _DownloadMessage(
+                icon: Icons.record_voice_over_outlined,
+                title: 'Belum ada qari dipilih',
+                message:
+                    'Pilih suara qari terlebih dahulu untuk melihat dan '
+                    'mengunduh paket audio juz atau surah agar dapat diputar '
+                    'tanpa internet.',
+                action: FilledButton(
+                  onPressed: _openVoiceSelection,
+                  child: const Text('Pilih suara qari'),
+                ),
+              )
+            : _selectedVoice!.audioMode == VoiceAudioMode.surah
+            ? _DownloadMessage(
+                icon: Icons.stream_rounded,
+                title: _selectedVoice!.name,
+                message:
+                    'Audio ${_selectedVoice!.name} diputar melalui streaming per '
+                    'surah. Unduhan offline belum tersedia untuk sumber ini.',
+                action: OutlinedButton(
+                  onPressed: _openVoiceSelection,
+                  child: const Text('Ganti suara qari'),
+                ),
+              )
+            : _buildPackages(context),
       ),
-      body: kIsWeb
-          ? const Center(
-              child: Padding(
-                padding: EdgeInsets.all(24),
-                child: Text(
-                  'Audio belum tersedia secara lokal. Pengunduhan dan '
-                  'penyimpanan audio tidak diaktifkan di Web preview.',
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            )
-          : _loading
-          ? const Center(child: CircularProgressIndicator())
-          : _error != null
-          ? _DownloadMessage(
-              message: _error!,
-              action: TextButton(
-                onPressed: _load,
-                child: const Text('Coba lagi'),
-              ),
-            )
-          : _selectedVoice?.audioMode == VoiceAudioMode.surah
-          ? const Center(
-              child: Padding(
-                padding: EdgeInsets.all(24),
-                child: Text(
-                  'Audio Muhammad Al-Luhaidan diputar melalui streaming per '
-                  'surah. Unduhan offline belum tersedia untuk sumber ini.',
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            )
-          : _buildPackages(context),
-    ),
-  );
+    );
+  }
 
   Widget _buildPackages(BuildContext context) {
     final voice = _selectedVoice!;
-    final packages = _packages!;
-    final completeCount = packages
-        .where(
-          (package) =>
-              (_downloadManager.statusFor(voice.id, package.juz) ??
-                  package.status) ==
-              AudioPackageStatus.complete,
-        )
-        .length;
+    final packages = _packages ?? const <AudioPackage>[];
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+
+    var completeCount = 0;
+    var totalDownloadedBytes = 0;
+    for (final package in packages) {
+      final status =
+          _downloadManager.statusFor(voice.id, package.juz) ?? package.status;
+      if (status == AudioPackageStatus.complete) {
+        completeCount++;
+      }
+      final liveProgress = _downloadManager.progressFor(voice.id, package.juz);
+      totalDownloadedBytes +=
+          liveProgress?.completedBytes ?? package.downloadedBytes;
+    }
 
     final completeSurahCount = _surahPackages
         ?.where(
@@ -473,50 +593,86 @@ class _DownloadScreenState extends State<DownloadScreen> {
         )
         .length;
 
+    final storageLabel = totalDownloadedBytes > 0
+        ? '${_formatBytes(totalDownloadedBytes)} tersimpan untuk mode offline'
+        : 'Belum ada audio tersimpan · Streaming tetap aktif saat online';
+    final countSummary = completeSurahCount == null
+        ? '$completeCount/30 juz\n114 surah tersedia'
+        : '$completeCount/30 juz\n$completeSurahCount/114 surah';
+
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(16, 14, 16, 8),
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 10),
           child: Card(
+            elevation: 0,
             color: AppColors.navy,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(18),
+            ),
             child: Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(14),
               child: Row(
                 children: [
-                  const Icon(
-                    Icons.headphones_rounded,
-                    size: 36,
-                    color: AppColors.gold,
-                  ),
-                  const SizedBox(width: 14),
+                  QariAvatar(voice: voice, size: 48, selected: true),
+                  const SizedBox(width: 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           voice.name,
-                          style: const TextStyle(
+                          style: theme.textTheme.titleSmall?.copyWith(
                             color: AppColors.parchment,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
-                        const SizedBox(height: 4),
-                        const Text(
-                          'Audio dapat diunduh berdasarkan juz atau surah. '
-                          'Ukuran dan progres unduhan ditampilkan dalam MB.',
-                          style: TextStyle(color: AppColors.parchment),
+                        const SizedBox(height: 3),
+                        Text(
+                          storageLabel,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: AppColors.parchment.withValues(alpha: 0.8),
+                            fontFeatures: const [FontFeature.tabularFigures()],
+                          ),
                         ),
                       ],
                     ),
                   ),
-                  Text(
-                    '$completeCount/30 juz\n'
-                    '${completeSurahCount ?? '—'}/114 surah',
-                    textAlign: TextAlign.end,
-                    style: const TextStyle(
-                      color: AppColors.gold,
-                      fontWeight: FontWeight.w800,
-                    ),
+                  const SizedBox(width: 10),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        countSummary,
+                        textAlign: TextAlign.end,
+                        style: theme.textTheme.labelMedium?.copyWith(
+                          color: AppColors.gold,
+                          fontWeight: FontWeight.w700,
+                          fontFeatures: const [FontFeature.tabularFigures()],
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      InkWell(
+                        onTap: _openVoiceSelection,
+                        borderRadius: BorderRadius.circular(8),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 4,
+                            vertical: 2,
+                          ),
+                          child: Text(
+                            'Ganti qari',
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color: AppColors.parchment.withValues(alpha: 0.9),
+                              decoration: TextDecoration.underline,
+                              decorationColor: AppColors.parchment.withValues(
+                                alpha: 0.65,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -558,7 +714,8 @@ class _DownloadScreenState extends State<DownloadScreen> {
                                     '$_surahLoadError',
                                     textAlign: TextAlign.center,
                                   ),
-                                  TextButton(
+                                  const SizedBox(height: 8),
+                                  FilledButton(
                                     onPressed: () {
                                       setState(() {
                                         _loadingSurahPackages = true;
@@ -573,7 +730,12 @@ class _DownloadScreenState extends State<DownloadScreen> {
                             )
                           : _loadingSurahPackages
                           ? const CircularProgressIndicator()
-                          : const Text('Daftar surah belum tersedia.'),
+                          : Text(
+                              'Memuat daftar surah...',
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                color: colors.onSurface.withValues(alpha: 0.72),
+                              ),
+                            ),
                     )
                   : ListView.separated(
                       padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
@@ -618,6 +780,8 @@ class _SurahPackageCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
     final liveProgress = manager.surahProgressFor(
       package.voiceId,
       package.surahNumber,
@@ -633,17 +797,34 @@ class _SurahPackageCard extends StatelessWidget {
         ? AudioPackageStatus.complete
         : AudioPackageStatus.notDownloaded;
     final isActive = status == AudioPackageStatus.downloading;
+    final downloadedBytes =
+        liveProgress?.downloadedBytes ?? package.downloadedBytes;
+    final subtitle = downloadedAyahs == 0 &&
+            status == AudioPackageStatus.notDownloaded
+        ? '${package.totalAyahs} ayat · Belum diunduh'
+        : '$downloadedAyahs/${package.totalAyahs} ayat · '
+              '${_formatBytes(downloadedBytes)}';
+
     return Card(
+      elevation: 0,
+      color: colors.surfaceContainerHighest,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(
+          color: status == AudioPackageStatus.complete
+              ? AppColors.gold.withValues(alpha: 0.6)
+              : colors.outlineVariant.withValues(alpha: 0.45),
+        ),
+      ),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(14, 8, 8, 8),
+        padding: const EdgeInsets.fromLTRB(14, 10, 8, 10),
         child: Column(
           children: [
             Row(
               children: [
-                CircleAvatar(
-                  backgroundColor: AppColors.navy,
-                  foregroundColor: AppColors.gold,
-                  child: Text('${package.surahNumber}'),
+                _NumberBadge(
+                  number: package.surahNumber,
+                  complete: status == AudioPackageStatus.complete,
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -652,12 +833,17 @@ class _SurahPackageCard extends StatelessWidget {
                     children: [
                       Text(
                         package.surahName,
-                        style: Theme.of(context).textTheme.titleMedium,
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
+                      const SizedBox(height: 2),
                       Text(
-                        '$downloadedAyahs/${package.totalAyahs} ayat diunduh · '
-                        '${_formatBytes(liveProgress?.downloadedBytes ?? package.downloadedBytes)}',
-                        style: Theme.of(context).textTheme.bodySmall,
+                        subtitle,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: colors.onSurface.withValues(alpha: 0.72),
+                          fontFeatures: const [FontFeature.tabularFigures()],
+                        ),
                       ),
                     ],
                   ),
@@ -666,10 +852,13 @@ class _SurahPackageCard extends StatelessWidget {
                   package.voiceId,
                   package.surahNumber,
                 ))
-                  const SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: CircularProgressIndicator(strokeWidth: 2),
+                  const Padding(
+                    padding: EdgeInsets.all(12),
+                    child: SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
                   )
                 else if (isActive)
                   IconButton(
@@ -708,13 +897,28 @@ class _SurahPackageCard extends StatelessWidget {
                   ),
               ],
             ),
+            if (isActive || status == AudioPackageStatus.paused) ...[
+              const SizedBox(height: 8),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(4),
+                child: LinearProgressIndicator(
+                  minHeight: 6,
+                  value: (liveProgress?.progress ?? 0).clamp(0.0, 1.0),
+                ),
+              ),
+            ],
             if (status == AudioPackageStatus.failed &&
                 liveProgress?.error != null)
               Align(
                 alignment: Alignment.centerLeft,
-                child: Text(
-                  liveProgress!.error!,
-                  style: TextStyle(color: Theme.of(context).colorScheme.error),
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 6),
+                  child: Text(
+                    _formatError(liveProgress!.error!),
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: colors.error,
+                    ),
+                  ),
                 ),
               ),
           ],
@@ -743,6 +947,8 @@ class _PackageCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
     final status =
         manager.statusFor(package.voiceId, package.juz) ?? package.status;
     final liveProgress = manager.progressFor(package.voiceId, package.juz);
@@ -758,18 +964,34 @@ class _PackageCard extends StatelessWidget {
         status == AudioPackageStatus.notDownloaded ||
         status == AudioPackageStatus.paused ||
         status == AudioPackageStatus.failed;
+    final subtitle = downloadedAyahs == 0 &&
+            status == AudioPackageStatus.notDownloaded
+        ? '${package.totalAyah} ayat · Belum diunduh'
+              '${totalBytes > 0 ? ' · ~${_formatBytes(totalBytes)}' : ''}'
+        : '$downloadedAyahs/${package.totalAyah} ayat · '
+              '${_formatBytes(downloadedBytes)}'
+              '${totalBytes > 0 ? ' dari ${_formatBytes(totalBytes)}' : ''}';
 
     return Card(
+      elevation: 0,
+      color: colors.surfaceContainerHighest,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(
+          color: status == AudioPackageStatus.complete
+              ? AppColors.gold.withValues(alpha: 0.6)
+              : colors.outlineVariant.withValues(alpha: 0.45),
+        ),
+      ),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(14, 8, 8, 8),
+        padding: const EdgeInsets.fromLTRB(14, 10, 8, 10),
         child: Column(
           children: [
             Row(
               children: [
-                CircleAvatar(
-                  backgroundColor: AppColors.navy,
-                  foregroundColor: AppColors.gold,
-                  child: Text('${package.juz}'),
+                _NumberBadge(
+                  number: package.juz,
+                  complete: status == AudioPackageStatus.complete,
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -778,22 +1000,29 @@ class _PackageCard extends StatelessWidget {
                     children: [
                       Text(
                         'Juz ${package.juz}',
-                        style: Theme.of(context).textTheme.titleMedium,
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
+                      const SizedBox(height: 2),
                       Text(
-                        '$downloadedAyahs/${package.totalAyah} ayat diunduh · '
-                        '${_formatBytes(downloadedBytes)}'
-                        '${totalBytes > 0 ? ' dari ${_formatBytes(totalBytes)}' : ''}',
-                        style: Theme.of(context).textTheme.bodySmall,
+                        subtitle,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: colors.onSurface.withValues(alpha: 0.72),
+                          fontFeatures: const [FontFeature.tabularFigures()],
+                        ),
                       ),
                     ],
                   ),
                 ),
                 if (estimating)
-                  const SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: CircularProgressIndicator(strokeWidth: 2),
+                  const Padding(
+                    padding: EdgeInsets.all(12),
+                    child: SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
                   )
                 else if (status == AudioPackageStatus.complete)
                   IconButton(
@@ -818,7 +1047,13 @@ class _PackageCard extends StatelessWidget {
                     status == AudioPackageStatus.paused ||
                     downloadedAyahs > 0)) ...[
               const SizedBox(height: 8),
-              LinearProgressIndicator(value: progress.clamp(0, 1)),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(4),
+                child: LinearProgressIndicator(
+                  minHeight: 6,
+                  value: progress.clamp(0.0, 1.0),
+                ),
+              ),
               const SizedBox(height: 4),
               Align(
                 alignment: Alignment.centerLeft,
@@ -826,19 +1061,57 @@ class _PackageCard extends StatelessWidget {
                   '${_formatBytes(downloadedBytes)}'
                   '${totalBytes > 0 ? ' / ${_formatBytes(totalBytes)}' : ''}'
                   ' · ${(progress * 100).round()}%',
-                  style: Theme.of(context).textTheme.bodySmall,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    fontFeatures: const [FontFeature.tabularFigures()],
+                  ),
                 ),
               ),
             ],
             if (status == AudioPackageStatus.failed && package.error != null)
               Align(
                 alignment: Alignment.centerLeft,
-                child: Text(
-                  package.error!,
-                  style: TextStyle(color: Theme.of(context).colorScheme.error),
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 6),
+                  child: Text(
+                    _formatError(package.error!),
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: colors.error,
+                    ),
+                  ),
                 ),
               ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _NumberBadge extends StatelessWidget {
+  const _NumberBadge({required this.number, this.complete = false});
+
+  final int number;
+  final bool complete;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Container(
+      width: 40,
+      height: 40,
+      decoration: BoxDecoration(
+        color: complete
+            ? AppColors.gold.withValues(alpha: 0.16)
+            : colors.primary.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      alignment: Alignment.center,
+      child: Text(
+        '$number',
+        style: Theme.of(context).textTheme.labelLarge?.copyWith(
+          color: complete ? AppColors.gold : colors.primary,
+          fontWeight: FontWeight.w700,
+          fontFeatures: const [FontFeature.tabularFigures()],
         ),
       ),
     );
@@ -911,32 +1184,73 @@ class _PackageActionMenu extends StatelessWidget {
 }
 
 class _DownloadMessage extends StatelessWidget {
-  const _DownloadMessage({required this.message, required this.action});
+  const _DownloadMessage({
+    required this.icon,
+    required this.title,
+    required this.message,
+    required this.action,
+  });
 
+  final IconData icon;
+  final String title;
   final String message;
   final Widget action;
 
   @override
-  Widget build(BuildContext context) => Center(
-    child: Padding(
-      padding: const EdgeInsets.all(28),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(
-            Icons.download_for_offline_outlined,
-            size: 56,
-            color: AppColors.gold,
-          ),
-          const SizedBox(height: 16),
-          Text(message, textAlign: TextAlign.center),
-          action,
-        ],
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(28),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 64,
+              height: 64,
+              decoration: BoxDecoration(
+                color: colors.primary.withValues(alpha: 0.08),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, size: 32, color: AppColors.gold),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: colors.onSurface.withValues(alpha: 0.78),
+              ),
+            ),
+            const SizedBox(height: 20),
+            action,
+          ],
+        ),
       ),
-    ),
-  );
+    );
+  }
 }
 
 String _formatBytes(int bytes) {
   return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
+}
+
+String _formatError(Object error) {
+  final text = error.toString().trim();
+  if (text.startsWith('Bad state: ')) {
+    return text.substring('Bad state: '.length);
+  }
+  if (text.startsWith('Exception: ')) {
+    return text.substring('Exception: '.length);
+  }
+  return text;
 }

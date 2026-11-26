@@ -16,6 +16,7 @@ class AsrModelTransportFile implements AsrModelTransport {
     required AsrModelRelease release,
     required Directory directory,
     this.baseUrl,
+    this.includeReleaseDirectory = true,
     Duration? idleTimeout,
     HttpClient? client,
   }) : _release = release,
@@ -33,6 +34,11 @@ class AsrModelTransportFile implements AsrModelTransport {
   /// tetap dipakai, tetapi model baru tidak dapat diunduh.
   final Uri? baseUrl;
 
+  /// Bila `true`, URL file diselesaikan sebagai `<baseUrl>/<release.directory>/<name>`.
+  /// Bila `false` (misalnya repo Hugging Face langsung), file diselesaikan
+  /// langsung sebagai `<baseUrl>/<name>`.
+  final bool includeReleaseDirectory;
+
   HttpClient? _client;
 
   File _file(AsrModelFile file) => File('${_directory.path}/${file.name}');
@@ -46,7 +52,9 @@ class AsrModelTransportFile implements AsrModelTransport {
         'diunduh.',
       );
     }
-    return base.resolve('${_release.directory}/${file.name}');
+    return includeReleaseDirectory
+        ? base.resolve('${_release.directory}/${file.name}')
+        : base.resolve(file.name);
   }
 
   @override

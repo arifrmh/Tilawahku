@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tilawahku/features/memorization/data/memorization_repository.dart';
 import 'package:tilawahku/features/memorization/domain/memorization_models.dart';
+import 'package:tilawahku/features/memorization/presentation/memorization_home_screen.dart';
 import 'package:tilawahku/features/memorization/presentation/memorization_practice_screen.dart';
 import 'package:tilawahku/features/reading/data/reading_repository.dart';
 
@@ -225,6 +226,42 @@ void main() {
     expect(recorded.single.result, resultJson);
     expect(recorded.single.attempts, 2);
   });
+
+  testWidgets('creating a program updates MemorizationHomeScreen immediately', (
+    tester,
+  ) async {
+    final readingRepository = _MemoryReadingRepository(ayahs);
+    final repository = MemorizationRepository(
+      store: _MemoryMemorizationStore(),
+      readingRepository: readingRepository,
+      clock: () => DateTime(2026, 11, 8, 10),
+    );
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: MemorizationHomeScreen(
+          repository: repository,
+          readingRepository: readingRepository,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Belum ada program hafalan.'), findsOneWidget);
+    await tester.tap(find.text('Buat program'));
+    await tester.pumpAndSettle();
+
+    await tester.enterText(find.byType(TextFormField).first, 'Program Al-Fatihah');
+    await tester.tap(find.text('Simpan program'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Program Al-Fatihah'), findsOneWidget);
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+
+    expect(find.text('Belum ada program hafalan.'), findsNothing);
+    expect(find.text('Program Al-Fatihah'), findsOneWidget);
+  });
 }
 
 Future<MemorizationProgram> _createProgram(MemorizationRepository repository) =>
@@ -255,6 +292,29 @@ class _MemoryReadingRepository extends ReadingRepository {
   _MemoryReadingRepository(this.ayahs);
 
   final List<AyahEntry> ayahs;
+
+  @override
+  Future<List<Surah>> getSurahs() async => const [
+    Surah(
+      id: 1,
+      nameArabic: 'الفاتحة',
+      nameIndonesian: 'Al-Fatihah',
+      ayahCount: 1,
+    ),
+    Surah(
+      id: 2,
+      nameArabic: 'البقرة',
+      nameIndonesian: 'Al-Baqarah',
+      ayahCount: 2,
+    ),
+  ];
+
+  @override
+  Future<List<AyahEntry>> getAyahsForSurah(
+    int surahNumber, {
+    int? limit,
+  }) async =>
+      ayahs.where((ayah) => ayah.surahNumber == surahNumber).toList();
 
   @override
   Future<List<AyahEntry>> getAyahsBetweenGlobalNumbers(

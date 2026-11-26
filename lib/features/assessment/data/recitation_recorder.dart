@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:typed_data';
 
+import 'package:flutter/services.dart';
 import 'package:record/record.dart';
 
 import '../domain/recitation_audio.dart';
@@ -108,13 +109,8 @@ class MicrophoneCapture implements RecitationCapture {
     if (!await _recorder.hasPermission()) {
       throw const RecitationCaptureException(
         RecitationCaptureFailure.permissionDenied,
-        'Izin mikrofon belum diberikan sehingga bacaan tidak dapat dinilai.',
-      );
-    }
-    if (!await _hasInputDevice()) {
-      throw const RecitationCaptureException(
-        RecitationCaptureFailure.noMicrophone,
-        'Tidak ada mikrofon yang tersedia untuk menilai bacaan.',
+        'Izin mikrofon belum diberikan. Aktifkan izin Mikrofon pada '
+        'pengaturan aplikasi lalu coba lagi.',
       );
     }
 
@@ -135,6 +131,18 @@ class MicrophoneCapture implements RecitationCapture {
       );
       _pcm = pcm;
       _clock = clock;
+    } on PlatformException catch (error) {
+      await _reset();
+      if (error.code == 'no_input_device') {
+        throw const RecitationCaptureException(
+          RecitationCaptureFailure.noMicrophone,
+          'Tidak ada mikrofon yang tersedia untuk merekam bacaan.',
+        );
+      }
+      throw RecitationCaptureException(
+        RecitationCaptureFailure.interrupted,
+        'Mikrofon tidak dapat dimulai: ${error.message ?? error.code}',
+      );
     } catch (error) {
       await _reset();
       throw RecitationCaptureException(
@@ -193,16 +201,6 @@ class MicrophoneCapture implements RecitationCapture {
   Future<void> dispose() async {
     await _reset();
     await _recorder.dispose();
-  }
-
-  Future<bool> _hasInputDevice() async {
-    try {
-      return (await _recorder.listInputDevices()).isNotEmpty;
-    } catch (_) {
-      // Sebagian platform tidak mengembalikan daftar perangkat; biarkan
-      // perekaman tetap dicoba agar pengguna tidak terkunci.
-      return true;
-    }
   }
 
   Future<void> _reset() async {

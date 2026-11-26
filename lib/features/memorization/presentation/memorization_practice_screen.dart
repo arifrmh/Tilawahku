@@ -381,6 +381,7 @@ class _MemorizationPracticeScreenState
                   Wrap(
                     alignment: WrapAlignment.center,
                     spacing: 8,
+                    runSpacing: 8,
                     children: [
                       for (final nextStatus in [
                         MemorizationStatus.notStarted,
@@ -413,7 +414,7 @@ class _MemorizationPracticeScreenState
                     controller: _assessment,
                     targetText: ayah.uthmaniText,
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 12),
                   OutlinedButton.icon(
                     onPressed: _openReader,
                     icon: const Icon(Icons.headphones_rounded),

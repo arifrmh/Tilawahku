@@ -35,6 +35,7 @@ class AudioRepository {
     required int surahNumber,
     required String voiceId,
   }) async {
+    await _appDatabase.ensureBundledContent();
     final db = await _appDatabase.database;
     final rows = await db.rawQuery(
       '''
@@ -52,6 +53,7 @@ class AudioRepository {
   }
 
   Future<List<AudioTrack>> getAllSurahTracks({required String voiceId}) async {
+    await _appDatabase.ensureBundledContent();
     final db = await _appDatabase.database;
     final rows = await db.rawQuery(
       '''
@@ -72,6 +74,7 @@ class AudioRepository {
     required int juzNumber,
     required String voiceId,
   }) async {
+    await _appDatabase.ensureBundledContent();
     final db = await _appDatabase.database;
     final rows = await db.rawQuery(
       '''

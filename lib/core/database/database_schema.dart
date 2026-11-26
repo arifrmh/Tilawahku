@@ -1,5 +1,5 @@
 abstract final class DatabaseSchema {
-  static const version = 9;
+  static const version = 10;
 
   static const createSurah = '''
     CREATE TABLE surah (
@@ -254,6 +254,15 @@ abstract final class DatabaseSchema {
       'CREATE INDEX hijri_calendar_year_month_idx '
       'ON hijri_calendar_cache (gregorian_year, gregorian_month)';
 
+  static const createKajianCatalogCache = '''
+    CREATE TABLE kajian_catalog_cache (
+      feed_url TEXT PRIMARY KEY,
+      source_json TEXT NOT NULL,
+      items_json TEXT NOT NULL,
+      fetched_at TEXT NOT NULL
+    )
+  ''';
+
   static const memorizationCreateStatements = [
     createMemorizationProgram,
     createMemorizationAyahProgress,
@@ -276,6 +285,8 @@ abstract final class DatabaseSchema {
     createHijriCalendarCache,
     createHijriCalendarYearMonthIndex,
   ];
+
+  static const kajianCreateStatements = [createKajianCatalogCache];
 
   static const createAyahSurahIndex =
       'CREATE INDEX ayah_surah_ayat_idx ON ayah (surah, ayat)';
@@ -302,5 +313,6 @@ abstract final class DatabaseSchema {
     ...tajwidCreateStatements,
     ...prayerCreateStatements,
     ...hijriCalendarCreateStatements,
+    ...kajianCreateStatements,
   ];
 }

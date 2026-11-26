@@ -117,17 +117,21 @@ class _TajwidQuizScreenState extends State<TajwidQuizScreen> {
           color: AppColors.gold,
         ),
         const SizedBox(height: 12),
-        Chip(label: Text(question.type.label)),
+        Align(
+          alignment: AlignmentDirectional.centerStart,
+          child: Chip(label: Text(question.type.label)),
+        ),
+        const SizedBox(height: 12),
         Card(
           child: Padding(
-            padding: const EdgeInsets.all(18),
+            padding: const EdgeInsets.all(16),
             child: Text(
               question.prompt,
               style: Theme.of(context).textTheme.titleLarge,
             ),
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 12),
         for (var index = 0; index < question.options.length; index++)
           _AnswerOption(
             text: question.options[index],
@@ -138,8 +142,9 @@ class _TajwidQuizScreenState extends State<TajwidQuizScreen> {
             onTap: () => _selectAnswer(index),
           ),
         if (selected != null) ...[
-          const SizedBox(height: 8),
+          const SizedBox(height: 4),
           Card(
+            margin: const EdgeInsets.only(bottom: 12),
             color: Theme.of(context).colorScheme.surfaceContainerHighest,
             child: Padding(
               padding: const EdgeInsets.all(16),
@@ -158,7 +163,7 @@ class _TajwidQuizScreenState extends State<TajwidQuizScreen> {
             style: TextStyle(color: Theme.of(context).colorScheme.error),
           ),
         ],
-        const SizedBox(height: 12),
+        const SizedBox(height: 4),
         FilledButton(
           onPressed: selected == null || _saving ? null : _continue,
           child: _saving
@@ -246,6 +251,7 @@ class _TajwidQuizScreenState extends State<TajwidQuizScreen> {
         icon: const Icon(Icons.refresh_rounded),
         label: const Text('Latihan lagi'),
       ),
+      const SizedBox(height: 12),
       OutlinedButton(
         onPressed: () => Navigator.of(context).pop(),
         child: const Text('Kembali ke materi'),
@@ -279,6 +285,11 @@ class _AnswerOption extends StatelessWidget {
         : incorrect
         ? colors.errorContainer
         : null;
+    final foreground = correct
+        ? colors.onSecondaryContainer
+        : incorrect
+        ? colors.onErrorContainer
+        : null;
     final icon = correct
         ? Icons.check_circle_outline_rounded
         : incorrect
@@ -287,17 +298,13 @@ class _AnswerOption extends StatelessWidget {
         ? Icons.radio_button_checked_rounded
         : Icons.radio_button_unchecked_rounded;
     return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      clipBehavior: Clip.antiAlias,
       color: background,
       child: ListTile(
         enabled: enabled || selected || correct,
-        leading: Icon(
-          icon,
-          color: correct
-              ? colors.onSecondaryContainer
-              : incorrect
-              ? colors.onErrorContainer
-              : null,
-        ),
+        textColor: foreground,
+        leading: Icon(icon, color: foreground),
         title: Text(text),
         selected: selected,
         onTap: enabled ? onTap : null,

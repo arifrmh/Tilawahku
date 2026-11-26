@@ -174,9 +174,14 @@ class HijriCalendarController extends ChangeNotifier {
     await _load(refresh: true);
   }
 
-  /// Buka pengaturan lokasi sholat.
-  Future<void> openLocationSettings() async {
-    // UI akan menangani navigasi ke layar sholat
-    // Controller hanya menyediakan aksi
+  /// Muat ulang lokasi dari pengaturan sholat lalu segarkan kalender.
+  Future<void> reloadLocation() async {
+    try {
+      final settings = await _prayerRepository.loadSettings();
+      _location = settings.location;
+    } on Object {
+      // Pertahankan lokasi sebelumnya bila gagal membaca pengaturan.
+    }
+    await _load(refresh: false);
   }
 }

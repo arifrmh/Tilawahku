@@ -42,6 +42,7 @@ class Voice {
     required this.editionId,
     required this.bitrateKbps,
     required this.attribution,
+    this.avatarAsset,
   });
 
   final String id;
@@ -52,6 +53,7 @@ class Voice {
   final String editionId;
   final int bitrateKbps;
   final String attribution;
+  final String? avatarAsset;
 
   factory Voice.fromJson(Map<String, dynamic> json) => Voice(
     id: json['id'] as String,
@@ -62,6 +64,7 @@ class Voice {
     editionId: json['edition_id'] as String,
     bitrateKbps: json['bitrate_kbps'] as int,
     attribution: json['attribution'] as String,
+    avatarAsset: json['avatar_asset'] as String?,
   );
 }
 

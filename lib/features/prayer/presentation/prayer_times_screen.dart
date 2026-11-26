@@ -198,7 +198,12 @@ class _HeaderCard extends StatelessWidget {
     final theme = Theme.of(context);
     return Card(
       color: AppColors.navy,
+      elevation: 0,
       clipBehavior: Clip.antiAlias,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(18),
+        side: BorderSide(color: AppColors.gold.withValues(alpha: 0.35)),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(18),
         child: Column(
@@ -373,16 +378,39 @@ class _PrayerTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final accent = isNext
-        ? AppColors.navy
-        : (isRunning ? AppColors.blue : null);
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
+
+    final titleColor = isNext
+        ? (isDark ? AppColors.gold : AppColors.navy)
+        : colors.onSurface;
+    final subtitleColor = colors.onSurface.withValues(
+      alpha: isNext || isRunning ? 0.78 : 0.68,
+    );
+    final iconColor = isNext
+        ? AppColors.gold
+        : (isRunning
+              ? colors.primary
+              : colors.onSurface.withValues(alpha: 0.72));
+    final borderColor = isNext
+        ? AppColors.gold
+        : (isRunning
+              ? colors.primary.withValues(alpha: 0.4)
+              : colors.outlineVariant.withValues(alpha: 0.45));
+    final cardColor = isNext && isDark
+        ? AppColors.gold.withValues(alpha: 0.08)
+        : colors.surfaceContainerHighest;
+
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
+      elevation: 0,
+      color: cardColor,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(16),
         side: BorderSide(
-          color: isNext ? AppColors.gold : Colors.transparent,
-          width: 1.6,
+          color: borderColor,
+          width: isNext ? 1.5 : 1.0,
         ),
       ),
       child: ListTile(
@@ -391,13 +419,13 @@ class _PrayerTile extends StatelessWidget {
           event.kind.isSalat
               ? (isNext ? Icons.mosque_rounded : Icons.schedule_rounded)
               : Icons.wb_sunny_outlined,
-          color: accent,
+          color: iconColor,
         ),
         title: Text(
           event.kind.labelId,
           style: TextStyle(
-            fontWeight: isNext || isRunning ? FontWeight.w800 : FontWeight.w600,
-            color: accent,
+            fontWeight: isNext || isRunning ? FontWeight.w700 : FontWeight.w600,
+            color: titleColor,
           ),
         ),
         subtitle: Text(
@@ -406,14 +434,14 @@ class _PrayerTile extends StatelessWidget {
                     ? 'Waktu salat'
                     : 'Disesuaikan ${adjustment > 0 ? '+' : ''}$adjustment menit')
               : 'Bukan waktu salat',
-          style: TextStyle(fontSize: 12, color: accent),
+          style: TextStyle(fontSize: 12, color: subtitleColor),
         ),
         trailing: Text(
           event.wallClock,
           style: TextStyle(
             fontSize: 18,
-            fontWeight: FontWeight.w800,
-            color: accent,
+            fontWeight: FontWeight.w700,
+            color: titleColor,
             fontFeatures: const [FontFeature.tabularFigures()],
           ),
         ),
@@ -470,24 +498,26 @@ class _NoticeCard extends StatelessWidget {
   final String message;
 
   @override
-  Widget build(BuildContext context) => Card(
-    color: AppColors.parchment,
-    child: Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-      child: Row(
-        children: [
-          const Icon(Icons.info_outline_rounded, color: AppColors.navy),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              message,
-              style: const TextStyle(color: AppColors.navy, fontSize: 13),
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Row(
+          children: [
+            Icon(Icons.info_outline_rounded, color: colorScheme.primary),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                message,
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-    ),
-  );
+    );
+  }
 }
 
 class _NeedsLocationPanel extends StatelessWidget {
@@ -503,7 +533,11 @@ class _NeedsLocationPanel extends StatelessWidget {
   Widget build(BuildContext context) => ListView(
     padding: const EdgeInsets.all(20),
     children: [
-      const Icon(Icons.place_outlined, size: 46, color: AppColors.navy),
+      Icon(
+        Icons.place_outlined,
+        size: 48,
+        color: Theme.of(context).colorScheme.primary,
+      ),
       const SizedBox(height: 12),
       Text(
         'Tentukan lokasi untuk melihat waktu salat',
@@ -517,7 +551,7 @@ class _NeedsLocationPanel extends StatelessWidget {
         'dikirim.',
         textAlign: TextAlign.center,
       ),
-      const SizedBox(height: 18),
+      const SizedBox(height: 20),
       FilledButton.icon(
         onPressed: controller.busy ? null : controller.useDeviceLocation,
         icon: const Icon(Icons.my_location_rounded),

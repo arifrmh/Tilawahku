@@ -24,6 +24,7 @@ void main() {
 
     expect(voices, hasLength(10));
     expect(voices.first.id, 'husary');
+    expect(voices.first.avatarAsset, 'assets/voices/husary.jpg');
     expect(voices[1].id, 'minshawi');
     expect(voices[2].id, 'alafasy');
     expect(voices[2].editionId, 'ar.alafasy');
@@ -106,6 +107,10 @@ void main() {
 
     expect(find.text('Baca dengan tenang'), findsOneWidget);
     expect(find.text('Lanjut'), findsOneWidget);
+
+    final materialApp = tester.widget<MaterialApp>(find.byType(MaterialApp));
+    expect(materialApp.themeAnimationDuration, const Duration(milliseconds: 350));
+    expect(materialApp.themeAnimationCurve, Curves.easeInOutCubic);
   });
 
   testWidgets('home opens the reader without a selected voice', (tester) async {
@@ -311,12 +316,26 @@ void main() {
     expect(AppColors.gold, const Color(0xFFE6B325));
     expect(AppColors.parchment, const Color(0xFFEDEAE0));
     expect(AppColors.blue, const Color(0xFF2C4870));
-    expect(AppTheme.light.scaffoldBackgroundColor, AppColors.parchment);
+    expect(
+      AppTheme.light.scaffoldBackgroundColor,
+      AppTheme.light.colorScheme.surfaceContainer,
+    );
+    expect(
+      AppTheme.light.navigationBarTheme.backgroundColor,
+      AppTheme.light.scaffoldBackgroundColor,
+    );
     expect(AppTheme.light.colorScheme.primary, AppColors.navy);
     expect(AppTheme.light.colorScheme.secondary, AppColors.gold);
     expect(AppTheme.light.colorScheme.tertiary, AppColors.blue);
     expect(AppTheme.dark.dialogTheme.backgroundColor, isNotNull);
-    expect(AppTheme.dark.scaffoldBackgroundColor, AppColors.navy);
+    expect(
+      AppTheme.dark.scaffoldBackgroundColor,
+      AppTheme.dark.colorScheme.surfaceContainer,
+    );
+    expect(
+      AppTheme.dark.navigationBarTheme.backgroundColor,
+      AppTheme.dark.scaffoldBackgroundColor,
+    );
     expect(AppTheme.dark.colorScheme.primary, AppColors.gold);
     expect(AppTheme.dark.colorScheme.secondary, AppColors.blue);
     expect(AppTheme.dark.progressIndicatorTheme.color, AppColors.gold);

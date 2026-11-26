@@ -142,6 +142,34 @@ void main() {
       expect(adjusted.hijriDay, 29);
       expect(adjusted.hijriMonth, 8);
       expect(adjusted.hijriYear, 1446);
+      expect(adjusted.hijriMonthNameId, "Sya'ban");
+      expect(adjusted.hijriMonthNameAr, 'شعبان');
+    });
+
+    test('withAdjustment recomputes Islamic events on shifted date', () {
+      const day = HijriCalendarDay(
+        gregorianDate: '2026-02-18',
+        hijriDay: 29,
+        hijriMonth: 8,
+        hijriYear: 1447,
+        hijriMonthNameEn: "Sha'ban",
+        hijriMonthNameAr: 'شعبان',
+        hijriMonthNameId: "Sya'ban",
+        weekdayEn: 'Wednesday',
+        weekdayAr: 'الأربعاء',
+        isToday: false,
+      );
+
+      final adjusted = day.withAdjustment(1);
+      expect(adjusted.hijriDay, 1);
+      expect(adjusted.hijriMonth, 9);
+      expect(adjusted.hijriMonthNameId, 'Ramadan');
+      expect(adjusted.events.map((e) => e.nameId), ['Awal Ramadan']);
+    });
+
+    test('gregorianWeekdayNameId returns Indonesian weekday name', () {
+      expect(gregorianWeekdayNameId('2026-11-20'), 'Jumat');
+      expect(gregorianWeekdayNameId('2026-11-22'), 'Minggu');
     });
   });
 
@@ -340,12 +368,19 @@ void main() {
       expect(event, isNull);
     });
 
-    test('all returns all events', () {
-      final events = IslamicEvents.instance.all;
+    test('all events are retrievable via MM-dd hijriKey', () {
+      final catalog = IslamicEvents.instance;
+      final events = catalog.all;
       expect(events.length, 8);
-      expect(events.any((e) => e.nameId == 'Maulid Nabi'), true);
-      expect(events.any((e) => e.nameId == 'Idul Fitri'), true);
-      expect(events.any((e) => e.nameId == 'Idul Adha'), true);
+      for (final event in events) {
+        final found = catalog.findByHijriKey(event.hijriKey);
+        expect(found, isNotNull, reason: 'Missing key ${event.hijriKey}');
+        expect(found?.nameId, event.nameId);
+      }
+      expect(catalog.findByHijriKey('01-10')?.nameId, 'Hari Asyura');
+      expect(catalog.findByHijriKey('09-01')?.nameId, 'Awal Ramadan');
+      expect(catalog.findByHijriKey('10-01')?.nameId, 'Idul Fitri');
+      expect(catalog.findByHijriKey('12-10')?.nameId, 'Idul Adha');
     });
   });
 }

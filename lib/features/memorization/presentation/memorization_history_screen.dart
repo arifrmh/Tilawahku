@@ -100,7 +100,7 @@ class _MemorizationHistoryScreenState extends State<MemorizationHistoryScreen> {
                 'Sesi latihan',
                 style: Theme.of(context).textTheme.titleLarge,
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 12),
               for (final session in data.sessions)
                 _SessionTile(
                   session: session,
@@ -111,14 +111,16 @@ class _MemorizationHistoryScreenState extends State<MemorizationHistoryScreen> {
                 ),
             ],
             if (data.changes.isNotEmpty) ...[
-              const SizedBox(height: 16),
+              const SizedBox(height: 8),
               Text(
                 'Perubahan status ayat',
                 style: Theme.of(context).textTheme.titleLarge,
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 12),
               for (final change in data.changes)
                 Card(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  clipBehavior: Clip.antiAlias,
                   child: ListTile(
                     leading: const Icon(Icons.swap_horiz_rounded),
                     title: Text(
@@ -166,7 +168,11 @@ class _SessionTileState extends State<_SessionTile> {
 
   @override
   Widget build(BuildContext context) => Card(
+    margin: const EdgeInsets.only(bottom: 12),
+    clipBehavior: Clip.antiAlias,
     child: ExpansionTile(
+      shape: const Border(),
+      collapsedShape: const Border(),
       leading: const Icon(Icons.event_note_rounded),
       title: Text(widget.session.mode.label),
       subtitle: Text(

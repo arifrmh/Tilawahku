@@ -31,7 +31,9 @@ class _TajwidHomeScreenState extends State<TajwidHomeScreen> {
   }
 
   void _reloadProgress() {
-    setState(() => _progress = widget.repository.getProgress());
+    setState(() {
+      _progress = widget.repository.getProgress();
+    });
   }
 
   Future<void> _openQuiz() async {
@@ -130,11 +132,14 @@ class _TajwidHomeScreenState extends State<TajwidHomeScreen> {
         const _ScopeNotice(),
         const SizedBox(height: 16),
         Text('Kategori materi', style: Theme.of(context).textTheme.titleLarge),
-        const SizedBox(height: 8),
+        const SizedBox(height: 12),
         for (final category in widget.repository.getCategories())
           Card(
+            margin: const EdgeInsets.only(bottom: 12),
             clipBehavior: Clip.antiAlias,
             child: ExpansionTile(
+              shape: const Border(),
+              collapsedShape: const Border(),
               leading: const Icon(Icons.menu_book_rounded),
               title: Text(category.id.title),
               subtitle: Text(category.description),
@@ -160,7 +165,7 @@ class _ScopeNotice extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Card(
     child: Padding(
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(16),
       child: Text(
         'Materi ini adalah pengantar, bukan evaluasi pelafalan. Penandaan '
         'warna otomatis belum tersedia karena data anotasi ayat yang '

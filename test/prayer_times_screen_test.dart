@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tilawahku/app/app_theme.dart';
 import 'package:tilawahku/core/preferences/app_preferences.dart';
 import 'package:tilawahku/features/prayer/data/aladhan_prayer_client.dart';
 import 'package:tilawahku/features/prayer/data/city_location_catalog.dart';
@@ -436,6 +437,35 @@ void main() {
       before,
       reason: 'penyesuaian bukan alasan unduh ulang',
     );
+  });
+
+  testWidgets('mode gelap memakai warna kontras tinggi pada salat berjalan dan berikutnya', (
+    tester,
+  ) async {
+    await repository.saveSettings(
+      const PrayerSettings(
+        method: PrayerMethod.kemenag,
+        asrMadhab: AsrMadhab.standard,
+        adjustments: PrayerAdjustments(),
+        location: jakarta,
+      ),
+    );
+    buildController();
+    useTallScreen(tester);
+    await tester.pumpWidget(
+      MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: AppTheme.dark,
+        home: PrayerTimesScreen(controller: controller),
+      ),
+    );
+    await settle(tester);
+
+    final subuhText = tester.widget<Text>(find.text('Subuh'));
+    final zuhurText = tester.widget<Text>(find.text('Zuhur'));
+    expect(subuhText.style?.color, isNot(AppColors.blue));
+    expect(subuhText.style?.color, isNot(AppColors.navy));
+    expect(zuhurText.style?.color, AppColors.gold);
   });
 }
 

@@ -40,4 +40,37 @@ class RecitationAudio {
   /// False untuk audio yang pasti ditolak engine; rekaman seperti ini tidak
   /// pernah dikirim ke runtime.
   bool get meetsAsrMinimum => samples.length >= asrMinimumSamples;
+
+  /// Mengemas ulang sampel mono 16 kHz menjadi berkas WAV PCM 16-bit standar
+  /// untuk diputar ulang di perangkat.
+  Uint8List toWavBytes() {
+    final dataLength = samples.length * 2;
+    final bytes = Uint8List(44 + dataLength);
+    final header = ByteData.sublistView(bytes);
+    void writeAscii(int offset, String value) {
+      for (var i = 0; i < value.length; i++) {
+        bytes[offset + i] = value.codeUnitAt(i);
+      }
+    }
+
+    writeAscii(0, 'RIFF');
+    header.setUint32(4, 36 + dataLength, Endian.little);
+    writeAscii(8, 'WAVE');
+    writeAscii(12, 'fmt ');
+    header.setUint32(16, 16, Endian.little);
+    header.setUint16(20, 1, Endian.little);
+    header.setUint16(22, 1, Endian.little);
+    header.setUint32(24, asrSampleRate, Endian.little);
+    header.setUint32(28, asrSampleRate * 2, Endian.little);
+    header.setUint16(32, 2, Endian.little);
+    header.setUint16(34, 16, Endian.little);
+    writeAscii(36, 'data');
+    header.setUint32(40, dataLength, Endian.little);
+
+    for (var i = 0; i < samples.length; i++) {
+      final value = (samples[i] * 32768.0).round().clamp(-32768, 32767);
+      header.setInt16(44 + i * 2, value, Endian.little);
+    }
+    return bytes;
+  }
 }
