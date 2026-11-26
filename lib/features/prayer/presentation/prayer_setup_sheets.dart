@@ -235,141 +235,363 @@ class _SettingsSheet extends StatelessWidget {
   final PrayerTimesController controller;
 
   @override
-  Widget build(BuildContext context) {
-    final settings = controller.settings;
-    return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Pengaturan jadwal',
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-              const SizedBox(height: 12),
-              DropdownButtonFormField<int>(
-                initialValue: settings.method.aladhanId,
-                decoration: const InputDecoration(
-                  isDense: true,
-                  labelText: 'Metode perhitungan',
-                ),
-                items: [
-                  for (final method in PrayerMethod.values)
-                    DropdownMenuItem(
-                      value: method.aladhanId,
-                      child: Text('${method.name} • ${method.angleSummary}'),
-                    ),
-                ],
-                onChanged: (value) {
-                  if (value == null) return;
-                  controller.selectMethod(PrayerMethod.byId(value));
-                },
-              ),
-              const SizedBox(height: 14),
-              Text(
-                'Mazhab Asar',
-                style: Theme.of(context).textTheme.titleSmall,
-              ),
-              const SizedBox(height: 6),
-              SegmentedButton<AsrMadhab>(
-                segments: [
-                  for (final madhab in AsrMadhab.values)
-                    ButtonSegment(value: madhab, label: Text(madhab.labelId)),
-                ],
-                selected: {settings.asrMadhab},
-                showSelectedIcon: false,
-                onSelectionChanged: (value) =>
-                    controller.selectMadhab(value.first),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Penyesuaian menit',
-                style: Theme.of(context).textTheme.titleSmall,
-              ),
-              const Text(
-                'Hanya mengoreksi tampilan dan pengingat di perangkat; nilai '
-                'dari layanan tidak diubah.',
-                style: TextStyle(fontSize: 12),
-              ),
-              for (final kind in PrayerKind.values)
-                if (kind.isSalat)
-                  _AdjustmentRow(
-                    kind: kind,
-                    minutes: settings.adjustments.minutesFor(kind) ?? 0,
-                    onChanged: (minutes) =>
-                        controller.setAdjustment(kind, minutes),
-                  ),
-              const SizedBox(height: 16),
-              Text('Pengingat', style: Theme.of(context).textTheme.titleSmall),
-              SwitchListTile(
-                contentPadding: EdgeInsets.zero,
-                value: settings.remindersEnabled,
-                onChanged: controller.remindersSupportedByPlatform
-                    ? (value) => controller.setRemindersEnabled(value)
-                    : null,
-                title: const Text('Aktifkan pengingat waktu salat'),
-                subtitle: Text(
-                  controller.remindersSupportedByPlatform
-                      ? (controller.remindersArmed
-                            ? 'Terjadwal untuk jadwal yang sedang tampil.'
-                            : 'Belum ada pengingat tersisa hari ini.')
-                      : 'Tidak tersedia pada platform ini.',
-                ),
-              ),
-              const SizedBox(height: 6),
-              DropdownButtonFormField<int>(
-                initialValue: settings.reminderLeadMinutes,
-                decoration: const InputDecoration(
-                  isDense: true,
-                  labelText: 'Menit sebelum waktu salat',
-                ),
-                items: const [
-                  DropdownMenuItem(value: 3, child: Text('3 menit')),
-                  DropdownMenuItem(value: 5, child: Text('5 menit')),
-                  DropdownMenuItem(value: 10, child: Text('10 menit')),
-                  DropdownMenuItem(value: 15, child: Text('15 menit')),
-                  DropdownMenuItem(value: 20, child: Text('20 menit')),
-                  DropdownMenuItem(value: 30, child: Text('30 menit')),
-                ],
-                onChanged: settings.remindersEnabled
-                    ? (value) {
-                        if (value != null) controller.setReminderLead(value);
-                      }
-                    : null,
-              ),
-              const SizedBox(height: 12),
-              Wrap(
-                spacing: 8,
-                children: [
-                  for (final kind in PrayerKind.values)
-                    if (kind.isSalat)
-                      FilterChip(
-                        label: Text(kind.labelId),
-                        selected:
-                            settings.reminderKinds.isEmpty ||
-                            settings.reminderKinds.contains(kind),
-                        onSelected: (_) => controller.toggleReminderKind(kind),
+  Widget build(BuildContext context) => ListenableBuilder(
+    listenable: controller,
+    builder: (context, _) {
+      final theme = Theme.of(context);
+      final colors = theme.colorScheme;
+      final settings = controller.settings;
+      final hasAnyAdjustment = PrayerKind.values.any(
+        (kind) =>
+            kind.isSalat && (settings.adjustments.minutesFor(kind) ?? 0) != 0,
+      );
+      final salatKinds = [
+        for (final kind in PrayerKind.values)
+          if (kind.isSalat) kind,
+      ];
+      String? asrClock;
+      final events = controller.schedule?.events;
+      if (events != null) {
+        for (final event in events) {
+          if (event.kind == PrayerKind.asr) {
+            asrClock = event.wallClock;
+            break;
+          }
+        }
+      }
+
+      return SafeArea(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.sizeOf(context).height * 0.85,
+          ),
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Pengaturan jadwal',
+                        style: theme.textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Daftar kosong berarti semua waktu salat diingatkan.',
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
-              const SizedBox(height: 12),
-              Text(
-                'Peringatan: pengingat terjadwal bergantung pada izin notifikasi '
-                'dan izin alarm presisi perangkat. Pada Android, pengujian di '
-                'perangkat nyata belum dilakukan.',
-                style: TextStyle(fontSize: 12, color: AppColors.blue),
-              ),
-            ],
+                    ),
+                    if (controller.busy)
+                      const SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                const _SheetSectionTitle('Perhitungan jadwal'),
+                const SizedBox(height: 8),
+                _SheetCard(
+                  padding: const EdgeInsets.all(14),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      DropdownButtonFormField<int>(
+                        key: ValueKey('method-${settings.method.aladhanId}'),
+                        initialValue: settings.method.aladhanId,
+                        isExpanded: true,
+                        decoration: InputDecoration(
+                          isDense: true,
+                          labelText: 'Metode perhitungan',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        items: [
+                          for (final method in PrayerMethod.values)
+                            DropdownMenuItem(
+                              value: method.aladhanId,
+                              child: Text(
+                                '${method.name} · ${method.angleSummary}',
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                        ],
+                        onChanged: (value) {
+                          if (value == null) return;
+                          controller.selectMethod(PrayerMethod.byId(value));
+                        },
+                      ),
+                      const SizedBox(height: 14),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              'Mazhab waktu Asar',
+                              style: theme.textTheme.labelLarge?.copyWith(
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                          if (asrClock != null)
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 3,
+                              ),
+                              decoration: BoxDecoration(
+                                color: colors.primary.withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                'Asar $asrClock',
+                                style: theme.textTheme.labelSmall?.copyWith(
+                                  color: colors.primary,
+                                  fontWeight: FontWeight.w700,
+                                  fontFeatures: const [
+                                    FontFeature.tabularFigures(),
+                                  ],
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Menentukan kapan waktu salat Asar dimulai; waktu salat lain tidak berubah.',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: colors.onSurface.withValues(alpha: 0.72),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      SizedBox(
+                        width: double.infinity,
+                        child: SegmentedButton<AsrMadhab>(
+                          segments: [
+                            for (final madhab in AsrMadhab.values)
+                              ButtonSegment(
+                                value: madhab,
+                                label: Text(
+                                  madhab.labelId,
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                          ],
+                          selected: {settings.asrMadhab},
+                          showSelectedIcon: false,
+                          onSelectionChanged: (value) =>
+                              controller.selectMadhab(value.first),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          color: colors.surfaceContainer,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Text(
+                          settings.asrMadhab.descriptionId,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: colors.onSurface.withValues(alpha: 0.8),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 18),
+                Row(
+                  children: [
+                    const Expanded(
+                      child: _SheetSectionTitle('Penyesuaian menit'),
+                    ),
+                    if (hasAnyAdjustment)
+                      TextButton(
+                        onPressed: controller.resetAdjustments,
+                        child: const Text('Reset'),
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Padding(
+                  padding: const EdgeInsets.only(left: 4, bottom: 8),
+                  child: Text(
+                    'Mengoreksi tampilan dan pengingat di perangkat secara langsung.',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: colors.onSurface.withValues(alpha: 0.72),
+                    ),
+                  ),
+                ),
+                _SheetCard(
+                  child: Column(
+                    children: [
+                      for (var i = 0; i < salatKinds.length; i++) ...[
+                        if (i > 0)
+                          Divider(
+                            height: 1,
+                            thickness: 1,
+                            indent: 14,
+                            endIndent: 14,
+                            color: colors.outlineVariant.withValues(
+                              alpha: 0.35,
+                            ),
+                          ),
+                        _AdjustmentRow(
+                          kind: salatKinds[i],
+                          minutes:
+                              settings.adjustments.minutesFor(salatKinds[i]) ??
+                              0,
+                          onChanged: (minutes) =>
+                              controller.setAdjustment(salatKinds[i], minutes),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 18),
+                const _SheetSectionTitle('Pengingat salat'),
+                const SizedBox(height: 8),
+                _SheetCard(
+                  padding: const EdgeInsets.fromLTRB(14, 4, 14, 14),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      SwitchListTile(
+                        contentPadding: EdgeInsets.zero,
+                        value: settings.remindersEnabled,
+                        onChanged: controller.remindersSupportedByPlatform
+                            ? (value) => controller.setRemindersEnabled(value)
+                            : null,
+                        title: Text(
+                          'Aktifkan pengingat waktu salat',
+                          style: theme.textTheme.bodyLarge?.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        subtitle: Text(
+                          controller.remindersSupportedByPlatform
+                              ? (!settings.remindersEnabled
+                                    ? 'Pengingat sedang nonaktif.'
+                                    : controller.remindersArmed
+                                    ? 'Terjadwal untuk jadwal yang sedang tampil.'
+                                    : 'Belum ada pengingat tersisa hari ini.')
+                              : 'Tidak tersedia pada platform ini.',
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: colors.onSurface.withValues(alpha: 0.72),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      DropdownButtonFormField<int>(
+                        key: ValueKey('lead-${settings.reminderLeadMinutes}'),
+                        initialValue: settings.reminderLeadMinutes,
+                        isExpanded: true,
+                        decoration: InputDecoration(
+                          isDense: true,
+                          labelText: 'Menit sebelum waktu salat',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        items: const [
+                          DropdownMenuItem(value: 3, child: Text('3 menit')),
+                          DropdownMenuItem(value: 5, child: Text('5 menit')),
+                          DropdownMenuItem(value: 10, child: Text('10 menit')),
+                          DropdownMenuItem(value: 15, child: Text('15 menit')),
+                          DropdownMenuItem(value: 20, child: Text('20 menit')),
+                          DropdownMenuItem(value: 30, child: Text('30 menit')),
+                        ],
+                        onChanged: settings.remindersEnabled
+                            ? (value) {
+                                if (value != null) {
+                                  controller.setReminderLead(value);
+                                }
+                              }
+                            : null,
+                      ),
+                      const SizedBox(height: 12),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 6,
+                        children: [
+                          for (final kind in salatKinds)
+                            FilterChip(
+                              label: Text(kind.labelId),
+                              selected:
+                                  settings.reminderKinds.isEmpty ||
+                                  settings.reminderKinds.contains(kind),
+                              onSelected: settings.remindersEnabled
+                                  ? (_) => controller.toggleReminderKind(kind)
+                                  : null,
+                            ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Jika tidak ada yang dipilih, semua waktu salat diingatkan. '
+                        'Pengingat terjadwal bergantung pada izin notifikasi dan alarm perangkat.',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: colors.onSurface.withValues(alpha: 0.68),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
+      );
+    },
+  );
+}
+
+class _SheetSectionTitle extends StatelessWidget {
+  const _SheetSectionTitle(this.title);
+
+  final String title;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.only(left: 4),
+      child: Text(
+        title,
+        style: theme.textTheme.titleSmall?.copyWith(
+          color: theme.colorScheme.primary,
+          fontWeight: FontWeight.w600,
+        ),
       ),
+    );
+  }
+}
+
+class _SheetCard extends StatelessWidget {
+  const _SheetCard({required this.child, this.padding});
+
+  final Widget child;
+  final EdgeInsetsGeometry? padding;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Card(
+      margin: EdgeInsets.zero,
+      elevation: 0,
+      clipBehavior: Clip.antiAlias,
+      color: colors.surfaceContainerHighest,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(
+          color: colors.outlineVariant.withValues(alpha: 0.45),
+        ),
+      ),
+      child: padding == null ? child : Padding(padding: padding!, child: child),
     );
   }
 }
@@ -386,37 +608,69 @@ class _AdjustmentRow extends StatelessWidget {
   final ValueChanged<int> onChanged;
 
   @override
-  Widget build(BuildContext context) => Row(
-    children: [
-      Expanded(child: Text(kind.labelId)),
-      IconButton(
-        tooltip: 'Kurangi 1 menit',
-        onPressed: () => onChanged(
-          (minutes - 1).clamp(
-            -PrayerAdjustments.maxMinutes,
-            PrayerAdjustments.maxMinutes,
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final adjusted = minutes != 0;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              kind.labelId,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ),
-        ),
-        icon: const Icon(Icons.remove_rounded),
-      ),
-      SizedBox(
-        width: 52,
-        child: Text(
-          '${minutes > 0 ? '+' : ''}$minutes',
-          textAlign: TextAlign.center,
-          style: const TextStyle(fontWeight: FontWeight.w700),
-        ),
-      ),
-      IconButton(
-        tooltip: 'Tambah 1 menit',
-        onPressed: () => onChanged(
-          (minutes + 1).clamp(
-            -PrayerAdjustments.maxMinutes,
-            PrayerAdjustments.maxMinutes,
+          IconButton(
+            tooltip: 'Kurangi 1 menit ${kind.labelId}',
+            constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+            onPressed: minutes <= -PrayerAdjustments.maxMinutes
+                ? null
+                : () => onChanged(
+                    (minutes - 1).clamp(
+                      -PrayerAdjustments.maxMinutes,
+                      PrayerAdjustments.maxMinutes,
+                    ),
+                  ),
+            icon: const Icon(Icons.remove_rounded),
           ),
-        ),
-        icon: const Icon(Icons.add_rounded),
+          Container(
+            width: 56,
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            decoration: BoxDecoration(
+              color: adjusted
+                  ? AppColors.gold.withValues(alpha: 0.16)
+                  : colors.surfaceContainer,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            alignment: Alignment.center,
+            child: Text(
+              '${minutes > 0 ? '+' : ''}$minutes',
+              style: theme.textTheme.labelLarge?.copyWith(
+                fontWeight: FontWeight.w700,
+                color: adjusted ? AppColors.gold : colors.onSurface,
+                fontFeatures: const [FontFeature.tabularFigures()],
+              ),
+            ),
+          ),
+          IconButton(
+            tooltip: 'Tambah 1 menit ${kind.labelId}',
+            constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+            onPressed: minutes >= PrayerAdjustments.maxMinutes
+                ? null
+                : () => onChanged(
+                    (minutes + 1).clamp(
+                      -PrayerAdjustments.maxMinutes,
+                      PrayerAdjustments.maxMinutes,
+                    ),
+                  ),
+            icon: const Icon(Icons.add_rounded),
+          ),
+        ],
       ),
-    ],
-  );
+    );
+  }
 }

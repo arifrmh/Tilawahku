@@ -100,13 +100,22 @@ class PrayerMethod {
 /// diverifikasi pada 2026-11-20: `school=0` -> `meta.school STANDARD`
 /// Asar 15:02, `school=1` -> `meta.school HANAFI` Asar 16:05 untuk Jakarta.
 enum AsrMadhab {
-  standard('Syafi\'i / Maliki / Hanbali', 0),
-  hanafi('Hanafi', 1);
+  standard(
+    'Syafi\'i / Maliki / Hanbali',
+    0,
+    'Umum dipakai di Indonesia: waktu Asar masuk saat bayangan benda sama dengan tingginya (1x).',
+  ),
+  hanafi(
+    'Hanafi',
+    1,
+    'Waktu Asar masuk lebih akhir (sekitar 1 jam): saat bayangan benda dua kali tingginya (2x).',
+  );
 
-  const AsrMadhab(this.labelId, this.aladhanSchool);
+  const AsrMadhab(this.labelId, this.aladhanSchool, this.descriptionId);
 
   final String labelId;
   final int aladhanSchool;
+  final String descriptionId;
 
   static AsrMadhab fromName(String? name) => values.firstWhere(
     (madhab) => madhab.name == name?.toLowerCase(),

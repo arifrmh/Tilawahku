@@ -210,13 +210,25 @@ class PrayerTimesController extends ChangeNotifier
   );
 
   Future<void> toggleReminderKind(PrayerKind kind) {
-    final kinds = {...settings.reminderKinds};
+    final allSalat = {
+      for (final item in PrayerKind.values)
+        if (item.isSalat) item,
+    };
+    final kinds = settings.reminderKinds.isEmpty
+        ? {...allSalat}
+        : {...settings.reminderKinds};
     if (!kinds.remove(kind)) kinds.add(kind);
+    final normalized = kinds.length == allSalat.length ? <PrayerKind>{} : kinds;
     return _updateSettings(
-      settings.copyWith(reminderKinds: kinds),
+      settings.copyWith(reminderKinds: normalized),
       rescheduleReminders: true,
     );
   }
+
+  Future<void> resetAdjustments() => _updateSettings(
+    settings.copyWith(adjustments: const PrayerAdjustments()),
+    rescheduleReminders: true,
+  );
 
   Future<void> _updateSettings(
     PrayerSettings next, {
@@ -227,6 +239,12 @@ class PrayerTimesController extends ChangeNotifier
         next.method.aladhanId != settings.method.aladhanId ||
         next.asrMadhab != settings.asrMadhab;
     settings = next;
+    if (!needsReload) {
+      _rawSchedule ??= schedule;
+      schedule = _rawSchedule?.withAdjustments(next.adjustments);
+      followingSchedule = _rawFollowing?.withAdjustments(next.adjustments);
+    }
+    notifyListeners();
     await _repository.saveSettings(next);
     if (needsReload) {
       // Kunci cache mengandung lokasi, metode, dan madhab: kombinasi baru bisa
@@ -236,9 +254,6 @@ class PrayerTimesController extends ChangeNotifier
       await _load();
       return;
     }
-    _rawSchedule ??= schedule;
-    schedule = _rawSchedule?.withAdjustments(next.adjustments);
-    followingSchedule = _rawFollowing?.withAdjustments(next.adjustments);
     if (rescheduleReminders) await _syncReminders();
     notifyListeners();
   }

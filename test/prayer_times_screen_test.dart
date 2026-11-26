@@ -467,6 +467,43 @@ void main() {
     expect(subuhText.style?.color, isNot(AppColors.navy));
     expect(zuhurText.style?.color, AppColors.gold);
   });
+
+  testWidgets('sheet pengaturan jadwal memperbarui mazhab, penyesuaian menit, dan switch pengingat secara realtime', (
+    tester,
+  ) async {
+    await startWithLocation(tester);
+
+    await tester.tap(find.byTooltip('Pengaturan jadwal'));
+    await settle(tester);
+
+    expect(find.text('Pengaturan jadwal'), findsOneWidget);
+
+    // 1. Mazhab Asar updates immediately with clear explanation
+    expect(find.text(AsrMadhab.standard.descriptionId), findsOneWidget);
+    expect(find.text('Asar 15:02'), findsOneWidget);
+    await tester.tap(find.text(AsrMadhab.hanafi.labelId));
+    await settle(tester);
+    final segmented = tester.widget<SegmentedButton<AsrMadhab>>(
+      find.byType(SegmentedButton<AsrMadhab>),
+    );
+    expect(segmented.selected, {AsrMadhab.hanafi});
+    expect(find.text(AsrMadhab.hanafi.descriptionId), findsOneWidget);
+
+    // 2. Penyesuaian menit Subuh updates immediately
+    await tester.tap(find.byTooltip('Tambah 1 menit Subuh'));
+    await settle(tester);
+    expect(find.text('+1'), findsOneWidget);
+    expect(find.text('Reset'), findsOneWidget);
+
+    // 3. Switch pengingat updates immediately
+    await tester.tap(find.text('Aktifkan pengingat waktu salat'));
+    await settle(tester);
+    expect(controller.settings.remindersEnabled, isTrue);
+    final reminderSwitch = tester.widget<SwitchListTile>(
+      find.widgetWithText(SwitchListTile, 'Aktifkan pengingat waktu salat'),
+    );
+    expect(reminderSwitch.value, isTrue);
+  });
 }
 
 const _cities =
